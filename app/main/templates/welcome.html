@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% from "component/navbar.html" import clean_navbar %}
+
+{% block content %}
+    {{ clean_navbar() }}
+    <div class="jumbotron">
+        <h1 class="display-4">Welcome to Boop!</h1>
+        <p class="lead">Boop is a pet service application that opens up opportunity for pet owners to find services for their pets the best way possible.</p>
+        <hr class="my-4">
+        <a class="btn btn-outline-primary my-2 mr-2 my-sm-0 btn-w-50" href="{{ url_for('gateway.signin') }}" role="button">
+            Sign in
+        </a>
+        <a class="btn btn-outline-primary my-2 ml-2 my-sm-0 btn-w-50" href="{{ url_for('gateway.signup') }}" role="button">
+            Sign up
+        </a>
+    </div>
+{% endblock %}

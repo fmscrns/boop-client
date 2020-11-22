@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% from "component/navbar.html" import loaded_navbar %}
+
+{% block content %}
+    {{ loaded_navbar() }}
+    <div class="container-fluid d-flex justify-content-center mt-3">
+        hello, world!
+    </div>
+{% endblock %}
