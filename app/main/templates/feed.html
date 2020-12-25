@@ -2,8 +2,8 @@
 {% from "component/navbar.html" import loaded_navbar %}
 
 {% block content %}
-    {{ loaded_navbar() }}
+    {{ loaded_navbar(current_user) }}
     <div class="container-fluid d-flex justify-content-center mt-3">
-        hello, world!
+        hello, {{ current_user["name"] }}!
     </div>
 {% endblock %}

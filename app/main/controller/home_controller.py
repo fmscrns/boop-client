@@ -5,6 +5,8 @@ from ..util.decorator import session_required
 
 @home_bp.route("/feed", methods=["GET", "POST"])
 @session_required
-def feed():
-    
-    return render_template("feed.html", page_title="Feed")
+def feed(current_user):
+    return render_template("feed.html",
+        page_title = "Feed",
+        current_user = current_user
+    )

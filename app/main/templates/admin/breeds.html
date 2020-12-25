@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+{% from "component/navbar.html" import admin_navbar %}
+
+{% block content %}
+    {{ admin_navbar(current_user) }}
+    <div class="container-fluid d-flex justify-content-center mt-3 flex-column">
+        <h2>Breeds</h2>
+        <div class="container border rounded d-flex flex-column p-2">
+          <form method="POST" action="{{ url_for('admin.create_breed') }}" class="m-3">
+            Create breed
+            {{ createBreedForm.hidden_tag() }}
+            <div class="form-row align-items-center">
+              <div class="col-auto">
+                {{ createBreedForm.name_input(class="form-control form-control-sm", minlength=2) }}
+              </div>
+              <div class="col-auto">
+                {{ createBreedForm.parent_input(class="form-control form-control-sm", minlength=2) }}
+              </div>
+              <div class="col-auto">
+                {{ createBreedForm.submit_input(class="btn btn-primary btn-sm") }}
+              </div>
+            </div>
+        </form>
+            <ul class="list-group" style="height:inherit;overflow-y:scroll;">
+                {% for breed in breed_list %}
+                  <li class="list-group-item d-flex justify-content-between">
+                      <span>{{ breed.name }}</span>
+                      <span>{{ breed.parent_name }}</span>
+                    <div>
+                        <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#edit{{ breed.public_id }}Modal">
+                            Edit
+                        </button>
+                        <div class="modal fade" id="edit{{ breed.public_id }}Modal" tabindex="-1" aria-labelledby="editBreedModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <form class="modal-content" method="POST" action="{{ url_for('admin.edit_breed', pid=breed.public_id) }}">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="editBreedModalLabel">Edit breed</h5>
+                                  {{ editBreedForm.hidden_tag() }}
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <div class="form-group">
+                                    {{ editBreedForm.name_input.label }}
+                                    {{ editBreedForm.name_input(class="form-control form-control-sm", placeholder=breed.name, minlength=2) }}
+                                  </div>
+                                  <div class="form-group">
+                                    {{ editBreedForm.parent_input.label }}
+                                    {{ editBreedForm.parent_input(class="form-control form-control-sm", minlength=2) }}
+                                  </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                  {{ editBreedForm.submit_input(class="btn btn-primary") }}
+                                </div>
+                              </form>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#delete{{ breed.public_id }}Modal">
+                            Delete
+                        </button>
+                        <div class="modal fade" id="delete{{ breed.public_id }}Modal" tabindex="-1" aria-labelledby="deleteBreedModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <form class="modal-content" method="POST" action="{{ url_for('admin.delete_breed', pid=breed.public_id) }}">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="deleteBreedModalLabel">Delete breed</h5>
+                                  {{ deleteBreedForm.hidden_tag() }}
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  {{ deleteBreedForm.confirm_name_input(class="d-none", value=breed.name) }}
+                                  <div class="form-group">
+                                    {{ deleteBreedForm.name_input.label }}     
+                                    {{ deleteBreedForm.name_input(class="form-control form-control-sm", placeholder=breed.name, minlength=2) }}
+                                  </div>
+                                  <div class="form-group">
+                                    {{ deleteBreedForm.parent_input.label }}
+                                    {{ deleteBreedForm.parent_input(class="form-control form-control-sm", minlength=2) }}
+                                  </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                  {{ deleteBreedForm.submit_input(class="btn btn-danger") }}
+                                </div>
+                              </form>
+                            </div>
+                        </div>
+                    </div>
+                  </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

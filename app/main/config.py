@@ -10,7 +10,6 @@ class DevelopmentConfig(Config):
     DEBUG = True
     API_DOMAIN = "http://127.0.0.1:5000"
 
-
 class ProductionConfig(Config):
     DEBUG = False
 

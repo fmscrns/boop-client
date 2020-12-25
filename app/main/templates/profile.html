@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% from "component/navbar.html" import loaded_navbar %}
+
+{% block content %}
+    {{ loaded_navbar(current_user) }}
+    <div class="container-fluid d-flex justify-content-center mt-3">
+        <div class="d-flex flex-column w-50">
+            <div class="jumbotron jumbotron-fluid rounded w-100 d-flex flex-column mb-3 pb-0">
+                <div class="d-flex flex-row px-4">
+                    <img src="{{ url_for('static', filename='images/bodega-sunshine.jpg') }}" alt="..." class="rounded mx-auto d-block w-25">
+                    <div class="container">
+                        <h1 class="display-6">{{ this_user["name"] }}</h1>
+                        <p class="lead">{{ this_user["username"] }}</p>
+                    </div>
+                </div>
+                <ul class="nav justify-content-center border rounded mt-3">
+                    <li class="nav-item">
+                      <a class="nav-link active" href="{{ url_for('profile.pets', username=this_user['username']) }}">Pets</a>
+                    </li>
+                    {#<li class="nav-item">
+                      <a class="nav-link" href="{{ url_for('profile.businesses', username=this_user['username']) }}">Businesses</a>
+                    </li>#}
+                </ul>
+            </div>
+            {% if this_user["public_id"] == current_user["public_id"] %}
+                <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#staticBackdrop">
+                    Create pet profile
+                </button>
+                <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-body">
+                        ...
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Understood</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
