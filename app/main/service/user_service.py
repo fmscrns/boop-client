@@ -14,6 +14,23 @@ class UserService:
                 "password": data.get("password_input")
             }
         )
+    
+    @staticmethod
+    def edit(pid, token, data):
+        return requests.patch("{}/user/{}".format(
+            current_app.config["API_DOMAIN"],
+            pid),
+            headers = {
+                "Authorization" : "Bearer {}".format(token)
+            },
+            json = {
+                "name": data.get("name_input"),
+                "username": data.get("username_input"),
+                "email": data.get("email_input"),
+                "password": data.get("password_input")
+            }
+        )
+
     @staticmethod
     def get_by_token():
         return requests.get("{}/user/bytoken".format(

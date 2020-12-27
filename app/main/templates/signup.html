@@ -73,14 +73,14 @@
                         {{ createUserForm.confirm_password_input(class="form-control form-control-sm") }}
                     {% endif %}
                 </div>
-                    <div class="d-flex flex-column mt-4">
-                        {{ createUserForm.submit_input(class="btn btn-primary btn-block") }}
-                        {% if page_title.split(" ")[0] == "Sign" %}
-                            <span class="small text-muted mt-3">Already on Boop? <a href="{{ url_for('gateway.signin') }}">Sign in here</a></span>
-                        {% elif page_title.split(" ")[0] == "Admin" %}
-                            <span class="small text-muted mt-3">Already a Boop admin? <a href="{{ url_for('gateway.admin_signin') }}">Sign in here</a></span>
-                        {% endif %}
-                    </div>
+                <div class="d-flex flex-column mt-4">
+                    {{ createUserForm.submit_input(class="btn btn-primary btn-block") }}
+                    {% if page_title.split(" ")[0] == "Sign" %}
+                        <span class="small text-muted mt-3">Already on Boop? <a href="{{ url_for('gateway.signin') }}">Sign in here</a></span>
+                    {% elif page_title.split(" ")[0] == "Admin" %}
+                        <span class="small text-muted mt-3">Already a Boop admin? <a href="{{ url_for('gateway.admin_signin') }}">Sign in here</a></span>
+                    {% endif %}
+                </div>
             </form>
           </div>
     </div>

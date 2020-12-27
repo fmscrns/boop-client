@@ -11,6 +11,50 @@
                     <div class="container">
                         <h1 class="display-6">{{ this_user["name"] }}</h1>
                         <p class="lead">{{ this_user["username"] }}</p>
+                        {% if this_user["public_id"] == current_user["public_id"] %}
+                            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editProfileModal">
+                                <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
+                            </button>
+                            <div class="modal fade" id="editProfileModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                <form class="modal-content" method="POST" action="{{ url_for('profile.edit_user', pid=current_user['public_id']) }}">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Edit profile</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ editUserForm.hidden_tag() }}
+                                        <div class="form-group">
+                                            {{ editUserForm.name_input.label }}
+                                            {{ editUserForm.name_input(class="form-control form-control-sm") }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ editUserForm.username_input.label }}
+                                            {{ editUserForm.username_input(class="form-control form-control-sm") }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ editUserForm.email_input.label }}
+                                            {{ editUserForm.email_input(class="form-control form-control-sm") }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ editUserForm.password_input.label }}
+                                            {{ editUserForm.password_input(class="form-control form-control-sm") }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ editUserForm.confirm_password_input.label }}
+                                            {{ editUserForm.confirm_password_input(class="form-control form-control-sm") }}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    {{ editUserForm.submit_input(class="btn btn-primary") }}
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
                 <ul class="nav justify-content-center border rounded mt-3">
