@@ -3,8 +3,10 @@ import os
 
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'my_precious_secret_key')
+    NAME_CLOUDINARY = "fmscrns"
+    KEY_API_CLOUDINARY = os.getenv('CLOUD_KEY')
+    SECRET_API_CLOUDINARY = os.getenv("CLOUD_SECRET")
     DEBUG = False
-
 
 class DevelopmentConfig(Config):
     DEBUG = True

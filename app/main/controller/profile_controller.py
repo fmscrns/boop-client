@@ -29,7 +29,7 @@ def edit_user(current_user, pid):
     editUserForm = EditUserForm()
 
     if editUserForm.validate_on_submit():
-        edit_user = UserService.edit(pid, session["booped_in"], request.form)
+        edit_user = UserService.edit(pid, session["booped_in"], request.form, request.files)
 
         if edit_user.ok:
             resp = json.loads(edit_user.text)

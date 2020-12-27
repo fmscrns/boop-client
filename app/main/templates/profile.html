@@ -7,7 +7,7 @@
         <div class="d-flex flex-column w-50">
             <div class="jumbotron jumbotron-fluid rounded w-100 d-flex flex-column mb-3 pb-0">
                 <div class="d-flex flex-row px-4">
-                    <img src="{{ url_for('static', filename='images/bodega-sunshine.jpg') }}" alt="..." class="rounded mx-auto d-block w-25">
+                    <img src="{{ url_for('static', filename='images/' + this_user['photo']) }}" alt="..." class="rounded mx-auto d-block w-25">
                     <div class="container">
                         <h1 class="display-6">{{ this_user["name"] }}</h1>
                         <p class="lead">{{ this_user["username"] }}</p>
@@ -17,7 +17,7 @@
                             </button>
                             <div class="modal fade" id="editProfileModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                 <div class="modal-dialog">
-                                <form class="modal-content" method="POST" action="{{ url_for('profile.edit_user', pid=current_user['public_id']) }}">
+                                <form class="modal-content" method="POST" action="{{ url_for('profile.edit_user', pid=current_user['public_id']) }}" enctype="multipart/form-data">
                                     <div class="modal-header">
                                     <h5 class="modal-title" id="staticBackdropLabel">Edit profile</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -26,6 +26,10 @@
                                     </div>
                                     <div class="modal-body">
                                         {{ editUserForm.hidden_tag() }}
+                                        <div class="form-group">
+                                            {{ editUserForm.photo_input.label }}
+                                            {{ editUserForm.photo_input(class="form-control form-control-sm") }}
+                                        </div>
                                         <div class="form-group">
                                             {{ editUserForm.name_input.label }}
                                             {{ editUserForm.name_input(class="form-control form-control-sm") }}

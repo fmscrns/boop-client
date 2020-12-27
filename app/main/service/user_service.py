@@ -1,6 +1,6 @@
 import requests, json
 from flask import current_app, session
-
+from . import save_image
 
 class UserService:
     @staticmethod
@@ -16,7 +16,7 @@ class UserService:
         )
     
     @staticmethod
-    def edit(pid, token, data):
+    def edit(pid, token, data_form, data_file):
         return requests.patch("{}/user/{}".format(
             current_app.config["API_DOMAIN"],
             pid),
@@ -24,10 +24,11 @@ class UserService:
                 "Authorization" : "Bearer {}".format(token)
             },
             json = {
-                "name": data.get("name_input"),
-                "username": data.get("username_input"),
-                "email": data.get("email_input"),
-                "password": data.get("password_input")
+                "name": data_form.get("name_input"),
+                "username": data_form.get("username_input"),
+                "email": data_form.get("email_input"),
+                "password": data_form.get("password_input"),
+                "photo": save_image(data_file.get("photo_input"))
             }
         )
 

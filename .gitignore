@@ -130,3 +130,7 @@ dmypy.json
 
 #VSCode
 .vscode
+
+#Ignore Images
+app/main/static/images/*
+!app/main/static/images/default.jpg
