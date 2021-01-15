@@ -6,7 +6,7 @@ from flask_script import Server, Manager
 
 from app.main import create_app
 
-app = create_app(os.getenv('BOILERPLATE_ENV') or 'dev')
+app = create_app(os.getenv('BOILERPLATE_ENV') or 'prod')
 app.register_blueprint(gateway_bp, url_prefix="/gateway")
 app.register_blueprint(admin_bp, url_prefix="/admin")
 app.register_blueprint(home_bp)
