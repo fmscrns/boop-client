@@ -10,7 +10,9 @@ app = create_app(os.getenv('BOILERPLATE_ENV') or 'dev')
 app.register_blueprint(gateway_bp, url_prefix="/gateway")
 app.register_blueprint(admin_bp, url_prefix="/admin")
 app.register_blueprint(home_bp)
-app.register_blueprint(profile_bp, url_prefix="/profile")
+app.register_blueprint(user_profile_bp, url_prefix="/user/profile")
+app.register_blueprint(pet_profile_bp, url_prefix="/pet/profile")
+app.register_blueprint(business_profile_bp, url_prefix="/business/profile")
 
 app.app_context().push()
 

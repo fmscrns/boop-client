@@ -20,4 +20,4 @@ class EditUserForm(FlaskForm):
     password_input = PasswordField("Password", default="", validators=[DataRequired(), Length(min=6, message="Too short.")])
     confirm_password_input = PasswordField("Confirm password", default="", validators=[DataRequired(), Length(min=6, message="Too short."), EqualTo("password_input")])
 
-    submit_input = SubmitField("Edit profile")
+    submit_input = SubmitField("Update profile")

@@ -11,6 +11,16 @@ class BreedService:
                 "Authorization" : "Bearer {}".format(token)
             }
         )
+    
+    @staticmethod
+    def get_by_specie(token, specie_id):
+        return requests.get("{}/breed/parent/{}".format(
+            current_app.config["API_DOMAIN"],
+            specie_id),
+            headers = {
+                "Authorization" : "Bearer {}".format(token)
+            }
+        )
 
     @staticmethod
     def create(token, data):
@@ -20,8 +30,8 @@ class BreedService:
                 "Authorization" : "Bearer {}".format(token)
             },
             json = {
-                "name" : data.get("name_input"),
-                "parent_id": data.get("parent_input")
+                "name" : data.get("cbf-name_input"),
+                "parent_id": data.get("cbf-parent_input")
             }
         )
 
@@ -34,8 +44,8 @@ class BreedService:
                 "Authorization" : "Bearer {}".format(token)
             },
             json = {
-                "name" : data.get("name_input"),
-                "parent_id": data.get("parent_input")
+                "name" : data.get("ebf-name_input"),
+                "parent_id": data.get("ebf-parent_input")
             }
         )
     
@@ -48,7 +58,7 @@ class BreedService:
                 "Authorization" : "Bearer {}".format(token)
             },
             json = {
-                "name" : data.get("name_input"),
-                "parent_id": data.get("parent_input")
+                "name" : data.get("dbf-name_input"),
+                "parent_id": data.get("dbf-parent_input")
             }
         )

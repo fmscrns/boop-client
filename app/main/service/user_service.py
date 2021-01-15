@@ -24,11 +24,11 @@ class UserService:
                 "Authorization" : "Bearer {}".format(token)
             },
             json = {
-                "name": data_form.get("name_input"),
-                "username": data_form.get("username_input"),
-                "email": data_form.get("email_input"),
-                "password": data_form.get("password_input"),
-                "photo": save_image(data_file.get("photo_input"))
+                "name": data_form.get("euf-name_input"),
+                "username": data_form.get("euf-username_input"),
+                "email": data_form.get("euf-email_input"),
+                "password": data_form.get("euf-password_input"),
+                "photo": save_image(data_file.get("euf-photo_input"), 0)
             }
         )
 

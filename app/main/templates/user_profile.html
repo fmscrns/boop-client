@@ -1,0 +1,206 @@
+{% extends "layout.html" %}
+{% from "component/navbar.html" import loaded_navbar %}
+
+{% block content %}
+    {{ loaded_navbar(current_user) }}
+    <div class="container-fluid d-flex justify-content-center pt-5 my-3">
+        <div class="d-flex flex-column w-50">
+            <div class="jumbotron jumbotron-fluid rounded w-100 d-flex flex-column mb-3 pb-0">
+                <div class="d-flex flex-row px-4">
+                    <img src="{{ config.MEDIA_STORAGE + this_user['photo'] }}" alt="..." class="rounded mx-auto d-block w-25">
+                    <div class="container">
+                        <h1 class="display-6">{{ this_user["name"] }}</h1>
+                        <p class="lead">{{ this_user["username"] }}</p>
+                        {% if this_user["public_id"] == current_user["public_id"] %}
+                            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editProfileModal">
+                                <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
+                            </button>
+                            <div class="modal fade" id="editProfileModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                <form class="modal-content" method="POST" action="{{ url_for('user_profile.edit_user', pid=current_user['public_id']) }}" enctype="multipart/form-data">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Edit profile</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ editUserForm.hidden_tag() }}
+                                        <div class="form-group">
+                                            {{ editUserForm.photo_input.label }}
+                                            {{ editUserForm.photo_input(class="form-control form-control-sm") }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ editUserForm.name_input.label }}
+                                            {{ editUserForm.name_input(class="form-control form-control-sm") }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ editUserForm.username_input.label }}
+                                            {{ editUserForm.username_input(class="form-control form-control-sm") }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ editUserForm.email_input.label }}
+                                            {{ editUserForm.email_input(class="form-control form-control-sm") }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ editUserForm.password_input.label }}
+                                            {{ editUserForm.password_input(class="form-control form-control-sm") }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ editUserForm.confirm_password_input.label }}
+                                            {{ editUserForm.confirm_password_input(class="form-control form-control-sm") }}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    {{ editUserForm.submit_input(class="btn btn-primary") }}
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <ul class="nav row m-0 border rounded mt-3">
+                    <li class="nav-item col d-flex justify-content-center">
+                      <a class="nav-link active" href="{{ url_for('user_profile.pets', username=this_user['username']) }}">Pets</a>
+                    </li>
+                    <li class="nav-item col d-flex justify-content-center">
+                      <a class="nav-link" href="{{ url_for('user_profile.businesses', username=this_user['username']) }}">Businesses</a>
+                    </li>
+                </ul>
+            </div>
+            {% if createPetForm %}
+                {% if this_user["public_id"] == current_user["public_id"] %}
+                    <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#createPetModal">
+                        Create pet profile
+                    </button>
+                    <div class="modal fade" id="createPetModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <form class="modal-content" method="POST" action="{{ url_for('user_profile.create_pet') }}" enctype="multipart/form-data" token="{{ session['booped_in'] }}" api-domain="{{ config.API_DOMAIN }}">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Create pet</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            </div>
+                            <div class="modal-body">
+                                {{ createPetForm.hidden_tag() }}
+                                <div class="form-group">
+                                    {{ createPetForm.photo_input.label }}
+                                    {{ createPetForm.photo_input(class="form-control form-control-sm") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ createPetForm.name_input.label }}
+                                    {{ createPetForm.name_input(class="form-control form-control-sm") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ createPetForm.bio_input.label }}
+                                    {{ createPetForm.bio_input(class="form-control form-control-sm") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ createPetForm.birthday_input.label }}
+                                    {{ createPetForm.birthday_input(class="form-control form-control-sm") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ createPetForm.sex_input.label }}
+                                    {% for subfield in createPetForm.sex_input %}
+                                    <div class="row container-fluid is-invalid">
+                                        <div class="col-1">
+                                        {{ subfield }}
+                                        </div>
+                                        <div class="col-8">
+                                        {{ subfield.label(class="small") }}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
+                                    {{ createPetForm.group_input.label }}
+                                    {{ createPetForm.group_input(class="form-control form-control-sm") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ createPetForm.subgroup_input.label }}
+                                    {{ createPetForm.subgroup_input(class="form-control form-control-sm") }}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            {{ createPetForm.submit_input(class="btn btn-primary") }}
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                {% endif %}
+                {% for pet in pet_list %}
+                    <div class="container-fluid border p-4 mt-3">
+                        <div class="d-flex flex-row">
+                            <img src="{{ config.MEDIA_STORAGE + pet['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                            <div class="d-flex flex-column ml-2 container">
+                                <a href="{{ url_for('pet_profile.posts', pet_pid=pet.id) }}" class="h4">{{ pet.name }}</a>
+                                <span>Bio: {{ pet.bio }}</span>
+                                <span>Birthday: {{ pet.birthday }}</span>
+                                <span>Sex: {%if pet.sex == 0 %}Male{%else%}Female{%endif%}</span>
+                                <span>Specie: {{ pet.group_name }}</span>
+                                <span>Breed: {{ pet.subgroup_name }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% elif createBusinessForm %}
+                {% if this_user["public_id"] == current_user["public_id"] %}
+                    <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#createBusinessModal">
+                        Create business profile
+                    </button>
+                    <div class="modal fade" id="createBusinessModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <form class="modal-content" method="POST" action="{{ url_for('user_profile.create_business') }}" enctype="multipart/form-data">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Create business</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            </div>
+                            <div class="modal-body">
+                                {{ createBusinessForm.hidden_tag() }}
+                                <div class="form-group">
+                                    {{ createBusinessForm.photo_input.label }}
+                                    {{ createBusinessForm.photo_input(class="form-control form-control-sm") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ createBusinessForm.name_input.label }}
+                                    {{ createBusinessForm.name_input(class="form-control form-control-sm") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ createBusinessForm.bio_input.label }}
+                                    {{ createBusinessForm.bio_input(class="form-control form-control-sm") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ createBusinessForm.type_input.label }}
+                                    {{ createBusinessForm.type_input(class="form-control form-control-sm") }}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            {{ createBusinessForm.submit_input(class="btn btn-primary") }}
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                {% endif %}
+                {% for business in business_list %}
+                    <div class="container-fluid border p-4 mt-3">
+                        <div class="d-flex flex-row">
+                            <img src="{{ config.MEDIA_STORAGE + business['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                            <div class="d-flex flex-column ml-2 container">
+                                <a href="{{ url_for('business_profile.posts', business_pid=business.id) }}" class="h4">{{ business.name }}</a>
+                                <span>Bio: {{ business.bio }}</span>
+                                <span>Type: {%if business._type == 0 %}Grooming{%elif business._type == 1%}Veterinary clinic{%elif business._type == 2 %}Supply and accessories{%elif business._type == 3 %}Grooming and veterinary clinic{%elif business._type == 4 %}Grooming, supply and accessories{%elif business._type == 5 %}Veterinary clinic, supply and accessories{%elif business._type == 6 %}Grooming, veterinary clinic, supply and accessories{%endif%}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

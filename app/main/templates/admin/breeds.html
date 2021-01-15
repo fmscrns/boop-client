@@ -43,11 +43,11 @@
                                 <div class="modal-body">
                                   <div class="form-group">
                                     {{ editBreedForm.name_input.label }}
-                                    {{ editBreedForm.name_input(class="form-control form-control-sm", placeholder=breed.name, minlength=2) }}
+                                    {{ editBreedForm.name_input(class="form-control form-control-sm", value=breed.name, minlength=2) }}
                                   </div>
                                   <div class="form-group">
                                     {{ editBreedForm.parent_input.label }}
-                                    {{ editBreedForm.parent_input(class="form-control form-control-sm", minlength=2) }}
+                                    {{ editBreedForm.parent_input(class="form-control form-control-sm", minlength=2, selected=breed.parent_id) }}
                                   </div>
                                 </div>
                                 <div class="modal-footer">

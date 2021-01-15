@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% from "component/navbar.html" import loaded_navbar %}
+
+{% block content %}
+    {{ loaded_navbar(current_user) }}
+    <div class="container-fluid d-flex justify-content-center pt-5 my-3">
+        <div class="d-flex flex-column w-50">
+            <div class="jumbotron jumbotron-fluid rounded w-100 d-flex flex-column mb-3 pb-0">
+                <div class="d-flex flex-row px-4">
+                    <img src="{{ config.MEDIA_STORAGE + this_business['photo'] }}" alt="..." class="rounded mx-auto d-block w-25">
+                    <div class="container">
+                        <h1 class="display-6">{{ this_business["name"] }}</h1>
+                        <p class="lead"><a href="{{ url_for('user_profile.businesses', username=this_business['exec_username']) }}">{{ this_business["exec_name"] }}'s</a> business</p>
+                        {% if this_business["exec_id"] == current_user["public_id"] %}
+                            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editBusinessModal">
+                                <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
+                            </button>
+                            <div class="modal fade" id="editBusinessModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Business Settings</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                    <form class="modal-body" method="POST" action="{{ url_for('business_profile.edit_business', pid=this_business.id) }}" enctype="multipart/form-data">
+                                        <h5 class="mb-3">Update business</h5>
+                                        {{ editBusinessForm.hidden_tag() }}
+                                        <div class="form-group">
+                                            {{ editBusinessForm.photo_input.label }}
+                                            {{ editBusinessForm.photo_input(class="form-control form-control-sm") }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ editBusinessForm.name_input.label }}
+                                            {{ editBusinessForm.name_input(class="form-control form-control-sm", value=this_business["name"]) }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ editBusinessForm.bio_input.label }}
+                                            {{ editBusinessForm.bio_input(class="form-control form-control-sm", value=this_business["bio"]) }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ editBusinessForm.type_input.label }}
+                                            {{ editBusinessForm.type_input(class="form-control form-control-sm", value=this_business["_type"]) }}
+                                        </div>
+                                        {{ editBusinessForm.submit_input(class="btn btn-primary float-right btn-block") }}
+                                    </form>
+                                    <form class="border-top modal-body" method="POST" action="{{ url_for('business_profile.delete_business', pid=this_business.id) }}">
+                                        <h5 class="mb-3">Delete business</h5>
+                                        {{ deleteBusinessForm.hidden_tag() }}
+                                        <span class="text-muted small">Confirm by typing the business's name</span>
+                                        {{ deleteBusinessForm.confirm_name_input(class="d-none", value=this_business.name) }}
+                                        {{ deleteBusinessForm.name_input(class="form-control form-control-sm", placeholder=this_business.name, minlength=2) }}
+                                        {{ deleteBusinessForm.submit_input(class="btn btn-danger float-right btn-block mt-3") }}
+                                    </form>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="">
+                    <div class="d-flex flex-column ml-2 container">
+                        <span>Bio: {{ this_business.bio }}</span>
+                        <span>Type: {%if this_business._type == 0 %}Grooming{%elif this_business._type == 1%}Veterinary clinic{%elif this_business._type == 2 %}Supply and accessories{%elif this_business._type == 3 %}Grooming and veterinary clinic{%elif this_business._type == 4 %}Grooming, supply and accessories{%elif this_business._type == 5 %}Veterinary clinic, supply and accessories{%elif this_business._type == 6 %}Grooming, veterinary clinic, supply and accessories{%endif%}</span>
+                    </div>
+                </div>
+                <ul class="nav row m-0 border rounded mt-3">
+                    <li class="nav-item col d-flex justify-content-center">
+                      <a class="nav-link active" href="#">Posts</a>
+                    </li>
+                    <li class="nav-item col d-flex justify-content-center">
+                      <a class="nav-link" href="#">Media</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

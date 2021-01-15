@@ -30,9 +30,9 @@ def species(current_user):
 @admin_bp.route("/breeds", methods=["GET", "POST"])
 @admin_session_required
 def breeds(current_user):
-    createBreedForm = CreateBreedForm()
-    editBreedForm = EditBreedForm()
-    deleteBreedForm = DeleteBreedForm()
+    createBreedForm = CreateBreedForm(prefix="cbf")
+    editBreedForm = EditBreedForm(prefix="ebf")
+    deleteBreedForm = DeleteBreedForm(prefix="dbf")
 
     createBreedForm.parent_input.choices = [(specie["public_id"], specie["name"]) for specie in json.loads(SpecieService.get_all(session["admin_booped_in"]).text)["data"]]
     editBreedForm.parent_input.choices = [(specie["public_id"], specie["name"]) for specie in json.loads(SpecieService.get_all(session["admin_booped_in"]).text)["data"]]
@@ -118,8 +118,8 @@ def delete_specie(current_user, pid):
 @admin_bp.route("breed/create", methods=["POST"])
 @admin_session_required
 def create_breed(current_user):
-    createBreedForm = CreateBreedForm()
-    createBreedForm.parent_input.choices = [(request.form.get("parent_input"), "")]
+    createBreedForm = CreateBreedForm(prefix="cbf")
+    createBreedForm.parent_input.choices = [(request.form.get("cbf-parent_input"), "")]
 
     if createBreedForm.validate_on_submit():
         create_specie = BreedService.create(session["admin_booped_in"], request.form)
@@ -142,8 +142,8 @@ def create_breed(current_user):
 @admin_bp.route("breed/edit/<pid>", methods=["POST"])
 @admin_session_required
 def edit_breed(current_user, pid):
-    editBreedForm = EditBreedForm()
-    editBreedForm.parent_input.choices = [(request.form.get("parent_input"), "")]
+    editBreedForm = EditBreedForm(prefix="ebf")
+    editBreedForm.parent_input.choices = [(request.form.get("ebf-parent_input"), "")]
 
     if editBreedForm.validate_on_submit():
         edit_specie = BreedService.edit(pid, session["admin_booped_in"], request.form)
@@ -166,8 +166,8 @@ def edit_breed(current_user, pid):
 @admin_bp.route("breed/delete/<pid>", methods=["POST"])
 @admin_session_required
 def delete_breed(current_user, pid):
-    deleteBreedForm = DeleteBreedForm()
-    deleteBreedForm.parent_input.choices = [(request.form.get("parent_input"), "")]
+    deleteBreedForm = DeleteBreedForm(prefix="dbf")
+    deleteBreedForm.parent_input.choices = [(request.form.get("dbf-parent_input"), "")]
 
     if deleteBreedForm.validate_on_submit():
         delete_breed = BreedService.delete(pid, session["admin_booped_in"], request.form)
