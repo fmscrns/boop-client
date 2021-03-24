@@ -7,74 +7,74 @@
         <div class="card" style="width: 500px;">
             <form class="card-body" method="POST" action="">
                 <h5 class="card-title mb-4">{{ page_title }}</h5>
-                {{ createUserForm.hidden_tag() }}
+                {{ createUserTwoForm.hidden_tag() }}
                 <div class="form-group">
-                    {{ createUserForm.name_input.label }}
-                    {% if createUserForm.name_input.errors %}
-                        {{ createUserForm.name_input(class="form-control form-control-sm is-invalid") }}
-                        {% for error in createUserForm.name_input.errors %}
+                    {{ createUserTwoForm.name_input.label }}
+                    {% if createUserTwoForm.name_input.errors %}
+                        {{ createUserTwoForm.name_input(class="form-control form-control-sm is-invalid") }}
+                        {% for error in createUserTwoForm.name_input.errors %}
                             <div class="invalid-feedback">
                                 {{ error }}
                             </div>
                         {% endfor %}
                     {% else %}
-                        {{ createUserForm.name_input(class="form-control form-control-sm") }}
+                        {{ createUserTwoForm.name_input(class="form-control form-control-sm") }}
                     {% endif %}
                 </div>
                 <div class="form-group">
-                    {{ createUserForm.username_input.label }}
-                    {% if createUserForm.username_input.errors %}
-                        {{ createUserForm.username_input(class="form-control form-control-sm is-invalid") }}
-                        {% for error in createUserForm.username_input.errors %}
+                    {{ createUserTwoForm.username_input.label }}
+                    {% if createUserTwoForm.username_input.errors %}
+                        {{ createUserTwoForm.username_input(class="form-control form-control-sm is-invalid") }}
+                        {% for error in createUserTwoForm.username_input.errors %}
                             <div class="invalid-feedback">
                                 {{ error }}
                             </div>
                         {% endfor %}
                     {% else %}
-                        {{ createUserForm.username_input(class="form-control form-control-sm") }}
+                        {{ createUserTwoForm.username_input(class="form-control form-control-sm") }}
                     {% endif %}
                 </div>
                 <div class="form-group">
-                    {{ createUserForm.email_input.label }}
-                    {% if createUserForm.email_input.errors %}
-                        {{ createUserForm.email_input(class="form-control form-control-sm is-invalid") }}
-                        {% for error in createUserForm.email_input.errors %}
+                    {{ createUserTwoForm.email_input.label }}
+                    {% if createUserTwoForm.email_input.errors %}
+                        {{ createUserTwoForm.email_input(class="form-control form-control-sm is-invalid") }}
+                        {% for error in createUserTwoForm.email_input.errors %}
                             <div class="invalid-feedback">
                                 {{ error }}
                             </div>
                         {% endfor %}
                     {% else %}
-                        {{ createUserForm.email_input(class="form-control form-control-sm") }}
+                        {{ createUserTwoForm.email_input(class="form-control form-control-sm") }}
                     {% endif %}
                 </div>
                 <div class="form-group">
-                    {{ createUserForm.password_input.label }}
-                    {% if createUserForm.password_input.errors %}
-                        {{ createUserForm.password_input(class="form-control form-control-sm is-invalid") }}
-                        {% for error in createUserForm.password_input.errors %}
+                    {{ createUserTwoForm.password_input.label }}
+                    {% if createUserTwoForm.password_input.errors %}
+                        {{ createUserTwoForm.password_input(class="form-control form-control-sm is-invalid") }}
+                        {% for error in createUserTwoForm.password_input.errors %}
                             <div class="invalid-feedback">
                                 {{ error }}
                             </div>
                         {% endfor %}
                     {% else %}
-                        {{ createUserForm.password_input(class="form-control form-control-sm") }}
+                        {{ createUserTwoForm.password_input(class="form-control form-control-sm") }}
                     {% endif %}
                 </div>
                 <div class="form-group">
-                    {{ createUserForm.confirm_password_input.label }}
-                    {% if createUserForm.confirm_password_input.errors %}
-                        {{ createUserForm.confirm_password_input(class="form-control form-control-sm is-invalid") }}
-                        {% for error in createUserForm.confirm_password_input.errors %}
+                    {{ createUserTwoForm.confirm_password_input.label }}
+                    {% if createUserTwoForm.confirm_password_input.errors %}
+                        {{ createUserTwoForm.confirm_password_input(class="form-control form-control-sm is-invalid") }}
+                        {% for error in createUserTwoForm.confirm_password_input.errors %}
                             <div class="invalid-feedback">
                                 {{ error }}
                             </div>
                         {% endfor %}
                     {% else %}
-                        {{ createUserForm.confirm_password_input(class="form-control form-control-sm") }}
+                        {{ createUserTwoForm.confirm_password_input(class="form-control form-control-sm") }}
                     {% endif %}
                 </div>
                 <div class="d-flex flex-column mt-4">
-                    {{ createUserForm.submit_input(class="btn btn-primary btn-block") }}
+                    {{ createUserTwoForm.submit_input(class="btn btn-primary btn-block") }}
                     {% if page_title.split(" ")[0] == "Sign" %}
                         <span class="small text-muted mt-3">Already on Boop? <a href="{{ url_for('gateway.signin') }}">Sign in here</a></span>
                     {% elif page_title.split(" ")[0] == "Admin" %}

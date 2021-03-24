@@ -2,47 +2,60 @@
 {% from "component/navbar.html" import clean_navbar %}
 
 {% block content %}
-    {{ clean_navbar() }}
-    <div class="container-fluid d-flex justify-content-center mt-3">
-        <div class="card" style="width: 500px;">
-            <form class="card-body" method="POST" action="">
-                <h5 class="card-title mb-4">{{ page_title }}</h5>
-                {{ getAuthTokenForm.hidden_tag() }}
-                <div class="form-group">
-                    {{ getAuthTokenForm.username_or_email_input.label }}
-                    {% if getAuthTokenForm.username_or_email_input.errors %}
-                        {{ getAuthTokenForm.username_or_email_input(class="form-control form-control-sm is-invalid") }}
-                        {% for error in getAuthTokenForm.username_or_email_input.errors %}
-                            <div class="invalid-feedback">
-                                {{ error }}
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        {{ getAuthTokenForm.username_or_email_input(class="form-control form-control-sm") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ getAuthTokenForm.password_input.label }}
-                    {% if getAuthTokenForm.password_input.errors %}
-                        {{ getAuthTokenForm.password_input(class="form-control form-control-sm is-invalid") }}
-                        {% for error in getAuthTokenForm.password_input.errors %}
-                            <div class="invalid-feedback">
-                                {{ error }}
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        {{ getAuthTokenForm.password_input(class="form-control form-control-sm") }}
-                    {% endif %}
-                </div>
-                    <div class="d-flex flex-column mt-4">
-                        {{ getAuthTokenForm.submit_input(class="btn btn-primary btn-block") }}
-                        {% if page_title.split(" ")[0] == "Sign" %}
-                            <span class="small text-muted mt-3">Not yet on Boop? <a href="{{ url_for('gateway.signup') }}">Sign up here</a></span>
-                        {% elif page_title.split(" ")[0] == "Admin" %}
-                            <span class="small text-muted mt-3">Want to be a Boop admin? <a href="{{ url_for('gateway.admin_signup') }}">Sign up here</a></span>
-                        {% endif %}
+    <div class="gwac row mx-auto m-0 my-5 {% if not getAuthTokenForm.username_or_email_input.data %}fade-in-1{% endif %}">
+        <div class="gwac-illus col-md-auto rounded-left p-0" style="background: url('{{ url_for('static', filename='assets/shuttle-landing-3.svg') }}');background-size:cover;">
+        <img src="{{ url_for('static', filename='assets/shuttle-landing-2.svg') }}" class="position-absolute comet-anim">
+        <img src="{{ url_for('static', filename='assets/shuttle-landing-1.svg') }}" class="position-absolute">
+        <a href="{{ url_for('welcome') }}">
+            <img class="m-4" src="{{ url_for('static', filename='assets/boop-nameplate.svg') }}">
+        </a>
+        </div>
+        <div class="gwac-bd-grd lgn-usr col p-0 rounded-right">
+        <div class="gwac-ld mt-1">
+            <div class="row align-items-center">
+                <div class="col">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
                     </div>
-            </form>
-          </div>
+                </div>
+            </div>
+        </div>
+        <form class="gwac-fs my-1 mr-1 px-5 py-4" method="POST" action="">
+            {{ getAuthTokenForm.hidden_tag() }}
+            <h4 class="pb-3">Sign in</h4>
+            <div class="form-group">
+            {{ getAuthTokenForm.username_or_email_input.label(class="small") }}
+            {% if getAuthTokenForm.username_or_email_input.errors %}
+                {{ getAuthTokenForm.email_input(class="form-control form-control-sm is-invalid") }}
+                <div class="invalid-feedback">
+                {% for error in getAuthTokenForm.username_or_email_input.errors %}
+                    <span class="frm-fb">{{ error }}</span>
+                {% endfor %}
+                </div>
+            {% else %}
+                {{ getAuthTokenForm.username_or_email_input(class="form-control form-control-sm") }}
+            {% endif %}
+            </div>
+            <div class="form-group">
+            {{ getAuthTokenForm.password_input.label(class="small") }}
+            {% if getAuthTokenForm.password_input.errors %}
+                {{ getAuthTokenForm.password_input(class="form-control form-control-sm is-invalid") }}
+                <div class="invalid-feedback">
+                {% for error in getAuthTokenForm.password_input.errors %}
+                    <span class="frm-fb">{{ error }}</span>
+                {% endfor %}
+                </div>
+            {% else %}
+                {{ getAuthTokenForm.password_input(class="form-control form-control-sm") }}
+            {% endif %}
+            </div>
+            <div class="d-flex flex-column mt-4">
+            {{ getAuthTokenForm.submit_input(class="btn btn-primary btn-block") }}
+            <span class="small text-muted mt-3">Don't have an account yet? <a href="{{ url_for('gateway.signup_one') }}">Sign up here</a></span>
+            </div>
+        </form>
+        </div>
     </div>
 {% endblock %}

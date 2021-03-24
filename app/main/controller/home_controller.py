@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, session, flash, redirect, url
 from ... import home_bp
 from ..util.decorator import session_required
 
-
 @home_bp.route("/feed", methods=["GET", "POST"])
 @session_required
 def feed(current_user):

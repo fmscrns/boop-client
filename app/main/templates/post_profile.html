@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% from "component/navbar.html" import loaded_navbar %}
+
+{% block content %}
+    {{ loaded_navbar(current_user) }}
+    <div class="container-fluid d-flex justify-content-center pt-5 my-3">
+        <div class="d-flex flex-column w-50">
+            <div class="jumbotron jumbotron-fluid rounded w-100 d-flex flex-column mb-3 pb-0">
+                <div class="d-flex flex-row px-4">
+                    <img src="{{ config.MEDIA_STORAGE + this_post['photo'] }}" alt="..." class="rounded mx-auto d-block w-25">
+                    <div class="container">
+                        <h1 class="display-6">{{ this_post["content"] }}</h1>
+                        <p class="lead"><a href="{{ url_for('user.pets', username=this_post['creator_username']) }}">{{ this_post["creator_name"] }}'s</a> post</p>
+                        <p class="lead">{{ this_post["registered_on"] }}</p>
+                        {% if this_post["creator_id"] == current_user["public_id"] %}
+                            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editProfileModal">
+                                <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
+                            </button>
+                            <div class="modal fade" id="editProfileModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                        <h5 class="modal-title" id="staticBackdropLabel">Post Settings</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                                        <form class="modal-body" method="POST" action="{{ url_for('post.delete', post_pid=this_post.public_id) }}">
+                                            <h5 class="mb-3">Delete post</h5>
+                                            {{ deletePostForm.hidden_tag() }}
+                                            {{ deletePostForm.submit_input(class="btn btn-danger float-right btn-block mt-3") }}
+                                        </form>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <ul class="nav row m-0 border rounded mt-3">
+                    <li class="nav-item col d-flex justify-content-center">
+                      <a class="nav-link active" href="#">Comments</a>
+                    </li>
+                    <li class="nav-item col d-flex justify-content-center">
+                      <a class="nav-link" href="#">Likes</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

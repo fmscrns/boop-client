@@ -1,36 +1,52 @@
-import json
+import json, os
+from itsdangerous import URLSafeTimedSerializer
 from flask import Flask, render_template, request, session, flash, redirect, url_for
 from ... import gateway_bp
-from ..form.user_form import CreateUserForm
+from ..form.user_form import CreateUserOneForm, CreateUserTwoForm
 from ..form.auth_form import GetAuthTokenForm
 from ..service.user_service import UserService, AdminService
 from ..service.auth_service import AuthService, AdminAuthService
 from ..util.decorator import no_session_required
 
-
-@gateway_bp.route("/signup", methods=["GET", "POST"])
+@gateway_bp.route("/signup/1", methods=["GET", "POST"])
 @no_session_required
-def signup():
-    createUserForm = CreateUserForm()
+def signup_one():
+    createUserOneForm = CreateUserOneForm()
 
     if request.method == "POST":
-        if createUserForm.validate_on_submit():
-            api_resp = UserService.create(request.form)
+        if createUserOneForm.validate_on_submit():
+            # send data wrapped in token to signup part two
+            serializer = URLSafeTimedSerializer(os.environ.get("SECRET_KEY"))
+            token = serializer.dumps({"name_input": createUserOneForm.name_input.data, "email_input": createUserOneForm.email_input.data}, salt="signup_two")
 
-            if api_resp.ok:
-                session["booped_in"] = json.loads(api_resp.text)["Authorization"]
-
-                flash(json.loads(api_resp.text)["message"], "success")
-                return redirect(url_for("home.feed"))
-
-            flash(json.loads(api_resp.text)["message"], "danger")
-            return redirect(url_for("gateway.signup"))
+            return redirect(url_for("gateway.signup_two", token=token))
 
         flash("Please try again.", "danger")
     
-    return render_template("signup.html",
+    return render_template("signup_one.html",
         page_title = "Sign up",
-        createUserForm = createUserForm
+        createUserOneForm = createUserOneForm
+    )
+
+@gateway_bp.route("/signup/2/token=<token>", methods=["GET", "POST"])
+@no_session_required
+def signup_two(token):
+    createUserTwoForm = CreateUserTwoForm()
+
+    # receive data from signup part one and if this page is called and no data, return error
+    serializer = URLSafeTimedSerializer(os.environ.get("SECRET_KEY"))
+    try:
+        partial_user_data = serializer.loads(token, salt="signup_two")
+        createUserTwoForm.name_input.data = partial_user_data.pop("name_input")
+        createUserTwoForm.email_input.data = partial_user_data.pop("email_input")
+
+    except Exception:
+        flash("Invalid token.", "danger")
+        return redirect(url_for("gateway.signup_one"))
+    
+    return render_template("signup_two.html",
+        page_title = "Sign up",
+        createUserTwoForm = createUserTwoForm
     )
 
 @gateway_bp.route("/signin", methods=["GET", "POST"])
@@ -73,10 +89,10 @@ def signout():
 @gateway_bp.route("/admin/signup", methods=["GET", "POST"])
 @no_session_required
 def admin_signup():
-    createUserForm = CreateUserForm()
+    createUserTwoForm = CreateUserTwoForm()
 
     if request.method == "POST":
-        if createUserForm.validate_on_submit():
+        if createUserTwoForm.validate_on_submit():
             api_resp = AdminService.create(request.form)
 
             if api_resp.ok:
@@ -90,9 +106,9 @@ def admin_signup():
 
         flash("Please try again.", "danger")
     
-    return render_template("signup.html",
+    return render_template("admin_signup.html",
         page_title = "Admin sign up",
-        createUserForm = createUserForm
+        createUserTwoForm = createUserTwoForm
     )
 
 @gateway_bp.route("/admin/signin", methods=["GET", "POST"])
@@ -115,7 +131,7 @@ def admin_signin():
             
         flash("Please try again.", "danger")
     
-    return render_template("signin.html",
+    return render_template("admin_signin.html",
         page_title = "Admin sign in",
         getAuthTokenForm = getAuthTokenForm
     )

@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% from "component/navbar.html" import clean_navbar %}
+
+{% block content %}
+    {{ clean_navbar() }}
+    <div class="container-fluid d-flex justify-content-center mt-3">
+        <div class="card" style="width: 500px;">
+            <form class="card-body" method="POST" action="">
+                <h5 class="card-title mb-4">{{ page_title }}</h5>
+                {{ getAuthTokenForm.hidden_tag() }}
+                <div class="form-group">
+                    {{ getAuthTokenForm.username_or_email_input.label }}
+                    {% if getAuthTokenForm.username_or_email_input.errors %}
+                        {{ getAuthTokenForm.username_or_email_input(class="form-control form-control-sm is-invalid") }}
+                        {% for error in getAuthTokenForm.username_or_email_input.errors %}
+                            <div class="invalid-feedback">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        {{ getAuthTokenForm.username_or_email_input(class="form-control form-control-sm") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ getAuthTokenForm.password_input.label }}
+                    {% if getAuthTokenForm.password_input.errors %}
+                        {{ getAuthTokenForm.password_input(class="form-control form-control-sm is-invalid") }}
+                        {% for error in getAuthTokenForm.password_input.errors %}
+                            <div class="invalid-feedback">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        {{ getAuthTokenForm.password_input(class="form-control form-control-sm") }}
+                    {% endif %}
+                </div>
+                    <div class="d-flex flex-column mt-4">
+                        {{ getAuthTokenForm.submit_input(class="btn btn-primary btn-block") }}
+                        {% if page_title.split(" ")[0] == "Sign" %}
+                            <span class="small text-muted mt-3">Not yet on Boop? <a href="{{ url_for('gateway.signup') }}">Sign up here</a></span>
+                        {% elif page_title.split(" ")[0] == "Admin" %}
+                            <span class="small text-muted mt-3">Want to be a Boop admin? <a href="{{ url_for('gateway.admin_signup') }}">Sign up here</a></span>
+                        {% endif %}
+                    </div>
+            </form>
+          </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div class="gwac row mx-auto m-0 my-5">
+    <div class="gwac-illus col-md-auto rounded-left p-0" style="background: url('{{ url_for('static', filename='assets/rocket-launch-3.svg') }}');">
+      <img src="{{ url_for('static', filename='assets/rocket-launch-2.svg') }}" class="position-absolute flt-osc">
+      <img src="{{ url_for('static', filename='assets/rocket-launch-1.svg') }}" class="position-absolute">
+      <a href="{{ url_for('welcome') }}">
+        <img class="m-4" src="{{ url_for('static', filename='assets/boop-nameplate.svg') }}">
+      </a>
+    </div>
+    <div class="gwac-bd-grd crt-usr sgnp-1 col p-0 rounded-right">
+      <div class="gwac-ld mt-1">
+        <div class="row align-items-center">
+            <div class="col">
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <form class="gwac-fs my-1 mr-1 px-5 py-4" method="POST" action="">
+        {{ createUserOneForm.hidden_tag() }}
+        <h4 class="pb-3">Sign up</h4>
+        <div class="gwac-fg-n form-group">
+            {{ createUserOneForm.name_input.label(class="small") }}
+            <div class="c-cnt d-none float-right">
+              <span class="text-muted small"><span class="c-dsp text-danger">0</span>/30</span>
+            </div>
+            {% if createUserOneForm.name_input.errors %}
+              {{ createUserOneForm.name_input(class="form-control form-control-sm is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in createUserOneForm.name_input.errors %}
+                  <span class="frm-fb">{{ error }}</span>
+                {% endfor %}
+              </div>
+            {% else %}
+              {{ createUserOneForm.name_input(class="form-control form-control-sm") }}
+              <div class="invalid-feedback d-none">
+                <span class="frm-fb">{{ error }}</span>
+              </div>
+            {% endif %}
+        </div>
+        <div class="gwac-fg-em form-group">
+          {{ createUserOneForm.email_input.label(class="small") }}
+          {% if createUserOneForm.email_input.errors %}
+            {{ createUserOneForm.email_input(class="form-control form-control-sm is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in createUserOneForm.email_input.errors %}
+                <span class="frm-fb">{{ error }}</span>
+              {% endfor %}
+            </div>
+            <span class="frm-fb-emex d-none">{{ createUserOneForm.email_input.data }}</span>
+          {% else %}
+            {{ createUserOneForm.email_input(class="form-control form-control-sm") }}
+            <div class="invalid-feedback d-none">
+              <span class="frm-fb">{{ error }}</span>
+            </div>
+          {% endif %}
+        </div>
+        <div class="d-flex flex-column mt-4">
+          {{ createUserOneForm.submit_input(class="btn btn-outline-secondary btn-block") }}
+          <span class="small text-muted mt-3">Already on Boop? <a href="{{ url_for('gateway.signin') }}">Log in here</a></span>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock content %}

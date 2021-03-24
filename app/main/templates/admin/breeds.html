@@ -22,6 +22,7 @@
             </div>
         </form>
             <ul class="list-group" style="height:inherit;overflow-y:scroll;">
+              {% if breed_list %}
                 {% for breed in breed_list %}
                   <li class="list-group-item d-flex justify-content-between">
                       <span>{{ breed.name }}</span>
@@ -92,6 +93,7 @@
                     </div>
                   </li>
                 {% endfor %}
+              {% endif %}
             </ul>
         </div>
     </div>

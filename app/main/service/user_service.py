@@ -5,6 +5,7 @@ from . import save_image
 class UserService:
     @staticmethod
     def create(data):
+        print(data)
         return requests.post("{}/user/".format(
             current_app.config["API_DOMAIN"]),
             json = {
@@ -30,6 +31,12 @@ class UserService:
                 "password": data_form.get("euf-password_input"),
                 "photo": save_image(data_file.get("euf-photo_input"), 0)
             }
+        )
+
+    @staticmethod
+    def get_by_email(email):
+        return requests.get("{}/user/email/{}".format(
+            current_app.config["API_DOMAIN"], email)
         )
 
     @staticmethod

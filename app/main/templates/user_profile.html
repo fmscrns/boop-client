@@ -17,7 +17,7 @@
                             </button>
                             <div class="modal fade" id="editProfileModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                 <div class="modal-dialog">
-                                <form class="modal-content" method="POST" action="{{ url_for('user_profile.edit_user', pid=current_user['public_id']) }}" enctype="multipart/form-data">
+                                <form class="modal-content" method="POST" action="{{ url_for('user.edit', user_pid=current_user['public_id']) }}" enctype="multipart/form-data">
                                     <div class="modal-header">
                                     <h5 class="modal-title" id="staticBackdropLabel">Edit profile</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -63,10 +63,13 @@
                 </div>
                 <ul class="nav row m-0 border rounded mt-3">
                     <li class="nav-item col d-flex justify-content-center">
-                      <a class="nav-link active" href="{{ url_for('user_profile.pets', username=this_user['username']) }}">Pets</a>
+                      <a class="nav-link active" href="{{ url_for('user.pets', username=this_user['username']) }}">Pets</a>
                     </li>
                     <li class="nav-item col d-flex justify-content-center">
-                      <a class="nav-link" href="{{ url_for('user_profile.businesses', username=this_user['username']) }}">Businesses</a>
+                        <a class="nav-link active" href="{{ url_for('user.posts', username=this_user['username']) }}">Posts</a>
+                      </li>
+                    <li class="nav-item col d-flex justify-content-center">
+                      <a class="nav-link" href="{{ url_for('user.businesses', username=this_user['username']) }}">Businesses</a>
                     </li>
                 </ul>
             </div>
@@ -76,8 +79,8 @@
                         Create pet profile
                     </button>
                     <div class="modal fade" id="createPetModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                        <form class="modal-content" method="POST" action="{{ url_for('user_profile.create_pet') }}" enctype="multipart/form-data" token="{{ session['booped_in'] }}" api-domain="{{ config.API_DOMAIN }}">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                        <form class="modal-content" method="POST" action="{{ url_for('pet.create') }}" enctype="multipart/form-data" token="{{ session['booped_in'] }}" api-domain="{{ config.API_DOMAIN }}">
                             <div class="modal-header">
                             <h5 class="modal-title" id="staticBackdropLabel">Create pet</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -137,7 +140,7 @@
                         <div class="d-flex flex-row">
                             <img src="{{ config.MEDIA_STORAGE + pet['photo'] }}" alt="..." class="rounded d-block w-25 border">
                             <div class="d-flex flex-column ml-2 container">
-                                <a href="{{ url_for('pet_profile.posts', pet_pid=pet.id) }}" class="h4">{{ pet.name }}</a>
+                                <a href="{{ url_for('pet.posts', pet_pid=pet.public_id) }}" class="h4">{{ pet.name }}</a>
                                 <span>Bio: {{ pet.bio }}</span>
                                 <span>Birthday: {{ pet.birthday }}</span>
                                 <span>Sex: {%if pet.sex == 0 %}Male{%else%}Female{%endif%}</span>
@@ -147,14 +150,59 @@
                         </div>
                     </div>
                 {% endfor %}
+            {% elif createPostForm %}
+                {% if this_user["public_id"] == current_user["public_id"] %}
+                    <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#createPostModal">
+                        Create post
+                    </button>
+                    <div class="modal fade" id="createPostModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                        <form class="modal-content" method="POST" action="{{ url_for('post.create') }}" enctype="multipart/form-data">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Create post</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            </div>
+                            <div class="modal-body">
+                                {{ createPostForm.hidden_tag() }}
+                                <div class="form-group">
+                                    {{ createPostForm.photo_input.label }}
+                                    {{ createPostForm.photo_input(class="form-control form-control-sm") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ createPostForm.content_input.label }}
+                                    {{ createPostForm.content_input(class="form-control form-control-sm") }}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            {{ createPostForm.submit_input(class="btn btn-primary") }}
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                {% endif %}
+                {% for post in post_list %}
+                    <a href="{{ url_for('post.comments', post_pid=post.public_id) }}" class="container-fluid border p-4 mt-3">
+                        <div class="d-flex flex-row">
+                            <img src="{{ config.MEDIA_STORAGE + post['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                            <div class="d-flex flex-column ml-2 container">
+                                <span>Content: {{ post.content }}</span>
+                                <span>Birthday: {{ post.birthday }}</span>
+                                <span>Registered on: {{ post.registered_on }}</span>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
             {% elif createBusinessForm %}
                 {% if this_user["public_id"] == current_user["public_id"] %}
                     <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#createBusinessModal">
                         Create business profile
                     </button>
                     <div class="modal fade" id="createBusinessModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                        <form class="modal-content" method="POST" action="{{ url_for('user_profile.create_business') }}" enctype="multipart/form-data">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                        <form class="modal-content" method="POST" action="{{ url_for('business.create') }}" enctype="multipart/form-data">
                             <div class="modal-header">
                             <h5 class="modal-title" id="staticBackdropLabel">Create business</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -179,6 +227,95 @@
                                     {{ createBusinessForm.type_input.label }}
                                     {{ createBusinessForm.type_input(class="form-control form-control-sm") }}
                                 </div>
+                                Opening days
+                                <hr>
+                                <div class="form-group cbf-ot-cont d-flex justify-content-between mx-3">
+                                    <div class="cbf-ot-cb">
+                                        {{ createBusinessForm.mon_open_bool }}
+                                        {{ createBusinessForm.mon_open_bool.label }}
+                                    </div>
+                                    <div class="cbf-ot-t">
+                                        <span class="text-muted small">Open:</span>
+                                        {{ createBusinessForm.mon_open_time(value="01:00", step='3600') }}
+                                        <span class="text-muted small">Close:</span>
+                                        {{ createBusinessForm.mon_close_time(value="01:00", step='3600') }}
+                                    </div>
+                                </div>
+                                <div class="form-group cbf-ot-cont d-flex justify-content-between mx-3">
+                                    <div class="cbf-ot-cb">
+                                        {{ createBusinessForm.tue_open_bool }}
+                                        {{ createBusinessForm.tue_open_bool.label }}
+                                    </div>
+                                    <div class="cbf-ot-t">
+                                        <span class="text-muted small">Open:</span>
+                                        {{ createBusinessForm.tue_open_time(value="01:00", step='3600') }}
+                                        <span class="text-muted small">Close:</span>
+                                        {{ createBusinessForm.tue_close_time(value="01:00", step='3600') }}
+                                    </div>
+                                </div>
+                                <div class="form-group cbf-ot-cont d-flex justify-content-between mx-3">
+                                    <div class="cbf-ot-cb">
+                                        {{ createBusinessForm.wed_open_bool }}
+                                        {{ createBusinessForm.wed_open_bool.label }}
+                                    </div>
+                                    <div class="cbf-ot-t">
+                                        <span class="text-muted small">Open:</span>
+                                        {{ createBusinessForm.wed_open_time(value="01:00", step='3600') }}
+                                        <span class="text-muted small">Close:</span>
+                                        {{ createBusinessForm.wed_close_time(value="01:00", step='3600') }}
+                                    </div>
+                                </div>
+                                <div class="form-group cbf-ot-cont d-flex justify-content-between mx-3">
+                                    <div class="cbf-ot-cb">
+                                        {{ createBusinessForm.thu_open_bool }}
+                                        {{ createBusinessForm.thu_open_bool.label }}
+                                    </div>
+                                    <div class="cbf-ot-t">
+                                        <span class="text-muted small">Open:</span>
+                                        {{ createBusinessForm.thu_open_time(value="01:00", step='3600') }}
+                                        <span class="text-muted small">Close:</span>
+                                        {{ createBusinessForm.thu_close_time(value="01:00", step='3600') }}
+                                    </div>
+                                </div>
+                                <div class="form-group cbf-ot-cont d-flex justify-content-between mx-3">
+                                    <div class="cbf-ot-cb">
+                                        {{ createBusinessForm.fri_open_bool }}
+                                        {{ createBusinessForm.fri_open_bool.label }}
+                                    </div>
+                                    <div class="cbf-ot-t">
+                                        <span class="text-muted small">Open:</span>
+                                        {{ createBusinessForm.fri_open_time(value="01:00", step='3600') }}
+                                        <span class="text-muted small">Close:</span>
+                                        {{ createBusinessForm.fri_close_time(value="01:00", step='3600') }}
+                                    </div>
+                                </div>
+                                <div class="form-group cbf-ot-cont d-flex justify-content-between mx-3">
+                                    <div class="cbf-ot-cb">
+                                        {{ createBusinessForm.sat_open_bool }}
+                                        {{ createBusinessForm.sat_open_bool.label }}
+                                    </div>
+                                    <div class="cbf-ot-t">
+                                        <span class="text-muted small">Open:</span>
+                                        {{ createBusinessForm.sat_open_time(value="01:00", step='3600') }}
+                                        <span class="text-muted small">Close:</span>
+                                        {{ createBusinessForm.sat_close_time(value="01:00", step='3600') }}
+                                    </div>
+                                </div>
+                                <div class="form-group cbf-ot-cont d-flex justify-content-between mx-3">
+                                    <div class="cbf-ot-cb">
+                                        {{ createBusinessForm.sun_open_bool }}
+                                        {{ createBusinessForm.sun_open_bool.label }}
+                                    </div>
+                                    <div class="cbf-ot-t">
+                                        <span class="text-muted small">Open:</span>
+                                        {{ createBusinessForm.sun_open_time(value="01:00", step='3600') }}
+                                        <span class="text-muted small">Close:</span>
+                                        {{ createBusinessForm.sun_close_time(value="01:00", step='3600') }}
+                                    </div>
+                                </div>
+                                Create session types (coming soon)
+                                <hr>
+                                
                             </div>
                             <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -193,9 +330,9 @@
                         <div class="d-flex flex-row">
                             <img src="{{ config.MEDIA_STORAGE + business['photo'] }}" alt="..." class="rounded d-block w-25 border">
                             <div class="d-flex flex-column ml-2 container">
-                                <a href="{{ url_for('business_profile.posts', business_pid=business.id) }}" class="h4">{{ business.name }}</a>
+                                <a href="{{ url_for('business.posts', business_pid=business.public_id) }}" class="h4">{{ business.name }}</a>
                                 <span>Bio: {{ business.bio }}</span>
-                                <span>Type: {%if business._type == 0 %}Grooming{%elif business._type == 1%}Veterinary clinic{%elif business._type == 2 %}Supply and accessories{%elif business._type == 3 %}Grooming and veterinary clinic{%elif business._type == 4 %}Grooming, supply and accessories{%elif business._type == 5 %}Veterinary clinic, supply and accessories{%elif business._type == 6 %}Grooming, veterinary clinic, supply and accessories{%endif%}</span>
+                                <span>Type: {% for type in business._type %}| {{ type.name }} {% endfor %}</span>
                             </div>
                         </div>
                     </div>

@@ -4,68 +4,68 @@
 {% block content %}
     {{ admin_navbar(current_user) }}
     <div class="container-fluid d-flex justify-content-center mt-3 flex-column">
-        <h2>Species</h2>
+        <h2>Business type</h2>
         <div class="container border rounded d-flex flex-column p-2">
-            <form method="POST" action="{{ url_for('admin.create_specie') }}" class="m-3">
-                Create specie
-                {{ createSpecieForm.hidden_tag() }}
+            <form method="POST" action="{{ url_for('admin.create_businessType') }}" class="m-3">
+                Create business type
+                {{ createBusinessTypeForm.hidden_tag() }}
                 <div class="form-row align-items-center">
                   <div class="col-auto">
-                    {{ createSpecieForm.name_input(class="form-control form-control-sm", minlength=2) }}
+                    {{ createBusinessTypeForm.name_input(class="form-control form-control-sm", minlength=2) }}
                   </div>
                   <div class="col-auto">
-                    {{ createSpecieForm.submit_input(class="btn btn-primary btn-sm") }}
+                    {{ createBusinessTypeForm.submit_input(class="btn btn-primary btn-sm") }}
                   </div>
                 </div>
             </form>
             <ul class="list-group" style="height:inherit;overflow-y:scroll;">
-                {% for specie in specie_list %}
-                  <li class="list-group-item d-flex justify-content-between">{{ specie.name }}
+                {% for type in businessType_list %}
+                  <li class="list-group-item d-flex justify-content-between">{{ type.name }}
                     <div>
-                        <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#edit{{ specie.public_id }}Modal">
+                        <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#edit{{ type.public_id }}Modal">
                             Edit
                         </button>
-                        <div class="modal fade" id="edit{{ specie.public_id }}Modal" tabindex="-1" aria-labelledby="editSpecieModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="edit{{ type.public_id }}Modal" tabindex="-1" aria-labelledby="editSpecieModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
-                              <form class="modal-content" method="POST" action="{{ url_for('admin.edit_specie', pid=specie.public_id) }}">
+                              <form class="modal-content" method="POST" action="{{ url_for('admin.edit_businessType', pid=type.public_id) }}">
                                 <div class="modal-header">
-                                  <h5 class="modal-title" id="editSpecieModalLabel">Edit specie</h5>
-                                  {{ editSpecieForm.hidden_tag() }}
+                                  <h5 class="modal-title" id="editBusinessTypeModalLabel">Edit business type</h5>
+                                  {{ editBusinessTypeForm.hidden_tag() }}
                                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                   </button>
                                 </div>
                                 <div class="modal-body">
-                                  {{ editSpecieForm.name_input(class="form-control form-control-sm", placeholder=specie.name, minlength=2) }}
+                                  {{ editBusinessTypeForm.name_input(class="form-control form-control-sm", placeholder=type.name, minlength=2) }}
                                 </div>
                                 <div class="modal-footer">
                                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                  {{ editSpecieForm.submit_input(class="btn btn-primary") }}
+                                  {{ editBusinessTypeForm.submit_input(class="btn btn-primary") }}
                                 </div>
                               </form>
                             </div>
                         </div>
                         
-                        <button type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#delete{{ specie.public_id }}Modal">
+                        <button type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#delete{{ type.public_id }}Modal">
                             Delete
                         </button>
-                        <div class="modal fade" id="delete{{ specie.public_id }}Modal" tabindex="-1" aria-labelledby="deleteSpecieModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="delete{{ type.public_id }}Modal" tabindex="-1" aria-labelledby="deleteSpecieModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
-                              <form class="modal-content" method="POST" action="{{ url_for('admin.delete_specie', pid=specie.public_id) }}">
+                              <form class="modal-content" method="POST" action="{{ url_for('admin.delete_businessType', pid=type.public_id) }}">
                                 <div class="modal-header">
-                                  <h5 class="modal-title" id="deleteSpecieModalLabel">Delete specie</h5>
-                                  {{ deleteSpecieForm.hidden_tag() }}
+                                  <h5 class="modal-title" id="deleteSpecieModalLabel">Delete business type</h5>
+                                  {{ deleteBusinessTypeForm.hidden_tag() }}
                                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                   </button>
                                 </div>
                                 <div class="modal-body">
-                                  {{ deleteSpecieForm.confirm_name_input(class="d-none", value=specie.name) }}
-                                  {{ deleteSpecieForm.name_input(class="form-control form-control-sm", placeholder=specie.name, minlength=2) }}
+                                  {{ deleteBusinessTypeForm.confirm_name_input(class="d-none", value=type.name) }}
+                                  {{ deleteBusinessTypeForm.name_input(class="form-control form-control-sm", placeholder=type.name, minlength=2) }}
                                 </div>
                                 <div class="modal-footer">
                                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                  {{ deleteSpecieForm.submit_input(class="btn btn-danger") }}
+                                  {{ deleteBusinessTypeForm.submit_input(class="btn btn-danger") }}
                                 </div>
                               </form>
                             </div>

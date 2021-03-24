@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% from "component/navbar.html" import loaded_navbar %}
+
+{% block content %}
+    {{ loaded_navbar(current_user) }}
+    <div class="container-fluid d-flex justify-content-center pt-5 my-3">
+        <h1>Appointment details coming soon</h1>
+    </div>
+{% endblock %}

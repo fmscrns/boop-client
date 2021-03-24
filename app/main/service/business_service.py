@@ -5,19 +5,6 @@ from . import save_image
 class BusinessService:
     @staticmethod
     def create(data_form, data_file):
-        _type = data_form.getlist("type_input")
-        if len(_type) == 1:
-            _type = int(_type[0])
-        elif len(_type) == 2:
-            if "0" in _type and "1" in _type:
-                _type = 3
-            elif "0" in _type and "2" in _type:
-                _type = 4
-            elif "1" in _type and "2" in _type:
-                _type = 5
-        else:
-            _type = 6
-
         return requests.post("{}/business/".format(
             current_app.config["API_DOMAIN"]),
             headers = {
@@ -26,8 +13,33 @@ class BusinessService:
             json = {
                 "name": data_form.get("name_input"),
                 "bio": data_form.get("bio_input"),
-                "_type": _type,
-                "photo": save_image(data_file.get("photo_input"), 2)
+                "_type": [
+                    dict(
+                        public_id = _type
+                    ) for _type in data_form.getlist("type_input")
+                ],
+                "mon_open_bool": True if data_form.get("mon_open_bool") else False,
+                "mon_open_time": data_form.get("mon_open_time"),
+                "mon_close_time": data_form.get("mon_close_time"),
+                "tue_open_bool": True if data_form.get("tue_open_bool") else False,
+                "tue_open_time": data_form.get("tue_open_time"),
+                "tue_close_time": data_form.get("tue_close_time"),
+                "wed_open_bool": True if data_form.get("wed_open_bool") else False,
+                "wed_open_time": data_form.get("wed_open_time"),
+                "wed_close_time": data_form.get("wed_close_time"),
+                "thu_open_bool": True if data_form.get("thu_open_bool") else False,
+                "thu_open_time": data_form.get("thu_open_time"),
+                "thu_close_time": data_form.get("thu_close_time"),
+                "fri_open_bool": True if data_form.get("fri_open_bool") else False,
+                "fri_open_time": data_form.get("fri_open_time"),
+                "fri_close_time": data_form.get("fri_close_time"),
+                "sat_open_bool": True if data_form.get("sat_open_bool") else False,
+                "sat_open_time": data_form.get("sat_open_time"),
+                "sat_close_time": data_form.get("sat_close_time"),
+                "sun_open_bool": True if data_form.get("sun_open_bool") else False,
+                "sun_open_time": data_form.get("sun_open_time"),
+                "sun_close_time": data_form.get("sun_close_time"),
+                "photo": save_image(data_file.get("photo_input"), 3)
             }
         )
     
@@ -52,20 +64,6 @@ class BusinessService:
 
     @staticmethod
     def edit(pid, token, data_form, data_file):
-        _type = data_form.getlist("ebf-type_input")
-        print("ASD: {}".format(_type))
-        if len(_type) == 1:
-            _type = int(_type[0])
-        elif len(_type) == 2:
-            if "0" in _type and "1" in _type:
-                _type = 3
-            elif "0" in _type and "2" in _type:
-                _type = 4
-            elif "1" in _type and "2" in _type:
-                _type = 5
-        else:
-            _type = 6
-        print("final: {}".format(_type))
         return requests.patch("{}/business/{}".format(
             current_app.config["API_DOMAIN"],
             pid),
@@ -75,7 +73,11 @@ class BusinessService:
             json = {
                 "name": data_form.get("ebf-name_input"),
                 "bio": data_form.get("ebf-bio_input"),
-                "_type": _type,
+                "_type": [
+                    dict(
+                        public_id = _type
+                    ) for _type in data_form.getlist("ebf-type_input")
+                ],
                 "photo": save_image(data_file.get("ebf-photo_input"), 2)
             }
         )
@@ -90,6 +92,6 @@ class BusinessService:
             },
             json = {
                 "name": data.get("name_input"),
-                "_type": 0
+                "_type": []
             }
         )

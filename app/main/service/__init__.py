@@ -27,4 +27,6 @@ def save_image(form_image, _type):
         elif _type == 1:
             return "default_pet.jpg"
         elif _type == 2:
+            return "default_post.jpg"
+        elif _type == 3:
             return "default_business.jpg"

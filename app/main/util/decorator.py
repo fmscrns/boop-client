@@ -11,7 +11,7 @@ def session_required(f):
             if get_resp.ok:
                 return f(*args, **kwargs, current_user=json.loads(get_resp.text))
             else:
-                flash(get_resp.message, "danger")
+                flash(json.loads(get_resp.text)["message"], "danger")
                 return redirect(url_for("gateway.signin"))
         elif "admin_booped_in" in session:
             get_resp = AdminService.get_by_token()
@@ -19,7 +19,7 @@ def session_required(f):
                 flash("Basic user only.", "danger")
                 return redirect(url_for("admin.control"))
             else:
-                flash(get_resp.message, "danger")
+                flash(json.loads(get_resp.text)["message"], "danger")
                 return redirect(url_for("gateway.admin_signin"))
         else:
             flash("You must sign in first.", "warning")
@@ -35,7 +35,7 @@ def admin_session_required(f):
             if get_resp.ok:
                 return f(*args, **kwargs, current_user=json.loads(get_resp.text))
             else:
-                flash(get_resp.message, "danger")
+                flash(json.loads(get_resp.text)["message"], "danger")
                 return redirect(url_for("gateway.admin_signin"))
         elif "booped_in" in session:
             get_resp = UserService.get_by_token()
@@ -43,7 +43,7 @@ def admin_session_required(f):
                 flash("Admin user only.", "warning")
                 return redirect(url_for("home.feed"))
             else:
-                flash(get_resp.message, "danger")
+                flash(json.loads(get_resp.text)["message"], "danger")
                 return redirect(url_for("gateway.signin"))
         else:
             flash("You must sign in first.", "warning")
@@ -60,7 +60,7 @@ def no_session_required(f):
                 flash("You must sign out first.", "warning")
                 return redirect(url_for("home.feed"))
             else:
-                flash(get_resp.message, "danger")
+                flash(json.loads(get_resp.text)["message"], "danger")
                 return f(*args, **kwargs)
         elif "admin_booped_in" in session:
             get_resp = AdminService.get_by_token()
@@ -68,7 +68,7 @@ def no_session_required(f):
                 flash("You must sign out first.", "warning")
                 return redirect(url_for("admin.control"))
             else:
-                flash(get_resp.message, "danger")
+                flash(json.loads(get_resp.text)["message"], "danger")
                 return f(*args, **kwargs)
         else:
             return f(*args, **kwargs)

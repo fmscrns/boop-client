@@ -4,7 +4,9 @@ from ... import admin_bp
 from ..util.decorator import admin_session_required
 from ..service.specie_service import SpecieService
 from ..service.breed_service import BreedService
+from ..service.businessType_service import BusinessTypeService
 from ..form.specie_form import CreateSpecieForm, EditSpecieForm, DeleteSpecieForm
+from ..form.businessType_form import CreateBusinessTypeForm, EditBusinessTypeForm, DeleteBusinessTypeForm
 from ..form.breed_form import CreateBreedForm, EditBreedForm, DeleteBreedForm
 
 @admin_bp.route("/control", methods=["GET", "POST"])
@@ -13,6 +15,20 @@ def control(current_user):
     return render_template("admin/control.html",
         page_title = "Admin Control",
         current_user = current_user
+    )
+
+@admin_bp.route("/business_types", methods=["GET", "POST"])
+@admin_session_required
+def business_types(current_user):
+    asd = json.loads(BusinessTypeService.get_all(session["admin_booped_in"]).text)["data"]
+    print(asd)
+    return render_template("admin/business_types.html",
+        page_title = "Configure Business Types",
+        current_user = current_user,
+        businessType_list = asd,
+        createBusinessTypeForm = CreateBusinessTypeForm(),
+        editBusinessTypeForm = EditBusinessTypeForm(),
+        deleteBusinessTypeForm = DeleteBusinessTypeForm()
     )
 
 @admin_bp.route("/species", methods=["GET", "POST"])
@@ -33,21 +49,90 @@ def breeds(current_user):
     createBreedForm = CreateBreedForm(prefix="cbf")
     editBreedForm = EditBreedForm(prefix="ebf")
     deleteBreedForm = DeleteBreedForm(prefix="dbf")
-
     createBreedForm.parent_input.choices = [(specie["public_id"], specie["name"]) for specie in json.loads(SpecieService.get_all(session["admin_booped_in"]).text)["data"]]
     editBreedForm.parent_input.choices = [(specie["public_id"], specie["name"]) for specie in json.loads(SpecieService.get_all(session["admin_booped_in"]).text)["data"]]
     deleteBreedForm.parent_input.choices = [(specie["public_id"], specie["name"]) for specie in json.loads(SpecieService.get_all(session["admin_booped_in"]).text)["data"]]
-
+    breed_list = BreedService.get_all(session["admin_booped_in"])
+    if breed_list.ok:
+        breed_list = json.loads(breed_list.text)["data"]
     return render_template("admin/breeds.html",
         page_title = "Configure Breeds",
         current_user = current_user,
-        breed_list = json.loads(BreedService.get_all(session["admin_booped_in"]).text)["data"],
+        breed_list = breed_list,
         createBreedForm = createBreedForm,
         editBreedForm = editBreedForm,
         deleteBreedForm = deleteBreedForm
     )
 
-@admin_bp.route("specie/create", methods=["POST"])
+@admin_bp.route("/business_type/create", methods=["POST"])
+@admin_session_required
+def create_businessType(current_user):
+    createBusinessTypeForm = CreateBusinessTypeForm()
+
+    if createBusinessTypeForm.validate_on_submit():
+        create_businessType = BusinessTypeService.create(session["admin_booped_in"], request.form)
+
+        if create_businessType.ok:
+            
+            flash(json.loads(create_businessType.text)["message"], "success")
+
+            return redirect(url_for("admin.business_types"))
+
+        flash(json.loads(create_businessType.text)["message"], "danger")
+
+    if createBusinessTypeForm.errors:
+        for key in createBusinessTypeForm.errors:
+            for message in createBusinessTypeForm.errors[key]:
+                flash("{}: {}".format(key, message), "danger")
+
+    return redirect(url_for("admin.business_types"))
+
+@admin_bp.route("/business_type/edit/<pid>", methods=["POST"])
+@admin_session_required
+def edit_businessType(current_user, pid):
+    editBusinessTypeForm = EditBusinessTypeForm()
+
+    if editBusinessTypeForm.validate_on_submit():
+        edit_businessType = BusinessTypeService.edit(pid, session["admin_booped_in"], request.form)
+
+        if edit_businessType.ok:
+            
+            flash(json.loads(edit_businessType.text)["message"], "success")
+
+            return redirect(url_for("admin.business_types"))
+
+        flash(json.loads(edit_businessType.text)["message"], "danger")
+
+    if editBusinessTypeForm.errors:
+        for key in editBusinessTypeForm.errors:
+            for message in editBusinessTypeForm.errors[key]:
+                flash("{}: {}".format(key, message), "danger")
+
+    return redirect(url_for("admin.business_types"))
+
+@admin_bp.route("/business_type/delete/<pid>", methods=["POST"])
+@admin_session_required
+def delete_businessType(current_user, pid):
+    deleteBusinessTypeForm = DeleteBusinessTypeForm()
+
+    if deleteBusinessTypeForm.validate_on_submit():
+        delete_businessType = BusinessTypeService.delete(pid, session["admin_booped_in"], request.form)
+
+        if delete_businessType.ok:
+            flash(json.loads(delete_businessType.text)["message"], "success")
+
+            return redirect(url_for("admin.business_types"))
+        
+        flash(json.loads(delete_businessType.text)["message"], "danger")
+
+    if deleteBusinessTypeForm.errors:
+        for key in deleteBusinessTypeForm.errors:
+            for message in deleteBusinessTypeForm.errors[key]:
+                flash("{}: {}".format(key, message), "danger")
+
+    return redirect(url_for("admin.business_types"))
+
+@admin_bp.route("/specie/create", methods=["POST"])
 @admin_session_required
 def create_specie(current_user):
     createSpecieForm = CreateSpecieForm()
@@ -70,7 +155,7 @@ def create_specie(current_user):
 
     return redirect(url_for("admin.species"))
 
-@admin_bp.route("specie/edit/<pid>", methods=["POST"])
+@admin_bp.route("/specie/edit/<pid>", methods=["POST"])
 @admin_session_required
 def edit_specie(current_user, pid):
     editSpecieForm = EditSpecieForm()
@@ -93,7 +178,7 @@ def edit_specie(current_user, pid):
 
     return redirect(url_for("admin.species"))
 
-@admin_bp.route("specie/delete/<pid>", methods=["POST"])
+@admin_bp.route("/specie/delete/<pid>", methods=["POST"])
 @admin_session_required
 def delete_specie(current_user, pid):
     deleteSpecieForm = DeleteSpecieForm()
@@ -115,7 +200,7 @@ def delete_specie(current_user, pid):
 
     return redirect(url_for("admin.species"))
 
-@admin_bp.route("breed/create", methods=["POST"])
+@admin_bp.route("/breed/create", methods=["POST"])
 @admin_session_required
 def create_breed(current_user):
     createBreedForm = CreateBreedForm(prefix="cbf")
@@ -139,7 +224,7 @@ def create_breed(current_user):
 
     return redirect(url_for("admin.breeds"))
 
-@admin_bp.route("breed/edit/<pid>", methods=["POST"])
+@admin_bp.route("/breed/edit/<pid>", methods=["POST"])
 @admin_session_required
 def edit_breed(current_user, pid):
     editBreedForm = EditBreedForm(prefix="ebf")
@@ -163,7 +248,7 @@ def edit_breed(current_user, pid):
 
     return redirect(url_for("admin.breeds"))
 
-@admin_bp.route("breed/delete/<pid>", methods=["POST"])
+@admin_bp.route("/breed/delete/<pid>", methods=["POST"])
 @admin_session_required
 def delete_breed(current_user, pid):
     deleteBreedForm = DeleteBreedForm(prefix="dbf")

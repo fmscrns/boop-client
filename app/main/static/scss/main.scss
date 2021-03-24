@@ -6,6 +6,114 @@
     bottom: 40px;
 }
 
+.gwac {
+    width: 700px;
+}
+
+.gwac > .gwac-illus {
+    width:300px;
+    background-size:cover !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    overflow: hidden;
+
+}
+
+.comet-anim {
+    animation-name: comet-anim;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+  }
+  
+  @keyframes comet-anim {
+    from {
+        transform: translate(-300px, -300px);
+    }
+    10% {
+        transform: translate(300px, 300px);
+    }
+    to {
+        transform: translate(300px, 300px);
+    }
+}
+
+.gwac > .gwac-illus > img {
+    pointer-events: none;
+}
+
+.gwac > .gwac-illus > a > img {
+    width: 80px;
+}
+
+
+.gwac > .lgn-usr {
+    background: linear-gradient(0deg, #BC6E33, #DB9A4E, #6E6071);
+}
+.gwac > .sgnp-1 {
+    background: linear-gradient(0deg, #69A8C8, #69A8C8, #69A8C8, #2893A7, #2893A7, #2893A7, #2893A7, #285C9D, #4440A5);
+}
+
+.gwac > .sgnp-2 {
+    background: linear-gradient(0deg, #028292, #6C17B2);
+}
+
+.gwac > .gwac-bd-grd > .gwac-ld {
+    background-color: rgba($color: white, $alpha: 0.5);
+    position: absolute;
+    width: 99%;
+    height: 98.5%;
+    z-index:10;
+}
+
+.gwac > .gwac-bd-grd > .gwac-fs > .form-group {
+    height: 90px;
+}
+
+.gwac > .gwac-bd-grd > .gwac-ld > div {
+    height: inherit;
+}
+
+.gwac > .gwac-bd-grd > .gwac-fs {
+    background-color: white;
+    height:500px;
+    position: relative;
+}
+
+.navbar > .navbar-brand > img {
+    width: 70px;
+}
+
+@media (max-width:900px) {
+    #gww-nvbr-lf {
+        display: none !important;
+    }
+}
+
+.flt-osc {
+    animation-name: flt-osc;
+    animation-duration: 2.5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+  }
+  
+  @keyframes flt-osc {
+    from {
+        transform: translate(0, 0);
+    }
+    65% {
+        transform: translate(0, 15px);
+    }
+    to {
+        transform: translate(0, 0);
+    }
+}
+
+.gww > .gww-l > .gww-ptr {
+    width: 90%;
+    height: 90%;
+}
+
 .btn-w-50 {
     width: 130px;
 }
@@ -24,4 +132,9 @@
 
 .yellow {
     background-color: yellow !important;
+}
+
+.cbf-ot-t {
+    pointer-events: none;
+    display: none;
 }
