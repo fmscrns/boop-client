@@ -15,6 +15,7 @@ app.register_blueprint(pet_bp, url_prefix="/pet")
 app.register_blueprint(business_bp, url_prefix="/business")
 app.register_blueprint(appointment_bp, url_prefix="/appointment")
 app.register_blueprint(post_bp, url_prefix="/post")
+app.register_blueprint(circle_bp, url_prefix="/circle")
 
 app.app_context().push()
 

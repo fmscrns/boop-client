@@ -8,5 +8,6 @@ pet_bp = Blueprint("pet", __name__)
 business_bp = Blueprint("business", __name__)
 appointment_bp = Blueprint("appointment", __name__)
 post_bp = Blueprint("post", __name__)
+circle_bp = Blueprint("circle", __name__)
 
-from .main.controller import gateway_controller, admin_controller, home_controller, user_controller, pet_controller, business_controller, appointment_controller, post_controller
+from .main.controller import gateway_controller, admin_controller, home_controller, user_controller, pet_controller, business_controller, appointment_controller, post_controller, circle_controller

@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+{% from "component/navbar.html" import admin_navbar %}
+
+{% block content %}
+    {{ admin_navbar(current_user) }}
+    <div class="container-fluid d-flex justify-content-center mt-3 flex-column">
+        <h2>Circle type</h2>
+        <div class="container border rounded d-flex flex-column p-2">
+            <form method="POST" action="{{ url_for('admin.create_circleType') }}" class="m-3">
+                Create circle type
+                {{ createCircleTypeForm.hidden_tag() }}
+                <div class="form-row align-items-center">
+                  <div class="col-auto">
+                    {{ createCircleTypeForm.name_input(class="form-control form-control-sm", minlength=2) }}
+                  </div>
+                  <div class="col-auto">
+                    {{ createCircleTypeForm.submit_input(class="btn btn-primary btn-sm") }}
+                  </div>
+                </div>
+            </form>
+            <ul class="list-group" style="height:inherit;overflow-y:scroll;">
+                {% for type in circleType_list %}
+                  <li class="list-group-item d-flex justify-content-between">{{ type.name }}
+                    <div>
+                        <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#edit{{ type.public_id }}Modal">
+                            Edit
+                        </button>
+                        <div class="modal fade" id="edit{{ type.public_id }}Modal" tabindex="-1" aria-labelledby="editCircleLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <form class="modal-content" method="POST" action="{{ url_for('admin.edit_circleType', pid=type.public_id) }}">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="editCircleTypeModalLabel">Edit circle type</h5>
+                                  {{ editCircleTypeForm.hidden_tag() }}
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  {{ editCircleTypeForm.name_input(class="form-control form-control-sm", placeholder=type.name, minlength=2) }}
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                  {{ editCircleTypeForm.submit_input(class="btn btn-primary") }}
+                                </div>
+                              </form>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#delete{{ type.public_id }}Modal">
+                            Delete
+                        </button>
+                        <div class="modal fade" id="delete{{ type.public_id }}Modal" tabindex="-1" aria-labelledby="deleteCircleLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <form class="modal-content" method="POST" action="{{ url_for('admin.delete_circleType', pid=type.public_id) }}">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="deleteCircleLabel">Delete circle type</h5>
+                                  {{ deleteCircleTypeForm.hidden_tag() }}
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  {{ deleteCircleTypeForm.confirm_name_input(class="d-none", value=type.name) }}
+                                  {{ deleteCircleTypeForm.name_input(class="form-control form-control-sm", placeholder=type.name, minlength=2) }}
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                  {{ deleteCircleTypeForm.submit_input(class="btn btn-danger") }}
+                                </div>
+                              </form>
+                            </div>
+                        </div>
+                    </div>
+                  </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

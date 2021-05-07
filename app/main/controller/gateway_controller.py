@@ -17,8 +17,10 @@ def signup_one():
         if createUserOneForm.validate_on_submit():
             # send data wrapped in token to signup part two
             serializer = URLSafeTimedSerializer(os.environ.get("SECRET_KEY"))
-            token = serializer.dumps({"name_input": createUserOneForm.name_input.data, "email_input": createUserOneForm.email_input.data}, salt="signup_two")
-
+            token = serializer.dumps({
+                "name_input": createUserOneForm.name_input.data, 
+                "email_input": createUserOneForm.email_input.data}, salt="signup_two")
+            
             return redirect(url_for("gateway.signup_two", token=token))
 
         flash("Please try again.", "danger")

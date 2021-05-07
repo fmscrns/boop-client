@@ -1,0 +1,121 @@
+{% extends "layout.html" %}
+{% from "component/navbar.html" import loaded_navbar %}
+
+{% block content %}
+    {{ loaded_navbar(current_user) }}
+    <div class="container-fluid d-flex justify-content-center pt-5 my-3">
+        <div class="d-flex flex-column w-50">
+            <div class="jumbotron jumbotron-fluid rounded w-100 d-flex flex-column mb-3 pb-0">
+                <div class="d-flex flex-row px-4">
+                    <img src="{{ config.MEDIA_STORAGE + this_circle['photo'] }}" alt="..." class="rounded mx-auto d-block w-25">
+                    <div class="container">
+                        <h1 class="display-6">{{ this_circle["name"] }}</h1>
+                        <p class="lead"><a href="{{ url_for('user.circles', username=this_circle['admin_username']) }}">{{ this_circle["admin_name"] }}'s</a> circle</p>
+                        {% if this_circle["admin_id"] == current_user["public_id"] %}
+                            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editCircleModal">
+                                <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
+                            </button>
+                            <div class="modal fade" id="editCircleModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Circle Settings</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                    <form class="modal-body" method="POST" action="{{ url_for('circle.edit', circle_pid=this_circle.public_id) }}" enctype="multipart/form-data">
+                                        <h5 class="mb-3">Update circle</h5>
+                                        {{ editCircleForm.hidden_tag() }}
+                                        <div class="form-group">
+                                            {{ editCircleForm.photo_input.label }}
+                                            {{ editCircleForm.photo_input(class="form-control form-control-sm") }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ editCircleForm.name_input.label }}
+                                            {{ editCircleForm.name_input(class="form-control form-control-sm", value=this_circle["name"]) }}
+                                        </div>
+                                        <div class="form-group">
+                                            {% set f = editCircleForm.bio_input.process_data(this_circle["bio"]) %}
+                                            {{ editCircleForm.bio_input.label }}
+                                            {{ editCircleForm.bio_input(class="form-control form-control-sm", value=this_circle["bio"]) }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ editCircleForm.type_input.label }}
+                                            {{ editCircleForm.type_input(class="form-control form-control-sm") }}
+                                        </div>
+                                        {{ editCircleForm.submit_input(class="btn btn-primary float-right btn-block") }}
+                                    </form>
+                                    <form class="border-top modal-body" method="POST" action="{{ url_for('circle.delete', circle_pid=this_circle.public_id) }}">
+                                        <h5 class="mb-3">Delete circle</h5>
+                                        {{ deleteCircleForm.hidden_tag() }}
+                                        <span class="text-muted small">Confirm by typing the circle's name</span>
+                                        {{ deleteCircleForm.confirm_name_input(class="d-none", value=this_circle.name) }}
+                                        {{ deleteCircleForm.name_input(class="form-control form-control-sm", placeholder=this_circle.name, minlength=2) }}
+                                        {{ deleteCircleForm.submit_input(class="btn btn-danger float-right btn-block mt-3") }}
+                                    </form>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#createAppointmentModal">
+                                Create appointment
+                            </button>
+                            <div class="modal fade" id="createAppointmentModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                <form class="modal-content" method="POST" action="{{ url_for('appointment.create') }}" enctype="multipart/form-data">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Create appointment</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ createAppointmentForm.hidden_tag() }}
+                                        <div class="form-group">
+                                            {{ createAppointmentForm.details_input.label }}
+                                            {{ createAppointmentForm.details_input(class="form-control form-control-sm") }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ createAppointmentForm.type_input.label }}
+                                            {{ createAppointmentForm.type_input(class="form-control form-control-sm") }}
+                                        </div>
+                                        <div class="form-group">
+                                            {{ createAppointmentForm.pet_input.label }}
+                                            {{ createAppointmentForm.pet_input(class="form-control form-control-sm") }}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    {{ createAppointmentForm.submit_input(class="btn btn-primary") }}
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="">
+                    <div class="d-flex flex-column ml-2 container">
+                        <span>Bio: {{ this_circle.bio }}</span>
+                        <span>Type: {% for type in this_circle._type %}| {{ type.name }} {% endfor %}</span>
+                    </div>
+                </div>
+                <ul class="nav row m-0 border rounded mt-3">
+                    <li class="nav-item col d-flex justify-content-center">
+                      <a class="nav-link active" href="#">Posts</a>
+                    </li>
+                    <li class="nav-item col d-flex justify-content-center">
+                      <a class="nav-link" href="#">Media</a>
+                    </li>
+                    <li class="nav-item col d-flex justify-content-center">
+                        <a class="nav-link" href="#">Members</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

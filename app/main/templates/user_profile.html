@@ -71,6 +71,9 @@
                     <li class="nav-item col d-flex justify-content-center">
                       <a class="nav-link" href="{{ url_for('user.businesses', username=this_user['username']) }}">Businesses</a>
                     </li>
+                    <li class="nav-item col d-flex justify-content-center">
+                        <a class="nav-link" href="{{ url_for('user.circles', username=this_user['username']) }}">Cirles</a>
+                    </li>
                 </ul>
             </div>
             {% if createPetForm %}
@@ -189,7 +192,6 @@
                             <img src="{{ config.MEDIA_STORAGE + post['photo'] }}" alt="..." class="rounded d-block w-25 border">
                             <div class="d-flex flex-column ml-2 container">
                                 <span>Content: {{ post.content }}</span>
-                                <span>Birthday: {{ post.birthday }}</span>
                                 <span>Registered on: {{ post.registered_on }}</span>
                             </div>
                         </div>
@@ -333,6 +335,59 @@
                                 <a href="{{ url_for('business.posts', business_pid=business.public_id) }}" class="h4">{{ business.name }}</a>
                                 <span>Bio: {{ business.bio }}</span>
                                 <span>Type: {% for type in business._type %}| {{ type.name }} {% endfor %}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% elif createCircleForm %}
+                {% if this_user["public_id"] == current_user["public_id"] %}
+                    <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#createCircleModal">
+                        Create Circle profile
+                    </button>
+                    <div class="modal fade" id="createCircleModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                        <form class="modal-content" method="POST" action="{{ url_for('circle.create') }}" enctype="multipart/form-data">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Create circle</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            </div>
+                            <div class="modal-body">
+                                {{ createCircleForm.hidden_tag() }}
+                                <div class="form-group">
+                                    {{ createCircleForm.photo_input.label }}
+                                    {{ createCircleForm.photo_input(class="form-control form-control-sm") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ createCircleForm.name_input.label }}
+                                    {{ createCircleForm.name_input(class="form-control form-control-sm") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ createCircleForm.bio_input.label }}
+                                    {{ createCircleForm.bio_input(class="form-control form-control-sm") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ createCircleForm.type_input.label }}
+                                    {{ createCircleForm.type_input(class="form-control form-control-sm") }}
+                                </div>                                 
+                            </div>
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            {{ createCircleForm.submit_input(class="btn btn-primary") }}
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                {% endif %}
+                {% for circle in circle_list %}
+                    <div class="container-fluid border p-4 mt-3">
+                        <div class="d-flex flex-row">
+                            <img src="{{ config.MEDIA_STORAGE + circle['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                            <div class="d-flex flex-column ml-2 container">
+                                <a href="{{ url_for('circle.posts', circle_pid=circle.public_id) }}" class="h4">{{ circle.name }}</a>
+                                <span>Bio: {{ circle.bio }}</span>
+                                <span>Type: {% for type in circle._type %}| {{ type.name }} {% endfor %}</span>
                             </div>
                         </div>
                     </div>

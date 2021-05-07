@@ -6,4 +6,24 @@
     <div class="container-fluid d-flex justify-content-center pt-5 my-3">
         hello, {{ current_user["name"] }}!
     </div>
+    <div class="container-fluid d-flex justify-content-center pt-5 my-3">
+        <div class="d-flex flex-column w-50">           
+            <div class="d-flex flex-row px-4">
+                <button type="button" class="btn btn-primary btn-lg btn-block">Post Something</button>
+            </div>
+            {% for business in business_list %}
+            <li class=""></li>{{ business.photo }}</li>
+            <li class=""></li>{{ business.content }}</li>
+            {% endfor %}
+            </div>
+            <h1></h1>
+        </div>
+    </div>
+    
+    
 {% endblock %}
+
+
+
+
+

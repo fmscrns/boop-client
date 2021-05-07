@@ -8,6 +8,10 @@ from ..service.businessType_service import BusinessTypeService
 from ..form.specie_form import CreateSpecieForm, EditSpecieForm, DeleteSpecieForm
 from ..form.businessType_form import CreateBusinessTypeForm, EditBusinessTypeForm, DeleteBusinessTypeForm
 from ..form.breed_form import CreateBreedForm, EditBreedForm, DeleteBreedForm
+from ..service.circleType_service import CircleTypeService
+from ..form.circleType_form import CreateCircleTypeForm, EditCircleTypeForm, DeleteCircleTypeForm
+
+
 
 @admin_bp.route("/control", methods=["GET", "POST"])
 @admin_session_required
@@ -29,6 +33,20 @@ def business_types(current_user):
         createBusinessTypeForm = CreateBusinessTypeForm(),
         editBusinessTypeForm = EditBusinessTypeForm(),
         deleteBusinessTypeForm = DeleteBusinessTypeForm()
+    )
+
+@admin_bp.route("/circle_types", methods=["GET", "POST"])
+@admin_session_required
+def circle_types(current_user):
+    asd = json.loads(CircleTypeService.get_all(session["admin_booped_in"]).text)["data"]
+    print(asd)
+    return render_template("admin/circle_types.html",
+        page_title = "Configure Circle Types",
+        current_user = current_user,
+        circleType_list = asd,
+        createCircleTypeForm = CreateCircleTypeForm(),
+        editCircleTypeForm = EditCircleTypeForm(),
+        deleteCircleTypeForm = DeleteCircleTypeForm()
     )
 
 @admin_bp.route("/species", methods=["GET", "POST"])
@@ -131,6 +149,75 @@ def delete_businessType(current_user, pid):
                 flash("{}: {}".format(key, message), "danger")
 
     return redirect(url_for("admin.business_types"))
+
+
+@admin_bp.route("/circle_type/create", methods=["POST"])
+@admin_session_required
+def create_circleType(current_user):
+    createCircleTypeForm = CreateCircleTypeForm()
+
+    if createCircleTypeForm.validate_on_submit():
+        create_circleType = CircleTypeService.create(session["admin_booped_in"], request.form)
+
+        if create_circleType.ok:
+            
+            flash(json.loads(create_circleType.text)["message"], "success")
+
+            return redirect(url_for("admin.circle_types"))
+
+        flash(json.loads(create_circleType.text)["message"], "danger")
+
+    if createCircleTypeForm.errors:
+        for key in createCircleTypeForm.errors:
+            for message in createCircleTypeForm.errors[key]:
+                flash("{}: {}".format(key, message), "danger")
+
+    return redirect(url_for("admin.circle_types"))
+
+@admin_bp.route("/circle_type/edit/<pid>", methods=["POST"])
+@admin_session_required
+def edit_circleType(current_user, pid):
+    editCircleTypeForm = EditCircleTypeForm()
+
+    if editCircleTypeForm.validate_on_submit():
+        edit_circleType = CircleTypeService.edit(pid, session["admin_booped_in"], request.form)
+
+        if edit_circleType.ok:
+            
+            flash(json.loads(edit_circleType.text)["message"], "success")
+
+            return redirect(url_for("admin.circle_types"))
+
+        flash(json.loads(edit_circleType.text)["message"], "danger")
+
+    if editCircleTypeForm.errors:
+        for key in editCircleTypeForm.errors:
+            for message in editCircleTypeForm.errors[key]:
+                flash("{}: {}".format(key, message), "danger")
+
+    return redirect(url_for("admin.circle_types"))
+
+@admin_bp.route("/circle_type/delete/<pid>", methods=["POST"])
+@admin_session_required
+def delete_circleType(current_user, pid):
+    deleteCircleTypeForm = DeleteCircleTypeForm()
+
+    if deleteCircleTypeForm.validate_on_submit():
+        delete_circleType = CircleTypeService.delete(pid, session["admin_booped_in"], request.form)
+
+        if delete_circleType.ok:
+            flash(json.loads(delete_circleType.text)["message"], "success")
+
+            return redirect(url_for("admin.circle_types"))
+        
+        flash(json.loads(delete_circleType.text)["message"], "danger")
+
+    if deleteCircleTypeForm.errors:
+        for key in deleteCircleTypeForm.errors:
+            for message in deleteCircleTypeForm.errors[key]:
+                flash("{}: {}".format(key, message), "danger")
+
+    return redirect(url_for("admin.circle_types"))
 
 @admin_bp.route("/specie/create", methods=["POST"])
 @admin_session_required
