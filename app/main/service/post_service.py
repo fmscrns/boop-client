@@ -47,7 +47,7 @@ class PostService:
 
     @staticmethod
     def get_all_posts():
-        return requests.get("{}/feed{}".format(
+        return requests.get("{}/post/".format(
             current_app.config["API_DOMAIN"]),
             headers = {
                 "Authorization" : "Bearer {}".format(session["booped_in"])
@@ -55,7 +55,7 @@ class PostService:
         )
     @staticmethod
     def get_all_post(token):
-        return requests.get("{}/feed{}".format(
+        return requests.get("{}/post/".format(
             current_app.config["API_DOMAIN"]),
             headers = {
                 "Authorization" : "Bearer {}".format(token)
