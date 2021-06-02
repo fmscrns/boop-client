@@ -93,6 +93,10 @@ class CircleService:
             data.get("member_input")),
             headers = {
                 "Authorization" : "Bearer {}".format(session["booped_in"])
+            },
+            json = {
+                "name": data.get("name_input"),
+                "_type": []
             }
         )
     

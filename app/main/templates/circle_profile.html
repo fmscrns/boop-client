@@ -84,6 +84,7 @@
                                         <div class="modal-body">
                                             {{ leaveCircleForm.hidden_tag() }}
                                             {{ leaveCircleForm.member_input(class="d-none", value=current_user["public_id"]) }}
+                                            {{ leaveCircleForm.confirm_name_input(class="d-none", value=this_circle["name"]) }}
                                             Are you sure you want to cancel join request?
                                         </div>
                                         <div class="modal-footer">
@@ -94,9 +95,44 @@
                                     </div>
                                 </div>
                             {% else %}
-                                <button class="btn btn-outline-danger">
-                                    Leave circle
-                                </button>
+                                {% if this_circle["member_count"] != 1 %}
+                                    <form method="POST" action="{{ url_for('circle.leave', circle_pid=this_circle['public_id']) }}">
+                                        {{ leaveCircleForm.hidden_tag() }}
+                                        <div class="form-group">
+                                            {{ leaveCircleForm.member_input(class="d-none", value=current_user["public_id"]) }}
+                                            {{ leaveCircleForm.name_input(class="d-none", value=this_circle["name"]) }}
+                                            {{ leaveCircleForm.submit_input(class="btn btn-outline-danger", value="Leave circle") }}
+                                        </div>
+                                    </form>
+                                {% else %}
+                                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#leaveCircleModal">
+                                        Leave circle
+                                    </button>
+                                    <div class="modal fade" id="leaveCircleModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="staticBackdropLabel">Leave circle</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            </div>
+                                            <form class="border-top modal-body" method="POST" action="{{ url_for('circle.leave', circle_pid=this_circle.public_id) }}">
+                                                <h5 class="mb-3">Leave circle</h5>
+                                                {{ leaveCircleForm.hidden_tag() }}
+                                                <span class="text-muted small">Confirm by typing the circle's name</span>
+                                                {{ leaveCircleForm.member_input(class="d-none", value=current_user["public_id"]) }}
+                                                {{ leaveCircleForm.confirm_name_input(class="d-none", value=this_circle.name) }}
+                                                {{ leaveCircleForm.name_input(class="form-control form-control-sm", placeholder=this_circle.name, minlength=2) }}
+                                                {{ leaveCircleForm.submit_input(class="btn btn-danger float-right btn-block mt-3") }}
+                                            </form>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
                             {% endif %}
                         {% endif %}
                     </div>

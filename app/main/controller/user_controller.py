@@ -29,8 +29,14 @@ def pets(current_user, username):
         editUserForm.username_input.data = current_user["username"]
         editUserForm.email_input.data = current_user["email"]
         createPetForm = CreatePetForm()
-        createPetForm.group_input.choices = [(specie["public_id"], specie["name"]) for specie in json.loads(SpecieService.get_all(session["booped_in"]).text)["data"]]
-        createPetForm.subgroup_input.choices = [(breed["public_id"], breed["name"]) for breed in json.loads(BreedService.get_by_specie(session["booped_in"], createPetForm.group_input.choices[0][0]).text)["data"]]
+
+        get_specie_list = SpecieService.get_all(session["booped_in"])
+        if get_specie_list.ok:
+            createPetForm.group_input.choices = [(specie["public_id"], specie["name"]) for specie in json.loads(get_specie_list.text)["data"]]
+
+        get_breed_list = BreedService.get_by_specie(session["booped_in"], createPetForm.group_input.choices[0][0])
+        if get_breed_list.ok:
+            createPetForm.subgroup_input.choices = [(breed["public_id"], breed["name"]) for breed in json.loads(get_breed_list.text)["data"]]
 
         this_user = json.loads(get_resp.text)
         return render_template("user_profile.html",

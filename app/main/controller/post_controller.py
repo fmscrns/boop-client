@@ -55,7 +55,7 @@ def create(current_user):
     elif createPostForm.confiner_input.data:
         return redirect(url_for("circle.posts", circle_pid=createPostForm.confiner_input.data))
     else:
-        return redirect(url_for("user.posts", username=resp["payload"]))
+        return redirect(url_for("user.posts"))
 
 @post_bp.route("/<post_pid>/delete", methods=["POST"])
 @session_required

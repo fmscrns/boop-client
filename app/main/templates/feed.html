@@ -24,6 +24,8 @@
                             </div>
                             <div class="modal-body">
                                 {{ createPostForm.hidden_tag() }}
+                                {{ createPostForm.pinboard_input(class="d-none") }}
+                                {{ createPostForm.confiner_input(class="d-none") }}
                                 <div class="form-group">
                                     {{ createPostForm.photo_input.label }}
                                     {{ createPostForm.photo_input(class="form-control form-control-sm") }}
