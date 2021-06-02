@@ -95,3 +95,12 @@ class BusinessService:
                 "_type": []
             }
         )
+
+    @staticmethod
+    def get_all_businesses():
+        return requests.get("{}/business/".format(
+            current_app.config["API_DOMAIN"]),
+            headers = {
+                "Authorization" : "Bearer {}".format(session["booped_in"])
+            }
+        )
