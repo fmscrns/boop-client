@@ -12,7 +12,9 @@ class PostService:
             },
             json = {
                 "content": data_form.get("content_input"),
-                "photo": save_image(data_file.get("photo_input"), 2)
+                "photo": save_image(data_file.get("photo_input"), 2),
+                "pinboard_id": data_form.get("pinboard_input"),
+                "confiner_id": data_form.get("confiner_input")
             }
         )
     
@@ -21,6 +23,26 @@ class PostService:
         return requests.get("{}/post/creator/{}".format(
             current_app.config["API_DOMAIN"],
             user_pid),
+            headers = {
+                "Authorization" : "Bearer {}".format(token)
+            }
+        )
+    
+    @staticmethod
+    def get_all_by_business(token, business_pid):
+        return requests.get("{}/post/pinboard/{}".format(
+            current_app.config["API_DOMAIN"],
+            business_pid),
+            headers = {
+                "Authorization" : "Bearer {}".format(token)
+            }
+        )
+    
+    @staticmethod
+    def get_all_by_circle(token, circle_pid):
+        return requests.get("{}/post/confiner/{}".format(
+            current_app.config["API_DOMAIN"],
+            circle_pid),
             headers = {
                 "Authorization" : "Bearer {}".format(token)
             }

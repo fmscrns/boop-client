@@ -18,8 +18,6 @@ from ..form.circle_form import CreateCircleForm
 from ..service.circleType_service import CircleTypeService
 from ..service.circle_service import CircleService
 
-
-
 @user_bp.route("/<username>", methods=["GET", "POST"])
 @user_bp.route("/<username>/pets", methods=["GET", "POST"])
 @session_required
@@ -116,11 +114,11 @@ def create():
 
 @user_bp.route("/<user_pid>/edit", methods=["POST"])
 @session_required
-def edit(current_user, pid):
+def edit(current_user, user_pid):
     editUserForm = EditUserForm(prefix="euf")
 
     if editUserForm.validate_on_submit():
-        edit_user = UserService.edit(pid, session["booped_in"], request.form, request.files)
+        edit_user = UserService.edit(user_pid, session["booped_in"], request.form, request.files)
 
         if edit_user.ok:
             resp = json.loads(edit_user.text)

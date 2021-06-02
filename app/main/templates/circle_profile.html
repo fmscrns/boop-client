@@ -4,7 +4,7 @@
 {% block content %}
     {{ loaded_navbar(current_user) }}
     <div class="container-fluid d-flex justify-content-center pt-5 my-3">
-        <div class="d-flex flex-column w-50">
+        <div class="circleprof-cont d-flex flex-column w-50">
             <div class="jumbotron jumbotron-fluid rounded w-100 d-flex flex-column mb-3 pb-0">
                 <div class="d-flex flex-row px-4">
                     <img src="{{ config.MEDIA_STORAGE + this_circle['photo'] }}" alt="..." class="rounded mx-auto d-block w-25">
@@ -61,40 +61,43 @@
                                 </div>
                             </div>
                         {% else %}
-                            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#createAppointmentModal">
-                                Create appointment
-                            </button>
-                            <div class="modal fade" id="createAppointmentModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                <form class="modal-content" method="POST" action="{{ url_for('appointment.create') }}" enctype="multipart/form-data">
-                                    <div class="modal-header">
-                                    <h5 class="modal-title" id="staticBackdropLabel">Create appointment</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        {{ createAppointmentForm.hidden_tag() }}
-                                        <div class="form-group">
-                                            {{ createAppointmentForm.details_input.label }}
-                                            {{ createAppointmentForm.details_input(class="form-control form-control-sm") }}
-                                        </div>
-                                        <div class="form-group">
-                                            {{ createAppointmentForm.type_input.label }}
-                                            {{ createAppointmentForm.type_input(class="form-control form-control-sm") }}
-                                        </div>
-                                        <div class="form-group">
-                                            {{ createAppointmentForm.pet_input.label }}
-                                            {{ createAppointmentForm.pet_input(class="form-control form-control-sm") }}
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    {{ createAppointmentForm.submit_input(class="btn btn-primary") }}
+                            {% if this_circle["visitor_auth"] == 0 %}
+                                <form method="POST" action="{{ url_for('circle.join', circle_pid=this_circle['public_id']) }}" enctype="multipart/form-data">
+                                    {{ joinCircleForm.hidden_tag() }}
+                                    <div class="form-group">
+                                        {{ joinCircleForm.submit_input(class="btn btn-primary") }}
                                     </div>
                                 </form>
+                            {% elif this_circle["visitor_auth"] == 1 %}
+                                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#cancelJoinModal">
+                                    Pending
+                                </button>
+                                <div class="modal fade" id="cancelJoinModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-scrollable">
+                                    <form class="modal-content" method="POST" action="{{ url_for('circle.leave', circle_pid=this_circle['public_id']) }}" enctype="multipart/form-data">
+                                        <div class="modal-header">
+                                        <h5 class="modal-title" id="staticBackdropLabel">Cancel join request</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ leaveCircleForm.hidden_tag() }}
+                                            {{ leaveCircleForm.member_input(class="d-none", value=current_user["public_id"]) }}
+                                            Are you sure you want to cancel join request?
+                                        </div>
+                                        <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        {{ leaveCircleForm.submit_input(class="btn btn-primary", value="Cancel join request") }}
+                                        </div>
+                                    </form>
+                                    </div>
                                 </div>
-                            </div>
+                            {% else %}
+                                <button class="btn btn-outline-danger">
+                                    Leave circle
+                                </button>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>
@@ -106,16 +109,139 @@
                 </div>
                 <ul class="nav row m-0 border rounded mt-3">
                     <li class="nav-item col d-flex justify-content-center">
-                      <a class="nav-link active" href="#">Posts</a>
+                      <a class="nav-link active" href="{{ url_for('circle.posts', circle_pid=this_circle['public_id']) }}">Posts</a>
                     </li>
                     <li class="nav-item col d-flex justify-content-center">
                       <a class="nav-link" href="#">Media</a>
                     </li>
                     <li class="nav-item col d-flex justify-content-center">
-                        <a class="nav-link" href="#">Members</a>
+                        <a class="nav-link" href="{{ url_for('circle.confirmed_members', circle_pid=this_circle['public_id']) }}">Members</a>
                     </li>
                 </ul>
             </div>
+            {% if this_circle["visitor_auth"] == 2 %}
+                {% if createPostForm %}
+                    <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#createPostModal">
+                        Create post
+                    </button>
+                    <div class="modal fade" id="createPostModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                        <form class="modal-content" method="POST" action="{{ url_for('post.create') }}" enctype="multipart/form-data">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Create post</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            </div>
+                            <div class="modal-body">
+                                {{ createPostForm.hidden_tag() }}
+                                {{ createPostForm.pinboard_input(class="d-none") }}
+                                {{ createPostForm.confiner_input(class="d-none", value=this_circle["public_id"]) }}
+                                <div class="form-group">
+                                    {{ createPostForm.photo_input.label }}
+                                    {{ createPostForm.photo_input(class="form-control form-control-sm") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ createPostForm.content_input.label }}
+                                    {{ createPostForm.content_input(class="form-control form-control-sm") }}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            {{ createPostForm.submit_input(class="btn btn-primary") }}
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                    {% for post in post_list %}
+                        <a href="{{ url_for('post.comments', post_pid=post.public_id) }}" class="container-fluid border p-4 mt-3">
+                            <div class="d-flex flex-row">
+                                <img src="{{ config.MEDIA_STORAGE + post['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                                <div class="d-flex flex-column ml-2 container">
+                                    <span>Content: {{ post.content }}</span>
+                                    <span>Registered on: {{ post.registered_on }}</span>
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                {% elif inviteMemberForm %}
+                    {% if this_circle["admin_id"] == current_user["public_id"] %}
+                        <ul class="nav row m-0 border rounded">
+                            <li class="nav-item col d-flex justify-content-center">
+                                <a class="nav-link" href="{{ url_for('circle.confirmed_members', circle_pid=this_circle['public_id']) }}">Confirmed</a>
+                            </li>
+                            <li class="nav-item col d-flex justify-content-center">
+                                <a class="nav-link" href="{{ url_for('circle.pending_members', circle_pid=this_circle['public_id']) }}">Pending</a>
+                            </li>
+                        </ul>
+
+                        <button type="button" class="btn btn-primary btn-block mt-3" data-toggle="modal" data-target="#createPostModal">
+                            Invite member
+                        </button>
+                        {#
+                        <div class="modal fade" id="createPostModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-scrollable">
+                            <form class="modal-content" method="POST" action="{{ url_for('post.create') }}" enctype="multipart/form-data">
+                                <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Create post</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                </div>
+                                <div class="modal-body">
+                                    {{ createPostForm.hidden_tag() }}
+                                    {{ createPostForm.pinboard_input(class="d-none") }}
+                                    {{ createPostForm.confiner_input(class="d-none", value=this_circle["public_id"]) }}
+                                    <div class="form-group">
+                                        {{ createPostForm.photo_input.label }}
+                                        {{ createPostForm.photo_input(class="form-control form-control-sm") }}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ createPostForm.content_input.label }}
+                                        {{ createPostForm.content_input(class="form-control form-control-sm") }}
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                {{ createPostForm.submit_input(class="btn btn-primary") }}
+                                </div>
+                            </form>
+                            </div>
+                        </div>#}
+                    {% endif %}
+                    {% for member in member_list %}
+                        <a href="{{ url_for('user.pets', username=member.username) }}" class="container-fluid border p-4 mt-3">
+                            <div class="d-flex flex-row">
+                                <img src="{{ config.MEDIA_STORAGE + member['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                                <div class="d-flex flex-column ml-2 container">
+                                    <span>{{ member.name }}</span>
+                                    <span>{{ member.username }}</span>
+                                </div>
+                                {% if acceptCircleForm and this_circle["admin_id"] == current_user["public_id"] %}
+                                    <div class="float-right">
+                                        <div class="d-flex flex-row">
+                                            <form method="POST" action="{{ url_for('circle.accept', circle_pid=this_circle['public_id']) }}" enctype="multipart/form-data">
+                                                {{ acceptCircleForm.hidden_tag() }}
+                                                {{ acceptCircleForm.member_input(class="d-none", value=member["public_id"]) }}
+                                                {{ acceptCircleForm.submit_input(class="btn btn-primary") }}
+                                            </form>
+                                            <form method="POST" action="{{ url_for('circle.leave', circle_pid=this_circle['public_id']) }}" enctype="multipart/form-data">
+                                                {{ leaveCircleForm.hidden_tag() }}
+                                                {{ leaveCircleForm.member_input(class="d-none", value=member["public_id"]) }}
+                                                {{ leaveCircleForm.submit_input(class="btn btn-outline-danger ml-2", value="Remove") }}
+                                            </form>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </a>
+                    {% endfor %}
+                {% endif %}
+            {% else %}
+                <div class="jumbotron jumbotron-fluid p-2 d-flex justify-content-center">
+                    <h5>Join circle to see its updates.</h5>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

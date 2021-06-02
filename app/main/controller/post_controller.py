@@ -36,7 +36,12 @@ def create(current_user):
             resp = json.loads(create_post.text)
             flash(resp["message"], "success")
 
-            return redirect(url_for("user.posts", username=resp["payload"]))
+            if createPostForm.pinboard_input.data:
+                return redirect(url_for("business.posts", business_pid=createPostForm.pinboard_input.data))
+            elif createPostForm.confiner_input.data:
+                return redirect(url_for("circle.posts", circle_pid=createPostForm.confiner_input.data))
+            else:
+                return redirect(url_for("user.posts", username=resp["payload"]))
         
         flash(json.loads(create_post.text), "danger")
     
@@ -45,7 +50,12 @@ def create(current_user):
             for message in createPostForm.errors[key]:
                 flash("{}: {}".format(key, message), "danger")
 
-    return redirect(url_for("user.posts", username=current_user["username"]))
+    if createPostForm.pinboard_input.data:
+        return redirect(url_for("business.posts", business_pid=createPostForm.pinboard_input.data))
+    elif createPostForm.confiner_input.data:
+        return redirect(url_for("circle.posts", circle_pid=createPostForm.confiner_input.data))
+    else:
+        return redirect(url_for("user.posts", username=resp["payload"]))
 
 @post_bp.route("/<post_pid>/delete", methods=["POST"])
 @session_required

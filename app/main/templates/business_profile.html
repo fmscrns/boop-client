@@ -10,8 +10,8 @@
                     <img src="{{ config.MEDIA_STORAGE + this_business['photo'] }}" alt="..." class="rounded mx-auto d-block w-25">
                     <div class="container">
                         <h1 class="display-6">{{ this_business["name"] }}</h1>
-                        <p class="lead"><a href="{{ url_for('user.businesses', username=this_business['exec_username']) }}">{{ this_business["exec_name"] }}'s</a> business</p>
-                        {% if this_business["exec_id"] == current_user["public_id"] %}
+                        <p class="lead"><a href="{{ url_for('user.businesses', username=this_business['executive_username']) }}">{{ this_business["executive_name"] }}'s</a> business</p>
+                        {% if this_business["executive_id"] == current_user["public_id"] %}
                             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editBusinessModal">
                                 <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
                             </button>
@@ -106,13 +106,60 @@
                 </div>
                 <ul class="nav row m-0 border rounded mt-3">
                     <li class="nav-item col d-flex justify-content-center">
-                      <a class="nav-link active" href="#">Posts</a>
+                      <a class="nav-link active" href="{{ url_for('business.posts', business_pid=this_business['public_id']) }}">Posts</a>
                     </li>
                     <li class="nav-item col d-flex justify-content-center">
                       <a class="nav-link" href="#">Media</a>
                     </li>
                 </ul>
             </div>
+            {% if createPostForm %}
+                {% if this_business["executive_id"] == current_user["public_id"] %}
+                    <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#createPostModal">
+                        Create post
+                    </button>
+                    <div class="modal fade" id="createPostModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                        <form class="modal-content" method="POST" action="{{ url_for('post.create') }}" enctype="multipart/form-data">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabel">Create post</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            </div>
+                            <div class="modal-body">
+                                {{ createPostForm.hidden_tag() }}
+                                {{ createPostForm.pinboard_input(class="d-none", value=this_business["public_id"]) }}
+                                {{ createPostForm.confiner_input(class="d-none") }}
+                                <div class="form-group">
+                                    {{ createPostForm.photo_input.label }}
+                                    {{ createPostForm.photo_input(class="form-control form-control-sm") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ createPostForm.content_input.label }}
+                                    {{ createPostForm.content_input(class="form-control form-control-sm") }}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            {{ createPostForm.submit_input(class="btn btn-primary") }}
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                {% endif %}
+                {% for post in post_list %}
+                    <a href="{{ url_for('post.comments', post_pid=post.public_id) }}" class="container-fluid border p-4 mt-3">
+                        <div class="d-flex flex-row">
+                            <img src="{{ config.MEDIA_STORAGE + post['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                            <div class="d-flex flex-column ml-2 container">
+                                <span>Content: {{ post.content }}</span>
+                                <span>Registered on: {{ post.registered_on }}</span>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

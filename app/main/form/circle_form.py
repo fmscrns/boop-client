@@ -21,6 +21,17 @@ class EditCircleForm(FlaskForm):
 
     submit_input = SubmitField("Update circle")
 
+class JoinCircleForm(FlaskForm):
+    submit_input = SubmitField("Join circle")
+
+class LeaveCircleForm(FlaskForm):
+    member_input = StringField()
+    submit_input = SubmitField()
+
+class AcceptCircleForm(FlaskForm):
+    member_input = StringField()
+    submit_input  = SubmitField("Accept")
+
 class DeleteCircleForm(FlaskForm):
     name_input = StringField("Name", validators=[DataRequired(), Length(max=30, message="Too long.")])
     confirm_name_input = StringField("The Name", default="")

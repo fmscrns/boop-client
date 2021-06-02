@@ -72,7 +72,7 @@
                       <a class="nav-link" href="{{ url_for('user.businesses', username=this_user['username']) }}">Businesses</a>
                     </li>
                     <li class="nav-item col d-flex justify-content-center">
-                        <a class="nav-link" href="{{ url_for('user.circles', username=this_user['username']) }}">Cirles</a>
+                        <a class="nav-link" href="{{ url_for('user.circles', username=this_user['username']) }}">Circles</a>
                     </li>
                 </ul>
             </div>
@@ -169,6 +169,8 @@
                             </div>
                             <div class="modal-body">
                                 {{ createPostForm.hidden_tag() }}
+                                {{ createPostForm.pinboard_input(class="d-none") }}
+                                {{ createPostForm.confiner_input(class="d-none") }}
                                 <div class="form-group">
                                     {{ createPostForm.photo_input.label }}
                                     {{ createPostForm.photo_input(class="form-control form-control-sm") }}

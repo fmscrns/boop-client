@@ -7,6 +7,8 @@ from wtforms.fields.html5 import DateField
 class CreatePostForm(FlaskForm):
     content_input = TextAreaField("Content", validators=[Length(max=280, message="Too long.")])
     photo_input = FileField("Photo", validators=[FileAllowed(["jpg", "jpeg", "png"])])
+    pinboard_input = StringField()
+    confiner_input = StringField()
 
     submit_input = SubmitField("Create post")
 

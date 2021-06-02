@@ -8,6 +8,8 @@ from ..service.pet_service import PetService
 from ..service.business_service import BusinessService
 from ..service.breed_service import BreedService
 from ..service.businessType_service import BusinessTypeService
+from ..service.post_service import PostService
+from ..form.post_form import CreatePostForm
 
 @business_bp.route("/<business_pid>", methods=["GET", "POST"])
 @business_bp.route("/<business_pid>/posts", methods=["GET", "POST"])
@@ -16,22 +18,22 @@ def posts(current_user, business_pid):
     get_resp = BusinessService.get_by_pid(business_pid)
     if get_resp.ok:
         this_business = json.loads(get_resp.text)
-
         editBusinessForm = EditBusinessForm(prefix="ebf")
         editBusinessForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in json.loads(BusinessTypeService.get_all(session["booped_in"]).text)["data"]]
         editBusinessForm.type_input.data = [_type["public_id"] for _type in this_business["_type"]]
-
         createAppointmentForm = CreateAppointmentForm()
         createAppointmentForm.pet_input.choices = [(pet["public_id"], pet["name"]) for pet in json.loads(PetService.get_all_by_user(session["booped_in"], current_user["public_id"]).text)["data"]]
         createAppointmentForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in this_business["_type"]]
-
+        createPostForm = CreatePostForm()
         return render_template("business_profile.html",
             page_title = "Business profile",
             current_user = current_user,
             this_business = this_business,
             editBusinessForm = editBusinessForm,
             deleteBusinessForm = DeleteBusinessForm(),
-            createAppointmentForm = createAppointmentForm
+            createAppointmentForm = createAppointmentForm,
+            createPostForm = createPostForm,
+            post_list = json.loads(PostService.get_all_by_business(session["booped_in"], this_business["public_id"]).text)["data"]
         )
     else:
         abort(404)

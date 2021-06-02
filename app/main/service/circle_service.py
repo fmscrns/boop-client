@@ -24,7 +24,7 @@ class CircleService:
     
     @staticmethod
     def get_all_by_user(token, user_pid):
-        return requests.get("{}/circle/admin/{}".format(
+        return requests.get("{}/circle/creator/{}".format(
             current_app.config["API_DOMAIN"],
             user_pid),
             headers = {
@@ -72,5 +72,57 @@ class CircleService:
             json = {
                 "name": data.get("name_input"),
                 "_type": []
+            }
+        )
+    
+    @staticmethod
+    def join(pid):
+        return requests.post("{}/circle/{}/member/".format(
+            current_app.config["API_DOMAIN"],
+            pid),
+            headers = {
+                "Authorization" : "Bearer {}".format(session["booped_in"])
+            }
+        )
+    
+    @staticmethod
+    def leave(pid, data):
+        return requests.delete("{}/circle/{}/member/{}".format(
+            current_app.config["API_DOMAIN"],
+            pid,
+            data.get("member_input")),
+            headers = {
+                "Authorization" : "Bearer {}".format(session["booped_in"])
+            }
+        )
+    
+    @staticmethod
+    def get_all_pending_circle_members(token, pid):
+        return requests.get("{}/circle/{}/member/?type=0".format(
+            current_app.config["API_DOMAIN"],
+            pid),
+            headers = {
+                "Authorization" : "Bearer {}".format(token)
+            }
+        )
+
+    @staticmethod
+    def get_all_confirmed_circle_members(token, pid):
+        return requests.get("{}/circle/{}/member/?type=1".format(
+            current_app.config["API_DOMAIN"],
+            pid),
+            headers = {
+                "Authorization" : "Bearer {}".format(token)
+            }
+        )
+
+    @staticmethod
+    def accept(pid, data):
+        return requests.post("{}/circle/{}/member/{}".format(
+            current_app.config["API_DOMAIN"],
+            pid,
+            data.get("member_input")),
+            headers = {
+                "Authorization" : "Bearer {}".format(session["booped_in"])
             }
         )
