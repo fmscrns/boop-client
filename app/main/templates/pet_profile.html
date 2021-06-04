@@ -10,8 +10,10 @@
                     <img src="{{ config.MEDIA_STORAGE + this_pet['photo'] }}" alt="..." class="rounded mx-auto d-block w-25">
                     <div class="container">
                         <h1 class="display-6">{{ this_pet["name"] }}</h1>
-                        <p class="lead"><a href="{{ url_for('user.pets', username=this_pet['owner_username']) }}">{{ this_pet["owner_name"] }}'s</a> pet</p>
-                        {% if this_pet["owner_id"] == current_user["public_id"] %}
+                        Owners: {% for owner in this_pet["owner"] %}<p class="lead"><a href="{{ url_for('user.pets', username=owner['username']) }}">{{ owner["name"] }}</a>{% endfor %}
+                        <br>
+                        {% for owner in this_pet["owner"] %}
+                        {% if owner["public_id"] == current_user["public_id"] %}
                             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editPetModal">
                                 <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
                             </button>
@@ -27,7 +29,6 @@
                                         <form class="modal-body" method="POST" action="{{ url_for('pet.edit', pet_pid=this_pet.public_id) }}" enctype="multipart/form-data">
                                             <h5 class="mb-3">Update pet</h5>
                                             {{ editPetForm.hidden_tag() }}
-                                            {{this_pet["bio"]}}
                                             <div class="form-group">
                                                 {{ editPetForm.photo_input.label }}
                                                 {{ editPetForm.photo_input(class="form-control form-control-sm") }}
@@ -71,6 +72,19 @@
                                                 </div>
                                                 {% endfor %}
                                             </div>
+                                            <div class="form-group">
+                                                {{ editPetForm.private_input.label }}
+                                                {% for subfield in editPetForm.private_input %}
+                                                <div class="row container-fluid is-invalid">
+                                                    <div class="col-1">
+                                                    {% if this_pet["is_private"] == True and loop.index == 1 %}{{ subfield(checked=True) }}{% elif this_pet["is_private"] == False and loop.index == 2 %}{{ subfield(checked=True) }}{% else %}{{ subfield }}{% endif %}
+                                                    </div>
+                                                    <div class="col-8">
+                                                    {{ subfield.label(class="small") }}
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
                                             {{ editPetForm.submit_input(class="btn btn-primary float-right btn-block") }}
                                         </form>
                                         <form class="border-top modal-body" method="POST" action="{{ url_for('pet.delete', pet_pid=this_pet.public_id) }}">
@@ -87,6 +101,50 @@
                                     </div>
                                 </div>
                             </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="d-flex align-items-center">
+                        {% if this_pet["visitor_auth"] == 2 %}
+                            <form method="POST" action="{{ url_for('pet.unfollow', pet_pid=this_pet['public_id']) }}">
+                                {{ unfollowPetForm.hidden_tag() }}
+                                <div class="form-group">
+                                    {{ unfollowPetForm.follower_input(class="d-none", value=current_user["public_id"]) }}
+                                    {{ unfollowPetForm.submit_input(class="btn btn-outline-danger", value="Unfollow") }}
+                                </div>
+                            </form>
+                        {% elif this_pet["visitor_auth"] == 1 %}
+                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#cancelFollowModal">
+                                Pending
+                            </button>
+                            <div class="modal fade" id="cancelFollowModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-scrollable">
+                                <form class="modal-content" method="POST" action="{{ url_for('pet.unfollow', pet_pid=this_pet['public_id']) }}">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="staticBackdropLabel">Cancel follow request</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ unfollowPetForm.hidden_tag() }}
+                                        {{ unfollowPetForm.follower_input(class="d-none", value=current_user["public_id"]) }}
+                                        Are you sure you want to cancel follow request?
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    {{ unfollowPetForm.submit_input(class="btn btn-primary", value="Cancel follow request") }}
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                        {% elif this_pet["visitor_auth"] == 0 %}
+                            <form method="POST" action="{{ url_for('pet.follow', pet_pid=this_pet['public_id']) }}">
+                                {{ followPetForm.hidden_tag() }}
+                                <div class="form-group">
+                                    {{ followPetForm.submit_input(class="btn btn-primary") }}
+                                </div>
+                            </form>
                         {% endif %}
                     </div>
                 </div>
@@ -106,8 +164,56 @@
                     <li class="nav-item col d-flex justify-content-center">
                       <a class="nav-link" href="#">Media</a>
                     </li>
+                    <li class="nav-item col d-flex justify-content-center">
+                        <a class="nav-link" href="{{ url_for('pet.confirmed_followers', pet_pid=this_pet['public_id']) }}">Followers</a>
+                    </li>
                 </ul>
             </div>
+            {% if (this_pet["is_private"] == 0) or (this_pet["visitor_auth"] > 1) %}
+                {% if inviteFollowerForm %}
+                    {% if this_pet["visitor_auth"] == 3 %}
+                        <ul class="nav row m-0 border rounded">
+                            <li class="nav-item col d-flex justify-content-center">
+                                <a class="nav-link" href="{{ url_for('pet.confirmed_followers', pet_pid=this_pet['public_id']) }}">Confirmed</a>
+                            </li>
+                            <li class="nav-item col d-flex justify-content-center">
+                                <a class="nav-link" href="{{ url_for('pet.pending_followers', pet_pid=this_pet['public_id']) }}">Pending</a>
+                            </li>
+                        </ul>
+                    {% endif %}
+                    {% for follower in follower_list %}
+                        <a href="{{ url_for('user.pets', username=follower.username) }}" class="container-fluid border p-4 mt-3">
+                            <div class="d-flex flex-row">
+                                <img src="{{ config.MEDIA_STORAGE + follower['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                                <div class="d-flex flex-column ml-2 container">
+                                    <span>{{ follower.name }}</span>
+                                    <span>{{ follower.username }}</span>
+                                </div>
+                                {% if acceptPetForm and this_pet["visitor_auth"] == 3 %}
+                                    <div class="float-right">
+                                        <div class="d-flex flex-row">
+                                            <form method="POST" action="{{ url_for('pet.accept', pet_pid=this_pet['public_id']) }}" enctype="multipart/form-data">
+                                                {{ acceptPetForm.hidden_tag() }}
+                                                {{ acceptPetForm.follower_input(class="d-none", value=follower["public_id"]) }}
+                                                {{ acceptPetForm.submit_input(class="btn btn-primary") }}
+                                            </form>
+                                            <form method="POST" action="{{ url_for('pet.unfollow', pet_pid=this_pet['public_id']) }}" enctype="multipart/form-data">
+                                                {{ unfollowPetForm.hidden_tag() }}
+                                                {{ unfollowPetForm.follower_input(class="d-none", value=follower["public_id"]) }}
+                                                {{ unfollowPetForm.submit_input(class="btn btn-outline-danger ml-2", value="Remove") }}
+                                            </form>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </a>
+                    {% endfor %}
+                {% endif %}
+            {% else %}
+                <div class="jumbotron jumbotron-fluid p-2 d-flex justify-content-center">
+                    <h5>Follow pet to see its updates.</h5>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

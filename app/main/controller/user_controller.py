@@ -4,7 +4,7 @@ from ... import user_bp
 from ..service.user_service import UserService
 from ..util.decorator import session_required
 from ..form.user_form import EditUserForm
-from ..form.pet_form import CreatePetForm
+from ..form.pet_form import CreatePetForm, FollowPetForm, UnfollowPetForm
 from ..form.business_form import CreateBusinessForm
 from ..service.specie_service import SpecieService
 from ..service.breed_service import BreedService
@@ -45,6 +45,8 @@ def pets(current_user, username):
             this_user = this_user,
             editUserForm = editUserForm,
             createPetForm = createPetForm,
+            followPetForm = FollowPetForm(),
+            unfollowPetForm = UnfollowPetForm(),
             pet_list = json.loads(PetService.get_all_by_user(session["booped_in"], this_user["public_id"]).text)["data"]
         )
     else:

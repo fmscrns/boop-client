@@ -62,7 +62,7 @@
                             </div>
                         {% else %}
                             {% if this_circle["visitor_auth"] == 0 %}
-                                <form method="POST" action="{{ url_for('circle.join', circle_pid=this_circle['public_id']) }}" enctype="multipart/form-data">
+                                <form method="POST" action="{{ url_for('circle.join', circle_pid=this_circle['public_id']) }}">
                                     {{ joinCircleForm.hidden_tag() }}
                                     <div class="form-group">
                                         {{ joinCircleForm.submit_input(class="btn btn-primary") }}
@@ -210,7 +210,6 @@
                                 <a class="nav-link" href="{{ url_for('circle.pending_members', circle_pid=this_circle['public_id']) }}">Pending</a>
                             </li>
                         </ul>
-
                         <button type="button" class="btn btn-primary btn-block mt-3" data-toggle="modal" data-target="#createPostModal">
                             Invite member
                         </button>

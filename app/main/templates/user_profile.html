@@ -122,6 +122,19 @@
                                     {% endfor %}
                                 </div>
                                 <div class="form-group">
+                                    {{ createPetForm.private_input.label }}
+                                    {% for subfield in createPetForm.private_input %}
+                                    <div class="row container-fluid is-invalid">
+                                        <div class="col-1">
+                                        {{ subfield }}
+                                        </div>
+                                        <div class="col-8">
+                                        {{ subfield.label(class="small") }}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
                                     {{ createPetForm.group_input.label }}
                                     {{ createPetForm.group_input(class="form-control form-control-sm") }}
                                 </div>
@@ -149,6 +162,49 @@
                                 <span>Sex: {%if pet.sex == 0 %}Male{%else%}Female{%endif%}</span>
                                 <span>Specie: {{ pet.group_name }}</span>
                                 <span>Breed: {{ pet.subgroup_name }}</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                {% if pet["visitor_auth"] == 2 %}
+                                    <form method="POST" action="{{ url_for('pet.unfollow', pet_pid=pet['public_id']) }}">
+                                        {{ unfollowPetForm.hidden_tag() }}
+                                        <div class="form-group">
+                                            {{ unfollowPetForm.follower_input(class="d-none", value=current_user["public_id"]) }}
+                                            {{ unfollowPetForm.submit_input(class="btn btn-outline-danger", value="Unfollow") }}
+                                        </div>
+                                    </form>
+                                {% elif pet["visitor_auth"] == 1 %}
+                                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#cancelFollowModal">
+                                        Pending
+                                    </button>
+                                    <div class="modal fade" id="cancelFollowModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-scrollable">
+                                        <form class="modal-content" method="POST" action="{{ url_for('pet.unfollow', pet_pid=pet['public_id']) }}">
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="staticBackdropLabel">Cancel follow request</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                {{ unfollowPetForm.hidden_tag() }}
+                                                {{ unfollowPetForm.follower_input(class="d-none", value=current_user["public_id"]) }}
+                                                Are you sure you want to cancel follow request?
+                                            </div>
+                                            <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            {{ unfollowPetForm.submit_input(class="btn btn-primary", value="Cancel follow request") }}
+                                            </div>
+                                        </form>
+                                        </div>
+                                    </div>
+                                {% elif pet["visitor_auth"] == 0 %}
+                                    <form method="POST" action="{{ url_for('pet.follow', pet_pid=pet['public_id']) }}">
+                                        {{ followPetForm.hidden_tag() }}
+                                        <div class="form-group">
+                                            {{ followPetForm.submit_input(class="btn btn-primary") }}
+                                        </div>
+                                    </form>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
