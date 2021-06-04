@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Length, Email, EqualTo
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired, Length, EqualTo
 
 class CreateBusinessTypeForm(FlaskForm):
     name_input = StringField("Name", default="", validators=[DataRequired(), Length(min=2, message="Too short.")])

@@ -14,7 +14,12 @@ class PostService:
                 "content": data_form.get("content_input"),
                 "photo": save_image(data_file.get("photo_input"), 2),
                 "pinboard_id": data_form.get("pinboard_input"),
-                "confiner_id": data_form.get("confiner_input")
+                "confiner_id": data_form.get("confiner_input"),
+                "subject": [
+                    dict(
+                        public_id = subject
+                    ) for subject in data_form.getlist("subject_input")
+                ],
             }
         )
     
@@ -23,6 +28,16 @@ class PostService:
         return requests.get("{}/post/creator/{}".format(
             current_app.config["API_DOMAIN"],
             user_pid),
+            headers = {
+                "Authorization" : "Bearer {}".format(token)
+            }
+        )
+    
+    @staticmethod
+    def get_all_by_pet(token, pet_pid):
+        return requests.get("{}/post/subject/{}".format(
+            current_app.config["API_DOMAIN"],
+            pet_pid),
             headers = {
                 "Authorization" : "Bearer {}".format(token)
             }

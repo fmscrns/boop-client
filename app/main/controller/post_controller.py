@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, session, flash, redirect, url
 from ... import post_bp
 from ..util.decorator import session_required
 from ..service.post_service import PostService
+from ..service.pet_service import PetService
 from ..form.post_form import CreatePostForm, DeletePostForm
 from dateutil import parser
 
@@ -28,7 +29,7 @@ def comments(current_user, post_pid):
 @session_required
 def create(current_user):
     createPostForm = CreatePostForm()
-
+    createPostForm.subject_input.choices = [(subject["public_id"], subject["name"]) for subject in json.loads(PetService.get_all_by_user(session["booped_in"], current_user["public_id"] + "?tag_suggestions=1").text)["data"]]
     if createPostForm.validate_on_submit():
         create_post = PostService.create(request.form, request.files)
 
@@ -41,7 +42,7 @@ def create(current_user):
             elif createPostForm.confiner_input.data:
                 return redirect(url_for("circle.posts", circle_pid=createPostForm.confiner_input.data))
             else:
-                return redirect(url_for("user.posts", username=resp["payload"]))
+                return redirect(url_for("user.posts", username=current_user["username"]))
         
         flash(json.loads(create_post.text), "danger")
     
@@ -55,7 +56,7 @@ def create(current_user):
     elif createPostForm.confiner_input.data:
         return redirect(url_for("circle.posts", circle_pid=createPostForm.confiner_input.data))
     else:
-        return redirect(url_for("user.posts"))
+        return redirect(url_for("user.posts", username=current_user["username"]))
 
 @post_bp.route("/<post_pid>/delete", methods=["POST"])
 @session_required

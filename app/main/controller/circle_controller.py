@@ -18,6 +18,8 @@ def posts(current_user, circle_pid):
     get_resp = CircleService.get_by_pid(circle_pid)
     if get_resp.ok:
         this_circle = json.loads(get_resp.text)
+        createPostForm = CreatePostForm()
+        createPostForm.subject_input.choices = [(subject["public_id"], subject["name"]) for subject in json.loads(PetService.get_all_by_user(session["booped_in"], current_user["public_id"] + "?tag_suggestions=1").text)["data"]]
         editCircleForm = EditCircleForm(prefix="ebf")
         editCircleForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in json.loads(CircleTypeService.get_all(session["booped_in"]).text)["data"]]
         editCircleForm.type_input.data = [_type["public_id"] for _type in this_circle["_type"]]
@@ -27,10 +29,10 @@ def posts(current_user, circle_pid):
             this_circle = this_circle,
             editCircleForm = editCircleForm,
             deleteCircleForm = DeleteCircleForm(),
-            createPostForm = CreatePostForm(),
+            createPostForm = createPostForm,
             joinCircleForm = JoinCircleForm(),
             leaveCircleForm = LeaveCircleForm(),
-            post_list = json.loads(PostService.get_all_by_circle(session["booped_in"], this_circle["public_id"]).text)["data"] if this_circle["visitor_auth"] == 2 else None
+            post_list = json.loads(PostService.get_all_by_circle(session["booped_in"], this_circle["public_id"]).text)["data"]
         )
     else:
         abort(404)
@@ -54,7 +56,7 @@ def confirmed_members(current_user, circle_pid):
             inviteMemberForm = 1,
             joinCircleForm = JoinCircleForm(),
             leaveCircleForm = LeaveCircleForm(),
-            member_list = json.loads(CircleService.get_all_confirmed_circle_members(session["booped_in"], this_circle["public_id"]).text)["data"] if this_circle["visitor_auth"] == 2 else None
+            member_list = json.loads(CircleService.get_all_confirmed_circle_members(session["booped_in"], this_circle["public_id"]).text)["data"]
         )
     else:
         abort(404)
@@ -65,21 +67,25 @@ def pending_members(current_user, circle_pid):
     get_resp = CircleService.get_by_pid(circle_pid)
     if get_resp.ok:
         this_circle = json.loads(get_resp.text)
-        editCircleForm = EditCircleForm(prefix="ebf")
-        editCircleForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in json.loads(CircleTypeService.get_all(session["booped_in"]).text)["data"]]
-        editCircleForm.type_input.data = [_type["public_id"] for _type in this_circle["_type"]]
-        return render_template("circle_profile.html",
-            page_title = "Circle profile",
-            current_user = current_user,
-            this_circle = this_circle,
-            editCircleForm = editCircleForm,
-            deleteCircleForm = DeleteCircleForm(),
-            inviteMemberForm = 1,
-            joinCircleForm = JoinCircleForm(),
-            leaveCircleForm = LeaveCircleForm(),
-            acceptCircleForm = AcceptCircleForm(),
-            member_list = json.loads(CircleService.get_all_pending_circle_members(session["booped_in"], this_circle["public_id"]).text)["data"] if this_circle["visitor_auth"] == 2 else None
-        )
+
+        if this_circle["visitor_auth"] == 3:
+            editCircleForm = EditCircleForm(prefix="ebf")
+            editCircleForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in json.loads(CircleTypeService.get_all(session["booped_in"]).text)["data"]]
+            editCircleForm.type_input.data = [_type["public_id"] for _type in this_circle["_type"]]
+            return render_template("circle_profile.html",
+                page_title = "Circle profile",
+                current_user = current_user,
+                this_circle = this_circle,
+                editCircleForm = editCircleForm,
+                deleteCircleForm = DeleteCircleForm(),
+                inviteMemberForm = 1,
+                joinCircleForm = JoinCircleForm(),
+                leaveCircleForm = LeaveCircleForm(),
+                acceptCircleForm = AcceptCircleForm(),
+                member_list = json.loads(CircleService.get_all_pending_circle_members(session["booped_in"], this_circle["public_id"]).text)["data"]
+            )
+        else:
+            abort(403)
     else:
         abort(404)
 

@@ -34,6 +34,10 @@
                                     {{ createPostForm.content_input.label }}
                                     {{ createPostForm.content_input(class="form-control form-control-sm") }}
                                 </div>
+                                <div class="form-group">
+                                    {{ createPostForm.subject_input.label }}
+                                    {{ createPostForm.subject_input(class="form-control form-control-sm") }}
+                                </div>
                             </div>
                             <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -48,17 +52,32 @@
                         </li>
                     </ul>
                 {% endif %}
-                {% for post in all_Posts %}
-                    <a href="{{ url_for('post.comments', post_pid=post.public_id) }}" class="container-fluid border p-4 mt-3">
+                {% for post in post_list %}
+                    <div class="container-fluid border p-4 mt-3">
                         <div class="d-flex flex-row">
-                            <img src="{{ config.MEDIA_STORAGE + post.photo }}" alt="..." class="rounded d-block w-25 border">
+                            <img src="{{ config.MEDIA_STORAGE + post['photo'] }}" alt="..." class="rounded d-block w-25 border">
                             <div class="d-flex flex-column ml-2 container">
-                                <span>User: {{ post.creator_name }} </span>
-                                <span>Content: {{ post.content }} </span>
+                                <a href="{{ url_for('user.pets', username=post.creator_username) }}" class="lead">{{ post.creator_name }}</a>
+                                <br>
+                                <a href="{{ url_for('post.comments', post_pid=post.public_id) }}">Content: {{ post.content }}</a>
                                 <span>Registered on: {{ post.registered_on }}</span>
+                                {% if post.pinboard_id %}
+                                    <span>Within business: <a href="{{ url_for('business.posts', business_pid=post.pinboard_id) }}">{{ post.pinboard_name }}</a></span>
+                                {% endif %}
+                                {% if post.confiner_id %}
+                                    <span>Within circle: <a href="{{ url_for('circle.posts', circle_pid=post.confiner_id) }}">{{ post.confiner_name }}</a></span>
+                                {% endif %}
+                                <span>
+                                    Tagged pets:
+                                    <div class="d-flex flex-row">
+                                        {% for subject in post.subject %}
+                                            <a href="{{ url_for('pet.posts', pet_pid=subject.public_id) }}" class="badge bg-light">{{ subject.name }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </span>
                             </div>
                         </div>
-                    </a>
+                    </div>
                 {% endfor %}
                 <nav aria-label="Page navigation">
                     <ul class="pagination rounded mt-3 justify-content-center">

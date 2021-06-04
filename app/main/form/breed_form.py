@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, InputRequired, Length, Email, EqualTo
+from wtforms import StringField, SelectField, SubmitField
+from wtforms.validators import DataRequired, InputRequired, Length, EqualTo
 
 
 class CreateBreedForm(FlaskForm):

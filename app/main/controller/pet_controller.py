@@ -7,6 +7,7 @@ from ..form.pet_form import AcceptPetForm, CreatePetForm, EditPetForm, DeletePet
 from ..service.pet_service import PetService
 from ..service.breed_service import BreedService
 from ..service.pet_service import PetService
+from ..service.post_service import PostService
 from dateutil import parser
 
 @pet_bp.route("/<pet_pid>", methods=["GET", "POST"])
@@ -23,9 +24,11 @@ def posts(current_user, pet_pid):
             current_user = current_user,
             this_pet = this_pet,
             editPetForm = EditPetForm(prefix="epf"),
+            createPostForm = 1,
             deletePetForm = DeletePetForm(),
             followPetForm = FollowPetForm(),
-            unfollowPetForm = UnfollowPetForm()
+            unfollowPetForm = UnfollowPetForm(),
+            post_list = json.loads(PostService.get_all_by_pet(session["booped_in"], this_pet["public_id"]).text)["data"]
         )
     else:
         abort(404)
@@ -83,14 +86,13 @@ def edit(current_user, pet_pid):
 @session_required
 def delete(current_user, pet_pid):
     deletePetForm = DeletePetForm()
-    owner_username = json.loads(PetService.get_by_pid(pet_pid).text)["owner_username"]
     if deletePetForm.validate_on_submit():
         delete_pet = PetService.delete(pet_pid, request.form)
 
         if delete_pet.ok:
             flash(json.loads(delete_pet.text)["message"], "success")
 
-            return redirect(url_for("user.pets", username=owner_username))
+            return redirect(url_for("user.pets", username=current_user["username"]))
         
         flash(json.loads(delete_pet.text), "danger")
 
@@ -174,20 +176,23 @@ def pending_followers(current_user, pet_pid):
     get_resp = PetService.get_by_pid(pet_pid)
     if get_resp.ok:
         this_pet = json.loads(get_resp.text)
-        this_pet["birthday"] = parser.parse(this_pet["birthday"])
+        if this_pet["visitor_auth"] == 3:
+            this_pet["birthday"] = parser.parse(this_pet["birthday"])
 
-        return render_template("pet_profile.html",
-            page_title = "Pet profile",
-            current_user = current_user,
-            this_pet = this_pet,
-            editPetForm = EditPetForm(prefix="epf"),
-            deletePetForm = DeletePetForm(),
-            followPetForm = FollowPetForm(),
-            unfollowPetForm = UnfollowPetForm(),
-            inviteFollowerForm = 1,
-            acceptPetForm = AcceptPetForm(),
-            follower_list = json.loads(PetService.get_all_pending_pet_followers(session["booped_in"], this_pet["public_id"]).text)["data"]
-        )
+            return render_template("pet_profile.html",
+                page_title = "Pet profile",
+                current_user = current_user,
+                this_pet = this_pet,
+                editPetForm = EditPetForm(prefix="epf"),
+                deletePetForm = DeletePetForm(),
+                followPetForm = FollowPetForm(),
+                unfollowPetForm = UnfollowPetForm(),
+                inviteFollowerForm = 1,
+                acceptPetForm = AcceptPetForm(),
+                follower_list = json.loads(PetService.get_all_pending_pet_followers(session["booped_in"], this_pet["public_id"]).text)["data"]
+            )
+        else:
+            abort(403)
     else:
         abort(404)
 

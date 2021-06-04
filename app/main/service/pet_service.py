@@ -79,7 +79,8 @@ class PetService:
                 "status": -1,
                 "photo": "",
                 "group_id": "",
-                "subgroup_id": ""
+                "subgroup_id": "",
+                "is_private": -1
             }
         )
 

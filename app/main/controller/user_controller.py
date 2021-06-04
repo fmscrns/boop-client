@@ -63,6 +63,7 @@ def posts(current_user, username):
         editUserForm.username_input.data = current_user["username"]
         editUserForm.email_input.data = current_user["email"]
         createPostForm = CreatePostForm()
+        createPostForm.subject_input.choices = [(subject["public_id"], subject["name"]) for subject in json.loads(PetService.get_all_by_user(session["booped_in"], current_user["public_id"] + "?tag_suggestions=1").text)["data"]]
         this_user = json.loads(get_resp.text)
         return render_template("user_profile.html",
             page_title = "Profile",

@@ -3,10 +3,9 @@ from flask import Flask, render_template, request, session, flash, redirect, url
 from ... import business_bp
 from ..util.decorator import session_required
 from ..form.business_form import CreateBusinessForm, EditBusinessForm, DeleteBusinessForm
-from ..form.appointment_form import CreateAppointmentForm, EditAppointmentForm, DeleteAppointmentForm
+from ..form.appointment_form import CreateAppointmentForm
 from ..service.pet_service import PetService
 from ..service.business_service import BusinessService
-from ..service.breed_service import BreedService
 from ..service.businessType_service import BusinessTypeService
 from ..service.post_service import PostService
 from ..form.post_form import CreatePostForm
@@ -25,6 +24,7 @@ def posts(current_user, business_pid):
         createAppointmentForm.pet_input.choices = [(pet["public_id"], pet["name"]) for pet in json.loads(PetService.get_all_by_user(session["booped_in"], current_user["public_id"]).text)["data"]]
         createAppointmentForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in this_business["_type"]]
         createPostForm = CreatePostForm()
+        createPostForm.subject_input.choices = [(subject["public_id"], subject["name"]) for subject in json.loads(PetService.get_all_by_user(session["booped_in"], current_user["public_id"] + "?tag_suggestions=1").text)["data"]]
         return render_template("business_profile.html",
             page_title = "Business profile",
             current_user = current_user,

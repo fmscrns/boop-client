@@ -1,8 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, RadioField, BooleanField, SelectField, SelectMultipleField, TextAreaField, SubmitField
-from wtforms.validators import DataRequired, InputRequired, Length, ValidationError, EqualTo
+from wtforms import StringField, BooleanField, SelectMultipleField, TextAreaField, SubmitField
+from wtforms.validators import DataRequired, InputRequired, Length, ValidationError
 from flask_wtf.file import FileField, FileAllowed
-from wtforms.fields.html5 import DateField
 from wtforms_components import TimeField
 
 def round_hour_check(form, field):

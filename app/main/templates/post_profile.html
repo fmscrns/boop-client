@@ -11,7 +11,8 @@
                     <div class="container">
                         <h1 class="display-6">{{ this_post["content"] }}</h1>
                         <p class="lead"><a href="{{ url_for('user.pets', username=this_post['creator_username']) }}">{{ this_post["creator_name"] }}'s</a> post</p>
-                        <p class="lead">{{ this_post["registered_on"] }}</p>
+                        <p class="text-muted">{{ this_post["registered_on"] }}</p>
+                        
                         {% if this_post["creator_id"] == current_user["public_id"] %}
                             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editProfileModal">
                                 <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
@@ -38,6 +39,13 @@
                             </div>
                         {% endif %}
                     </div>
+                </div>
+                <br>
+                <div class="container d-flex flex-column">
+                    Tagged pets:
+                    {% for subject in this_post.subject %}
+                        <a href="{{ url_for('pet.posts', pet_pid=subject.public_id) }}">{{ subject.name }}</a>
+                    {% endfor %}
                 </div>
                 <ul class="nav row m-0 border rounded mt-3">
                     <li class="nav-item col d-flex justify-content-center">

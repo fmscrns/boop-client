@@ -1,8 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, RadioField, SelectField, SelectMultipleField, TextAreaField, SubmitField
-from wtforms.validators import DataRequired, InputRequired, Length, ValidationError, EqualTo
-from flask_wtf.file import FileField, FileAllowed
-from wtforms.fields.html5 import DateField
+from wtforms import SelectMultipleField, TextAreaField, SubmitField
+from wtforms.validators import InputRequired, Length
 
 class CreateAppointmentForm(FlaskForm):
     details_input = TextAreaField("Details", validators=[Length(max=50, message="Too long.")])
