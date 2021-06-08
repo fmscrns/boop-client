@@ -20,7 +20,7 @@ def feed(current_user):
             page_title = "Feed",
             current_user = current_user,
             createPostForm = createPostForm,
-            all_Posts = json.loads(all_post_request.text)["data"],
+            all_Posts = json.loads(all_post_request.text)["data"]
         )
     else:
         abort(404)
