@@ -42,3 +42,7 @@ class UnfollowPetForm(FlaskForm):
 class AcceptPetForm(FlaskForm):
     follower_input = StringField()
     submit_input  = SubmitField("Accept")
+
+class CreatePetOwnerForm(FlaskForm):
+    text_input = StringField(default="", validators=[DataRequired()])
+    submit_input  = SubmitField("Add")

@@ -54,6 +54,15 @@ class UserService:
                 "Authorization" : "Bearer {}".format(session["booped_in"])
             }
         )
+    
+    @staticmethod
+    def search(value):
+        return requests.get("{}/user/?search={}".format(
+            current_app.config["API_DOMAIN"], value),
+            headers = {
+                "Authorization" : "Bearer {}".format(session["booped_in"])
+            }
+        )
 
 class AdminService:
     @staticmethod

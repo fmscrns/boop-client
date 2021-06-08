@@ -1,5 +1,5 @@
 import json
-from flask import Flask, render_template, request, session, flash, redirect, url_for, abort
+from flask import render_template, flash, redirect, url_for, abort, jsonify, session, request
 from ... import user_bp
 from ..service.user_service import UserService
 from ..util.decorator import session_required
@@ -17,6 +17,11 @@ from ..service.businessType_service import BusinessTypeService
 from ..form.circle_form import CreateCircleForm
 from ..service.circleType_service import CircleTypeService
 from ..service.circle_service import CircleService
+
+@user_bp.route("/", methods=["GET"])
+@session_required
+def search(current_user):
+    return jsonify(json.loads(UserService.search(request.args.get("search")).text)["data"])
 
 @user_bp.route("/<username>", methods=["GET", "POST"])
 @user_bp.route("/<username>/pets", methods=["GET", "POST"])
@@ -143,7 +148,6 @@ def edit(current_user, user_pid):
                 flash("{}: {}".format(key, message), "danger")
 
     return redirect(url_for("user.pets", username=current_user["username"]))
-
 
 @user_bp.route("/<username>", methods=["GET", "POST"])
 @user_bp.route("/<username>/circles", methods=["GET", "POST"])

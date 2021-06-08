@@ -24,6 +24,19 @@ class PetService:
         )
     
     @staticmethod
+    def create_owner(pid, token, data):
+        return requests.post("{}/pet/{}/owner/".format(
+            current_app.config["API_DOMAIN"], 
+            pid),
+            headers = {
+                "Authorization" : "Bearer {}".format(token)
+            },
+            json = {
+                "public_id": data.get("cpof-text_input")
+            }
+        )
+    
+    @staticmethod
     def get_all_by_user(token, user_pid):
         return requests.get("{}/pet/owner/{}".format(
             current_app.config["API_DOMAIN"],
