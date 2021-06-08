@@ -171,31 +171,38 @@
             {% if (this_pet["is_private"] == 0) or (this_pet["visitor_auth"] > 1) %}
                 {% if createPostForm %}
                     {% for post in post_list %}
-                        <div class="container-fluid border p-4 mt-3">
-                            <div class="d-flex flex-row">
-                                <img src="{{ config.MEDIA_STORAGE + post['photo'] }}" alt="..." class="rounded d-block w-25 border">
-                                <div class="d-flex flex-column ml-2 container">
-                                    <a href="{{ url_for('user.pets', username=post.creator_username) }}" class="lead">{{ post.creator_name }}</a>
-                                    <br>
-                                    <a href="{{ url_for('post.comments', post_pid=post.public_id) }}">Content: {{ post.content }}</a>
-                                    <span>Registered on: {{ post.registered_on }}</span>
-                                    {% if post.pinboard_id %}
-                                        <span>Within business: <a href="{{ url_for('business.posts', business_pid=post.pinboard_id) }}">{{ post.pinboard_name }}</a></span>
-                                    {% endif %}
-                                    {% if post.confiner_id %}
-                                        <span>Within circle: <a href="{{ url_for('circle.posts', circle_pid=post.confiner_id) }}">{{ post.confiner_name }}</a></span>
-                                    {% endif %}
-                                    <span>
-                                        Tagged pets:
-                                        <div class="d-flex flex-row">
-                                            {% for subject in post.subject %}
-                                                <a href="{{ url_for('pet.posts', pet_pid=subject.public_id) }}" class="badge bg-light">{{ subject.name }}</a>
-                                            {% endfor %}
-                                        </div>
-                                    </span>
-                                </div>
+                    <div class="container-fluid border p-4 mt-3">
+                        <div class="d-flex flex-row">
+                            <div class="float-left pt-1">
+                                <img class="home-content-profPic" src="{{ url_for('static', filename='images/{}'.format(post.creator_photo)) }}" alt="..." class="rounded d-block w-25 border">
+                            </div>
+                            <div class="d-flex flex-column ml-2 container">
+                                <a href="{{ url_for('user.pets', username=post['creator_username']) }}" class="lead"><span class="font-weight-bold hci-bb-l">{{ post.creator_name }}</span> <span style="font-size:15px;">@{{ post.creator_username }} · {{ post.registered_on }}</span>
+                                </a>
+                                <br>
+                                <a href="{{ url_for('post.comments', post_pid=post.public_id) }}">Content: {{ post.content }}</a>
+                                {% if post.photo != None %}
+                                    <div class="text-center">
+                                        <img class="img-fluid hci-1p" src="{{ config.MEDIA_STORAGE + post['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                                    </div>
+                                {% endif %}
+                                {% if post.pinboard_id %}
+                                    <span>Within business: <a href="{{ url_for('business.posts', business_pid=post.pinboard_id) }}">{{ post.pinboard_name }}</a></span>
+                                {% endif %}
+                                {% if post.confiner_id %}
+                                    <span>Within circle: <a href="{{ url_for('circle.posts', circle_pid=post.confiner_id) }}">{{ post.confiner_name }}</a></span>
+                                {% endif %}
+                                <span>
+                                    Tagged pets:
+                                    <div class="d-flex flex-row">
+                                        {% for subject in post.subject %}
+                                            <a href="{{ url_for('pet.posts', pet_pid=subject.public_id) }}" class="badge bg-light">{{ subject.name }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </span>
                             </div>
                         </div>
+                    </div>
                     {% endfor %}
                 {% elif inviteFollowerForm %}
                     {% if this_pet["visitor_auth"] == 3 %}
@@ -212,10 +219,9 @@
                     {% for owner in this_pet["owner"] %}
                         <a href="{{ url_for('user.pets', username=owner.username) }}" class="container-fluid border p-4 mt-3">
                             <div class="d-flex flex-row">
-                                <img src="{{ config.MEDIA_STORAGE + owner['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                                <img class="home-content-profPic" src="{{ config.MEDIA_STORAGE + owner['photo'] }}" alt="..." class="rounded d-block w-25 border">
                                 <div class="d-flex flex-column ml-2 container">
-                                    <span>{{ owner.name }}</span>
-                                    <span>{{ owner.username }}</span>
+                                    <span class="font-weight-bold hci-bb-l">{{ owner.name }}</span> <span style="font-size:15px;">@{{ owner.username }}</span>
                                 </div>
                                 <span class="text-muted">Owner</span>
                             </div>
@@ -225,11 +231,11 @@
                     {% for follower in follower_list %}
                         <a href="{{ url_for('user.pets', username=follower.username) }}" class="container-fluid border p-4 mt-3">
                             <div class="d-flex flex-row">
-                                <img src="{{ config.MEDIA_STORAGE + follower['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                                <img class="home-content-profPic" src="{{ config.MEDIA_STORAGE + follower['photo'] }}" alt="..." class="rounded d-block w-25 border">
                                 <div class="d-flex flex-column ml-2 container">
-                                    <span>{{ follower.name }}</span>
-                                    <span>{{ follower.username }}</span>
+                                    <span class="font-weight-bold hci-bb-l">{{ follower.name }}</span> <span style="font-size:15px;">@{{ follower.username }}</span>
                                 </div>
+                                <span class="text-muted">Follower</span>
                                 {% if acceptPetForm and this_pet["visitor_auth"] == 3 %}
                                     <div class="float-right">
                                         <div class="d-flex flex-row">

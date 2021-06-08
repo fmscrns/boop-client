@@ -6,6 +6,8 @@ from ..service.post_service import  PostService
 from ..service.user_service import *
 from ..form.post_form import CreatePostForm
 import json
+from dateutil import parser
+
 
 @home_bp.route("/feed", methods=["GET", "POST"])
 @session_required
@@ -18,7 +20,7 @@ def feed(current_user):
             page_title = "Feed",
             current_user = current_user,
             createPostForm = createPostForm,
-            all_Posts = json.loads(all_post_request.text)["data"]
+            all_Posts = json.loads(all_post_request.text)["data"],
         )
     else:
         abort(404)

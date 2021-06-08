@@ -52,15 +52,22 @@
                         </li>
                     </ul>
                 {% endif %}
-                {% for post in post_list %}
+                {% for post in all_Posts %}
                     <div class="container-fluid border p-4 mt-3">
                         <div class="d-flex flex-row">
-                            <img src="{{ config.MEDIA_STORAGE + post['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                            <div class="float-left pt-1">
+                                <img class="home-content-profPic" src="{{ url_for('static', filename='images/{}'.format(post.creator_photo)) }}" alt="..." class="rounded d-block w-25 border">
+                            </div>
                             <div class="d-flex flex-column ml-2 container">
-                                <a href="{{ url_for('user.pets', username=post.creator_username) }}" class="lead">{{ post.creator_name }}</a>
+                                <a href="{{ url_for('user.pets', username=post['creator_username']) }}" class="lead"><span class="font-weight-bold hci-bb-l">{{ post.creator_name }}</span> <span style="font-size:15px;">@{{ post.creator_username }} · {{ post.registered_on }}</span>
+                                </a>
                                 <br>
                                 <a href="{{ url_for('post.comments', post_pid=post.public_id) }}">Content: {{ post.content }}</a>
-                                <span>Registered on: {{ post.registered_on }}</span>
+                                {% if post.photo != None %}
+                                    <div class="text-center">
+                                        <img class="img-fluid hci-1p" src="{{ config.MEDIA_STORAGE + post['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                                    </div>
+                                {% endif %}
                                 {% if post.pinboard_id %}
                                     <span>Within business: <a href="{{ url_for('business.posts', business_pid=post.pinboard_id) }}">{{ post.pinboard_name }}</a></span>
                                 {% endif %}
