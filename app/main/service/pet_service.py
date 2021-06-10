@@ -32,7 +32,21 @@ class PetService:
                 "Authorization" : "Bearer {}".format(token)
             },
             json = {
-                "public_id": data.get("cpof-text_input")
+                "public_id": data.get("cpof-owner_input")
+            }
+        )
+    
+    @staticmethod
+    def delete_owner(pid, token, data):
+        print(data.get("dpof-owner_input"))
+        return requests.delete("{}/pet/{}/owner/{}".format(
+            current_app.config["API_DOMAIN"], 
+            pid,
+            data.get("dpof-owner_input")),
+            headers = {
+                "Authorization" : "Bearer {}".format(token)
+            }, json = {
+                "name_input": data.get("dpof-name_input")
             }
         )
     

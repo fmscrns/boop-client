@@ -108,7 +108,7 @@ def create(current_user):
     if createCircleForm.errors:
         for key in createCircleForm.errors:
             for message in createCircleForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
+                flash(message, "danger")
 
     return redirect(url_for("user.circles", username=current_user["username"]))
 
@@ -132,7 +132,7 @@ def edit(current_user, circle_pid):
     if editCircleForm.errors:
         for key in editCircleForm.errors:
             for message in editCircleForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
+                flash(message, "danger")
 
     return redirect(url_for("circle.posts", circle_pid=circle_pid))
 
@@ -154,7 +154,7 @@ def delete(current_user, circle_pid):
     if deleteCircleForm.errors:
         for key in deleteCircleForm.errors:
             for message in deleteCircleForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
+                flash(message, "danger")
 
     return redirect(url_for("circle.posts", circle_pid=circle_pid))
 
@@ -176,7 +176,7 @@ def join(current_user, circle_pid):
     if joinCircleForm.errors:
         for key in joinCircleForm.errors:
             for message in joinCircleForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
+                flash(message, "danger")
 
     return redirect(url_for("circle.posts", circle_pid=circle_pid))
 
@@ -198,7 +198,7 @@ def leave(current_user, circle_pid):
     if leaveCircleForm.errors:
         for key in leaveCircleForm.errors:
             for message in leaveCircleForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
+                flash(message, "danger")
 
     return redirect(url_for("circle.posts", circle_pid=circle_pid))
 
@@ -220,6 +220,6 @@ def accept(current_user, circle_pid):
     if acceptCircleForm.errors:
         for key in acceptCircleForm.errors:
             for message in acceptCircleForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
+                flash(message, "danger")
 
     return redirect(url_for("circle.pending_members", circle_pid=circle_pid))

@@ -3,7 +3,7 @@ from flask import render_template, request, session, flash, redirect, url_for, a
 from ... import pet_bp
 from ..service.user_service import UserService
 from ..util.decorator import session_required
-from ..form.pet_form import AcceptPetForm, CreatePetForm, EditPetForm, DeletePetForm, FollowPetForm, UnfollowPetForm, CreatePetOwnerForm
+from ..form.pet_form import AcceptPetForm, CreatePetForm, DeletePetOwnerForm, EditPetForm, DeletePetForm, FollowPetForm, UnfollowPetForm, CreatePetOwnerForm
 from ..service.pet_service import PetService
 from ..service.breed_service import BreedService
 from ..service.pet_service import PetService
@@ -27,146 +27,13 @@ def posts(current_user, pet_pid):
             createPostForm = 1,
             deletePetForm = DeletePetForm(),
             createPetOwnerForm = CreatePetOwnerForm(prefix="cpof"),
+            deletePetOwnerForm = DeletePetOwnerForm(prefix="dpof"),
             followPetForm = FollowPetForm(),
             unfollowPetForm = UnfollowPetForm(),
             post_list = json.loads(PostService.get_all_by_pet(session["booped_in"], this_pet["public_id"]).text)["data"]
         )
     else:
         abort(404)
-
-@pet_bp.route("/create", methods=["POST"])
-@session_required
-def create(current_user):
-    createPetForm = CreatePetForm()
-
-    createPetForm.group_input.choices = [(request.form.get("group_input"), "")]
-    createPetForm.subgroup_input.choices = [(request.form.get("subgroup_input"), "")]
-
-    if createPetForm.validate_on_submit():
-        create_pet = PetService.create(request.form, request.files)
-
-        if create_pet.ok:
-            flash(json.loads(create_pet.text)["message"], "success")
-
-            return redirect(url_for("user.pets", username=current_user["username"]))
-        
-        flash(json.loads(create_pet.text)["message"], "danger")
-    
-    if createPetForm.errors:
-        for key in createPetForm.errors:
-            for message in createPetForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
-
-    return redirect(url_for("user.pets", username=current_user["username"]))
-
-@pet_bp.route("/<pet_pid>/owner/create", methods=["POST"])
-@session_required
-def create_owner(current_user, pet_pid):
-    createPetOwnerForm = CreatePetOwnerForm(prefix="cpof")
-    if createPetOwnerForm.validate_on_submit():
-        create_pet_owner = PetService.create_owner(pet_pid, session["booped_in"], request.form)
-
-        if create_pet_owner.ok:
-            flash(json.loads(create_pet_owner.text)["message"], "success")
-
-            return redirect(url_for("pet.posts", pet_pid=pet_pid))
-        
-        flash(json.loads(create_pet_owner.text)["message"], "danger")
-    
-    if createPetOwnerForm.errors:
-        for key in createPetOwnerForm.errors:
-            for message in createPetOwnerForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
-
-    return redirect(url_for("pet.posts", pet_pid=pet_pid))
-
-@pet_bp.route("/<pet_pid>/edit", methods=["POST"])
-@session_required
-def edit(current_user, pet_pid):
-    editPetForm = EditPetForm(prefix="epf")
-
-    if editPetForm.validate_on_submit():
-        edit_pet = PetService.edit(pet_pid, session["booped_in"], request.form, request.files)
-
-        if edit_pet.ok:
-            resp = json.loads(edit_pet.text)
-            flash(resp["message"], "success")
-
-            return redirect(url_for("pet.posts", pet_pid=pet_pid))
-        
-        flash(json.loads(edit_pet.text)["message"], "danger")
-    
-    if editPetForm.errors:
-        for key in editPetForm.errors:
-            for message in editPetForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
-
-    return redirect(url_for("pet.posts", pet_pid=pet_pid))
-
-@pet_bp.route("/<pet_pid>/delete", methods=["POST"])
-@session_required
-def delete(current_user, pet_pid):
-    deletePetForm = DeletePetForm()
-    if deletePetForm.validate_on_submit():
-        delete_pet = PetService.delete(pet_pid, request.form)
-
-        if delete_pet.ok:
-            flash(json.loads(delete_pet.text)["message"], "success")
-
-            return redirect(url_for("user.pets", username=current_user["username"]))
-        
-        flash(json.loads(delete_pet.text), "danger")
-
-    if deletePetForm.errors:
-        for key in deletePetForm.errors:
-            for message in deletePetForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
-
-    return redirect(url_for("pet.posts", pet_pid=pet_pid))
-
-@pet_bp.route("/<pet_pid>/follow", methods=["POST"])
-@session_required
-def follow(current_user, pet_pid):
-    followPetForm = FollowPetForm()
-    if followPetForm.validate_on_submit():
-        follow_pet = PetService.follow(pet_pid)
-
-        if follow_pet.ok:
-            resp = json.loads(follow_pet.text)
-            flash(resp["message"], "success")
-
-            return redirect(url_for("pet.posts", pet_pid=pet_pid))
-        
-        flash(json.loads(follow_pet.text)["message"], "danger")
-
-    if followPetForm.errors:
-        for key in followPetForm.errors:
-            for message in followPetForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
-
-    return redirect(url_for("pet.posts", pet_pid=pet_pid))
-
-@pet_bp.route("/<pet_pid>/unfollow", methods=["POST"])
-@session_required
-def unfollow(current_user, pet_pid):
-    unfollowPetForm = UnfollowPetForm()
-    if unfollowPetForm.validate_on_submit():
-        unfollow_pet = PetService.unfollow(pet_pid, request.form)
-
-        if unfollow_pet.ok:
-            resp = json.loads(unfollow_pet.text)
-            flash(resp["message"], "success")
-
-            return redirect(url_for("pet.posts", pet_pid=pet_pid))
-        
-        flash(json.loads(unfollow_pet.text)["message"], "danger")
-
-    if unfollowPetForm.errors:
-        for key in unfollowPetForm.errors:
-            for message in unfollowPetForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
-
-    return redirect(url_for("pet.posts", pet_pid=pet_pid))
 
 @pet_bp.route("/<pet_pid>/followers", methods=["GET", "POST"])
 @pet_bp.route("/<pet_pid>/followers/confirmed", methods=["GET", "POST"])
@@ -184,6 +51,7 @@ def confirmed_followers(current_user, pet_pid):
             editPetForm = EditPetForm(prefix="epf"),
             deletePetForm = DeletePetForm(),
             createPetOwnerForm = CreatePetOwnerForm(prefix="cpof"),
+            deletePetOwnerForm = DeletePetOwnerForm(prefix="dpof"),
             followPetForm = FollowPetForm(),
             unfollowPetForm = UnfollowPetForm(),
             inviteFollowerForm = 1,
@@ -208,6 +76,7 @@ def pending_followers(current_user, pet_pid):
                 editPetForm = EditPetForm(prefix="epf"),
                 deletePetForm = DeletePetForm(),
                 createPetOwnerForm = CreatePetOwnerForm(prefix="cpof"),
+                deletePetOwnerForm = DeletePetOwnerForm(prefix="dpof"),
                 followPetForm = FollowPetForm(),
                 unfollowPetForm = UnfollowPetForm(),
                 inviteFollowerForm = 1,
@@ -218,6 +87,161 @@ def pending_followers(current_user, pet_pid):
             abort(403)
     else:
         abort(404)
+
+@pet_bp.route("/create", methods=["POST"])
+@session_required
+def create(current_user):
+    createPetForm = CreatePetForm()
+
+    createPetForm.group_input.choices = [(request.form.get("group_input"), "")]
+    createPetForm.subgroup_input.choices = [(request.form.get("subgroup_input"), "")]
+
+    if createPetForm.validate_on_submit():
+        create_pet = PetService.create(request.form, request.files)
+
+        if create_pet.ok:
+            flash(json.loads(create_pet.text)["message"], "success")
+
+            return redirect(url_for("user.pets", username=current_user["username"]))
+        
+        flash(json.loads(create_pet.text)["message"], "danger")
+    
+    if createPetForm.errors:
+        for key in createPetForm.errors:
+            for message in createPetForm.errors[key]:
+                flash(message, "danger")
+
+    return redirect(url_for("user.pets", username=current_user["username"]))
+
+@pet_bp.route("/<pet_pid>/owner/create", methods=["POST"])
+@session_required
+def create_owner(current_user, pet_pid):
+    createPetOwnerForm = CreatePetOwnerForm(prefix="cpof")
+    if createPetOwnerForm.validate_on_submit():
+        create_pet_owner = PetService.create_owner(pet_pid, session["booped_in"], request.form)
+
+        if create_pet_owner.ok:
+            flash(json.loads(create_pet_owner.text)["message"], "success")
+
+            return redirect(url_for("pet.posts", pet_pid=pet_pid))
+        
+        flash(json.loads(create_pet_owner.text)["message"], "danger")
+    
+    if createPetOwnerForm.errors:
+        for key in createPetOwnerForm.errors:
+            for message in createPetOwnerForm.errors[key]:
+                flash(message, "danger")
+
+    return redirect(url_for("pet.posts", pet_pid=pet_pid))
+
+@pet_bp.route("/<pet_pid>/owner/delete", methods=["POST"])
+@session_required
+def delete_owner(current_user, pet_pid):
+    deletePetOwnerForm = DeletePetOwnerForm(prefix="dpof")
+    if deletePetOwnerForm.validate_on_submit():
+        delete_pet_owner = PetService.delete_owner(pet_pid, session["booped_in"], request.form)
+
+        if delete_pet_owner.ok:
+            flash(json.loads(delete_pet_owner.text)["message"], "success")
+
+            return redirect(url_for("pet.posts", pet_pid=pet_pid))
+        
+        flash(json.loads(delete_pet_owner.text)["message"], "danger")
+    
+    if deletePetOwnerForm.errors:
+        for key in deletePetOwnerForm.errors:
+            for message in deletePetOwnerForm.errors[key]:
+                flash(message, "danger")
+
+    return redirect(url_for("pet.posts", pet_pid=pet_pid))
+
+@pet_bp.route("/<pet_pid>/edit", methods=["POST"])
+@session_required
+def edit(current_user, pet_pid):
+    editPetForm = EditPetForm(prefix="epf")
+
+    if editPetForm.validate_on_submit():
+        edit_pet = PetService.edit(pet_pid, session["booped_in"], request.form, request.files)
+
+        if edit_pet.ok:
+            resp = json.loads(edit_pet.text)
+            flash(resp["message"], "success")
+
+            return redirect(url_for("pet.posts", pet_pid=pet_pid))
+        
+        flash(json.loads(edit_pet.text)["message"], "danger")
+    
+    if editPetForm.errors:
+        for key in editPetForm.errors:
+            for message in editPetForm.errors[key]:
+                flash(message, "danger")
+
+    return redirect(url_for("pet.posts", pet_pid=pet_pid))
+
+@pet_bp.route("/<pet_pid>/delete", methods=["POST"])
+@session_required
+def delete(current_user, pet_pid):
+    deletePetForm = DeletePetForm()
+    if deletePetForm.validate_on_submit():
+        delete_pet = PetService.delete(pet_pid, request.form)
+
+        if delete_pet.ok:
+            flash(json.loads(delete_pet.text)["message"], "success")
+
+            return redirect(url_for("user.pets", username=current_user["username"]))
+        
+        flash(json.loads(delete_pet.text), "danger")
+
+    if deletePetForm.errors:
+        for key in deletePetForm.errors:
+            for message in deletePetForm.errors[key]:
+                flash(message, "danger")
+
+    return redirect(url_for("pet.posts", pet_pid=pet_pid))
+
+@pet_bp.route("/<pet_pid>/follow", methods=["POST"])
+@session_required
+def follow(current_user, pet_pid):
+    followPetForm = FollowPetForm()
+    if followPetForm.validate_on_submit():
+        follow_pet = PetService.follow(pet_pid)
+
+        if follow_pet.ok:
+            resp = json.loads(follow_pet.text)
+            flash(resp["message"], "success")
+
+            return redirect(url_for("pet.posts", pet_pid=pet_pid))
+        
+        flash(json.loads(follow_pet.text)["message"], "danger")
+
+    if followPetForm.errors:
+        for key in followPetForm.errors:
+            for message in followPetForm.errors[key]:
+                flash(message, "danger")
+
+    return redirect(url_for("pet.posts", pet_pid=pet_pid))
+
+@pet_bp.route("/<pet_pid>/unfollow", methods=["POST"])
+@session_required
+def unfollow(current_user, pet_pid):
+    unfollowPetForm = UnfollowPetForm()
+    if unfollowPetForm.validate_on_submit():
+        unfollow_pet = PetService.unfollow(pet_pid, request.form)
+
+        if unfollow_pet.ok:
+            resp = json.loads(unfollow_pet.text)
+            flash(resp["message"], "success")
+
+            return redirect(url_for("pet.posts", pet_pid=pet_pid))
+        
+        flash(json.loads(unfollow_pet.text)["message"], "danger")
+
+    if unfollowPetForm.errors:
+        for key in unfollowPetForm.errors:
+            for message in unfollowPetForm.errors[key]:
+                flash(message, "danger")
+
+    return redirect(url_for("pet.posts", pet_pid=pet_pid))
 
 @pet_bp.route("/<pet_pid>/accept", methods=["POST"])
 @session_required
@@ -237,6 +261,6 @@ def accept(current_user, pet_pid):
     if acceptPetForm.errors:
         for key in acceptPetForm.errors:
             for message in acceptPetForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
+                flash(message, "danger")
 
     return redirect(url_for("pet.pending_followers", pet_pid=pet_pid))

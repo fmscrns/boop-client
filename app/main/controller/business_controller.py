@@ -57,7 +57,7 @@ def create(current_user):
     if createBusinessForm.errors:
         for key in createBusinessForm.errors:
             for message in createBusinessForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
+                flash(message, "danger")
 
     return redirect(url_for("user.businesses", username=current_user["username"]))
 
@@ -81,7 +81,7 @@ def edit(current_user, business_pid):
     if editBusinessForm.errors:
         for key in editBusinessForm.errors:
             for message in editBusinessForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
+                flash(message, "danger")
 
     return redirect(url_for("business.posts", business_pid=business_pid))
 
@@ -103,6 +103,6 @@ def delete(current_user, business_pid):
     if deleteBusinessForm.errors:
         for key in deleteBusinessForm.errors:
             for message in deleteBusinessForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
+                flash(message, "danger")
 
     return redirect(url_for("business.posts", business_pid=business_pid))

@@ -164,4 +164,46 @@
 .autocomplete-items > div:hover {
     /*when hovering an item:*/
     background-color: #e9e9e9;
+}
+
+.hci-bb-p {
+    width:15px;
+    margin-right:5px;
+    margin-top:-2.5px;
   }
+  
+.home-content-profPic {
+    border-radius:50%;
+    width:50px;
+    height:50px;
+    object-fit:cover;
+    background:white;
+    display: block;
+    border: 1px solid lightgray;
+}
+.pp-opp {
+    border-radius:50%;
+    width:30px;
+    height:30px;
+    object-fit:cover;
+    background:white;
+    display: block;
+    border: 1px solid lightgray;
+}
+
+.hci-1p {
+    border-radius: 8.5px;
+    height:300px !important;
+    width:100%;
+    object-fit:cover;
+}
+
+a {
+    color: #212529;
+    text-decoration: none;
+    background-color: transparent;
+}
+a:hover {
+    color: black;
+    text-decoration: underline;
+}

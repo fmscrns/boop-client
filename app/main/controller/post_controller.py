@@ -49,7 +49,7 @@ def create(current_user):
     if createPostForm.errors:
         for key in createPostForm.errors:
             for message in createPostForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
+                flash(message, "danger")
 
     if createPostForm.pinboard_input.data:
         return redirect(url_for("business.posts", business_pid=createPostForm.pinboard_input.data))
@@ -76,6 +76,6 @@ def delete(current_user, post_pid):
     if deletePostForm.errors:
         for key in deletePostForm.errors:
             for message in deletePostForm.errors[key]:
-                flash("{}: {}".format(key, message), "danger")
+                flash(message, "danger")
 
     return redirect(url_for("post.comments", post_pid=pid))

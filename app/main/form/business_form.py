@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, SelectMultipleField, TextAreaField, SubmitField
-from wtforms.validators import DataRequired, InputRequired, Length, ValidationError
+from wtforms.validators import DataRequired, InputRequired, Length, ValidationError, EqualTo
 from flask_wtf.file import FileField, FileAllowed
 from wtforms_components import TimeField
 
@@ -56,6 +56,6 @@ class EditBusinessForm(FlaskForm):
     submit_input = SubmitField("Update business")
 
 class DeleteBusinessForm(FlaskForm):
-    name_input = StringField("Name", validators=[DataRequired(), Length(max=30, message="Too long.")])
-    confirm_name_input = StringField("The Name", default="")
+    name_input = StringField("Name", validators=[DataRequired(), Length(max=30, message="Too long."), EqualTo("confirm_name_input", message='Name must match.')])
+    confirm_name_input = StringField()
     submit_input = SubmitField("Delete business")

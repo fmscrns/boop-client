@@ -50,7 +50,7 @@
                                         <h5 class="mb-3">Delete circle</h5>
                                         {{ deleteCircleForm.hidden_tag() }}
                                         <span class="text-muted small">Confirm by typing the circle's name</span>
-                                        {{ deleteCircleForm.confirm_name_input(class="d-none", value=this_circle.name) }}
+                                        {{ deleteCircleForm.confirm_name_input(hidden=True, value=this_circle.name) }}
                                         {{ deleteCircleForm.name_input(class="form-control form-control-sm", placeholder=this_circle.name, minlength=2) }}
                                         {{ deleteCircleForm.submit_input(class="btn btn-danger float-right btn-block mt-3") }}
                                     </form>
@@ -83,8 +83,8 @@
                                         </div>
                                         <div class="modal-body">
                                             {{ leaveCircleForm.hidden_tag() }}
-                                            {{ leaveCircleForm.member_input(class="d-none", value=current_user["public_id"]) }}
-                                            {{ leaveCircleForm.confirm_name_input(class="d-none", value=this_circle["name"]) }}
+                                            {{ leaveCircleForm.member_input(hidden=True, value=current_user["public_id"]) }}
+                                            {{ leaveCircleForm.confirm_name_input(hidden=True, value=this_circle["name"]) }}
                                             Are you sure you want to cancel join request?
                                         </div>
                                         <div class="modal-footer">
@@ -99,8 +99,8 @@
                                     <form method="POST" action="{{ url_for('circle.leave', circle_pid=this_circle['public_id']) }}">
                                         {{ leaveCircleForm.hidden_tag() }}
                                         <div class="form-group">
-                                            {{ leaveCircleForm.member_input(class="d-none", value=current_user["public_id"]) }}
-                                            {{ leaveCircleForm.name_input(class="d-none", value=this_circle["name"]) }}
+                                            {{ leaveCircleForm.member_input(hidden=True, value=current_user["public_id"]) }}
+                                            {{ leaveCircleForm.name_input(hidden=True, value=this_circle["name"]) }}
                                             {{ leaveCircleForm.submit_input(class="btn btn-outline-danger", value="Leave circle") }}
                                         </div>
                                     </form>
@@ -121,8 +121,8 @@
                                                 <h5 class="mb-3">Leave circle</h5>
                                                 {{ leaveCircleForm.hidden_tag() }}
                                                 <span class="text-muted small">Confirm by typing the circle's name</span>
-                                                {{ leaveCircleForm.member_input(class="d-none", value=current_user["public_id"]) }}
-                                                {{ leaveCircleForm.confirm_name_input(class="d-none", value=this_circle.name) }}
+                                                {{ leaveCircleForm.member_input(hidden=True, value=current_user["public_id"]) }}
+                                                {{ leaveCircleForm.confirm_name_input(hidden=True, value=this_circle.name) }}
                                                 {{ leaveCircleForm.name_input(class="form-control form-control-sm", placeholder=this_circle.name, minlength=2) }}
                                                 {{ leaveCircleForm.submit_input(class="btn btn-danger float-right btn-block mt-3") }}
                                             </form>
@@ -171,8 +171,8 @@
                             </div>
                             <div class="modal-body">
                                 {{ createPostForm.hidden_tag() }}
-                                {{ createPostForm.pinboard_input(class="d-none") }}
-                                {{ createPostForm.confiner_input(class="d-none", value=this_circle["public_id"]) }}
+                                {{ createPostForm.pinboard_input(hidden=True) }}
+                                {{ createPostForm.confiner_input(hidden=True, value=this_circle["public_id"]) }}
                                 <div class="form-group">
                                     {{ createPostForm.photo_input.label }}
                                     {{ createPostForm.photo_input(class="form-control form-control-sm") }}
@@ -194,31 +194,38 @@
                         </div>
                     </div>
                     {% for post in post_list %}
-                        <div class="container-fluid border p-4 mt-3">
-                            <div class="d-flex flex-row">
-                                <img src="{{ config.MEDIA_STORAGE + post['photo'] }}" alt="..." class="rounded d-block w-25 border">
-                                <div class="d-flex flex-column ml-2 container">
-                                    <a href="{{ url_for('user.pets', username=post.creator_username) }}" class="lead">{{ post.creator_name }}</a>
-                                    <br>
-                                    <a href="{{ url_for('post.comments', post_pid=post.public_id) }}">Content: {{ post.content }}</a>
-                                    <span>Registered on: {{ post.registered_on }}</span>
-                                    {% if post.pinboard_id %}
-                                        <span>Within business: <a href="{{ url_for('business.posts', business_pid=post.pinboard_id) }}">{{ post.pinboard_name }}</a></span>
-                                    {% endif %}
-                                    {% if post.confiner_id %}
-                                        <span>Within circle: <a href="{{ url_for('circle.posts', circle_pid=post.confiner_id) }}">{{ post.confiner_name }}</a></span>
-                                    {% endif %}
-                                    <span>
-                                        Tagged pets:
-                                        <div class="d-flex flex-row">
-                                            {% for subject in post.subject %}
-                                                <a href="{{ url_for('pet.posts', pet_pid=subject.public_id) }}" class="badge bg-light">{{ subject.name }}</a>
-                                            {% endfor %}
-                                        </div>
-                                    </span>
-                                </div>
+                    <div class="container-fluid border p-4 mt-3">
+                        <div class="d-flex flex-row">
+                            <div class="float-left pt-1">
+                                <img class="home-content-profPic" src="{{ url_for('static', filename='images/{}'.format(post.creator_photo)) }}" alt="..." class="rounded d-block w-25 border">
+                            </div>
+                            <div class="d-flex flex-column ml-2 container">
+                                <a href="{{ url_for('user.pets', username=post['creator_username']) }}" class="lead"><span class="font-weight-bold hci-bb-l">{{ post.creator_name }}</span> <span style="font-size:15px;">@{{ post.creator_username }} · {{ post.registered_on }}</span>
+                                </a>
+                                <br>
+                                <a href="{{ url_for('post.comments', post_pid=post.public_id) }}">Content: {{ post.content }}</a>
+                                {% if post.photo != None %}
+                                    <div class="text-center">
+                                        <img class="img-fluid hci-1p" src="{{ config.MEDIA_STORAGE + post['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                                    </div>
+                                {% endif %}
+                                {% if post.pinboard_id %}
+                                    <span>Within business: <a href="{{ url_for('business.posts', business_pid=post.pinboard_id) }}">{{ post.pinboard_name }}</a></span>
+                                {% endif %}
+                                {% if post.confiner_id %}
+                                    <span>Within circle: <a href="{{ url_for('circle.posts', circle_pid=post.confiner_id) }}">{{ post.confiner_name }}</a></span>
+                                {% endif %}
+                                <span>
+                                    Tagged pets:
+                                    <div class="d-flex flex-row">
+                                        {% for subject in post.subject %}
+                                            <a href="{{ url_for('pet.posts', pet_pid=subject.public_id) }}" class="badge bg-light">{{ subject.name }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </span>
                             </div>
                         </div>
+                    </div>
                     {% endfor %}
                     <nav aria-label="Page navigation">
                         <ul class="pagination rounded mt-3 justify-content-center">
@@ -258,8 +265,8 @@
                                 </div>
                                 <div class="modal-body">
                                     {{ createPostForm.hidden_tag() }}
-                                    {{ createPostForm.pinboard_input(class="d-none") }}
-                                    {{ createPostForm.confiner_input(class="d-none", value=this_circle["public_id"]) }}
+                                    {{ createPostForm.pinboard_input(hidden=True) }}
+                                    {{ createPostForm.confiner_input(hidden=True, value=this_circle["public_id"]) }}
                                     <div class="form-group">
                                         {{ createPostForm.photo_input.label }}
                                         {{ createPostForm.photo_input(class="form-control form-control-sm") }}
@@ -290,12 +297,12 @@
                                         <div class="d-flex flex-row">
                                             <form method="POST" action="{{ url_for('circle.accept', circle_pid=this_circle['public_id']) }}" enctype="multipart/form-data">
                                                 {{ acceptCircleForm.hidden_tag() }}
-                                                {{ acceptCircleForm.member_input(class="d-none", value=member["public_id"]) }}
+                                                {{ acceptCircleForm.member_input(hidden=True, value=member["public_id"]) }}
                                                 {{ acceptCircleForm.submit_input(class="btn btn-primary") }}
                                             </form>
                                             <form method="POST" action="{{ url_for('circle.leave', circle_pid=this_circle['public_id']) }}" enctype="multipart/form-data">
                                                 {{ leaveCircleForm.hidden_tag() }}
-                                                {{ leaveCircleForm.member_input(class="d-none", value=member["public_id"]) }}
+                                                {{ leaveCircleForm.member_input(hidden=True, value=member["public_id"]) }}
                                                 {{ leaveCircleForm.submit_input(class="btn btn-outline-danger ml-2", value="Remove") }}
                                             </form>
                                         </div>

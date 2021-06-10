@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectMultipleField, TextAreaField, SubmitField
-from wtforms.validators import DataRequired, InputRequired, Length
+from wtforms.validators import DataRequired, InputRequired, Length, EqualTo
 from flask_wtf.file import FileField, FileAllowed
 
 class CreateCircleForm(FlaskForm):
@@ -24,7 +24,7 @@ class JoinCircleForm(FlaskForm):
 
 class LeaveCircleForm(FlaskForm):
     member_input = StringField()
-    name_input = StringField("Name", validators=[DataRequired(), Length(max=30, message="Too long.")])
+    name_input = StringField("Name", validators=[DataRequired(), Length(max=30, message="Too long."), EqualTo("confirm_name_input", message='Name must match.')])
     confirm_name_input = StringField()
     submit_input = SubmitField()
 
@@ -33,6 +33,6 @@ class AcceptCircleForm(FlaskForm):
     submit_input  = SubmitField("Accept")
 
 class DeleteCircleForm(FlaskForm):
-    name_input = StringField("Name", validators=[DataRequired(), Length(max=30, message="Too long.")])
+    name_input = StringField("Name", validators=[DataRequired(), Length(max=30, message="Too long."), EqualTo("confirm_name_input", message='Name must match.')])
     confirm_name_input = StringField()
     submit_input = SubmitField("Delete circle")
