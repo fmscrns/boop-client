@@ -5,8 +5,8 @@ from flask_wtf.file import FileField, FileAllowed
 from wtforms.fields.html5 import DateField
 
 class CreatePetForm(FlaskForm):
-    name_input = StringField("Name", validators=[DataRequired(), Length(max=30, message="Too long.")])
-    bio_input = TextAreaField("Bio", validators=[Length(max=50, message="Too long.")])
+    name_input = StringField("Name", validators=[DataRequired(), Length(min=2, max=30)])
+    bio_input = TextAreaField("Bio", validators=[Length(min=2, max=50)])
     birthday_input = DateField("Birthday", format="%Y-%m-%d")
     sex_input = RadioField("Sex", coerce=int, choices=[(0, "Male"), (1, "Female")], validators=[InputRequired()])
     private_input = RadioField("Private", coerce=int, choices=[(1, "Yes"), (0, "No")], validators=[InputRequired()])
@@ -17,8 +17,8 @@ class CreatePetForm(FlaskForm):
     submit_input = SubmitField("Create pet")
 
 class EditPetForm(FlaskForm):
-    name_input = StringField("Name", default="", validators=[DataRequired(), Length(min=2, message="Too short.")])
-    bio_input = TextAreaField("Bio", validators=[Length(max=50, message="Too long.")])
+    name_input = StringField("Name", default="", validators=[DataRequired(), Length(min=2, max=30)])
+    bio_input = TextAreaField("Bio", validators=[Length(max=50)])
     birthday_input = DateField("Birthday", format="%Y-%m-%d")
     status_input = RadioField("Status", coerce=int, choices=[(0, "Closed"), (1, "Open for adoption")], validators=[InputRequired()])
     sex_input = RadioField("Sex", coerce=int, choices=[(0, "Male"), (1, "Female")], validators=[InputRequired()])
@@ -28,7 +28,7 @@ class EditPetForm(FlaskForm):
     submit_input = SubmitField("Update pet")
 
 class DeletePetForm(FlaskForm):
-    name_input = StringField("Name", default="", validators=[DataRequired(), Length(min=2, message="Too short."), EqualTo("confirm_name_input", message='Name must match.')])
+    name_input = StringField("Name", default="", validators=[DataRequired(), Length(min=2, max=30), EqualTo("confirm_name_input", message='Name must match.')])
     confirm_name_input = StringField("The Name", default="")
     submit_input = SubmitField("Delete pet")
 
@@ -50,5 +50,5 @@ class CreatePetOwnerForm(FlaskForm):
 class DeletePetOwnerForm(FlaskForm):
     owner_input = StringField(default="")
     confirm_name_input = StringField()
-    name_input = StringField("Name", validators=[DataRequired(), Length(max=30, message="Too long."), EqualTo("confirm_name_input", message='Name must match.')])
+    name_input = StringField("Name", validators=[DataRequired(), Length(min=2, max=30), EqualTo("confirm_name_input", message='Name must match.')])
     submit_input  = SubmitField("Remove")

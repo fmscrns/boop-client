@@ -11,7 +11,7 @@
                     <div class="container">
                         <h1 class="display-6">{{ this_post["content"] }}</h1>
                         <p class="lead"><a href="{{ url_for('user.pets', username=this_post['creator_username']) }}">{{ this_post["creator_name"] }}'s</a> post</p>
-                        <p class="text-muted">{{ this_post["registered_on"] }}</p>
+                        <p class="text-muted">{{ this_post["registered_on"].strftime("% %d, %Y") }}</p>
                         
                         {% if this_post["creator_id"] == current_user["public_id"] %}
                             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editProfileModal">

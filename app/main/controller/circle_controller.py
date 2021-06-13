@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, session, flash, redirect, url
 from werkzeug.datastructures import Accept
 from ... import circle_bp
 from ..util.decorator import session_required
-from ..form.circle_form import AcceptCircleForm, CreateCircleForm, EditCircleForm, DeleteCircleForm, JoinCircleForm, LeaveCircleForm
+from ..form.circle_form import AcceptCircleForm, CreateCircleAdminForm, CreateCircleForm, DeleteCircleAdminForm, EditCircleForm, DeleteCircleForm, JoinCircleForm, LeaveCircleForm
 from ..service.pet_service import PetService
 from ..service.circle_service import CircleService
 from ..service.breed_service import BreedService
@@ -29,6 +29,8 @@ def posts(current_user, circle_pid):
             this_circle = this_circle,
             editCircleForm = editCircleForm,
             deleteCircleForm = DeleteCircleForm(),
+            createCircleAdminForm = CreateCircleAdminForm(prefix="ccaf"),
+            deleteCircleAdminForm = DeleteCircleAdminForm(prefix="dcaf"),
             createPostForm = createPostForm,
             joinCircleForm = JoinCircleForm(),
             leaveCircleForm = LeaveCircleForm(),
@@ -53,6 +55,8 @@ def confirmed_members(current_user, circle_pid):
             this_circle = this_circle,
             editCircleForm = editCircleForm,
             deleteCircleForm = DeleteCircleForm(),
+            createCircleAdminForm = CreateCircleAdminForm(prefix="ccaf"),
+            deleteCircleAdminForm = DeleteCircleAdminForm(prefix="dcaf"),
             inviteMemberForm = 1,
             joinCircleForm = JoinCircleForm(),
             leaveCircleForm = LeaveCircleForm(),
@@ -78,6 +82,8 @@ def pending_members(current_user, circle_pid):
                 this_circle = this_circle,
                 editCircleForm = editCircleForm,
                 deleteCircleForm = DeleteCircleForm(),
+                createCircleAdminForm = CreateCircleAdminForm(prefix="ccaf"),
+                deleteCircleAdminForm = DeleteCircleAdminForm(prefix="dcaf"),
                 inviteMemberForm = 1,
                 joinCircleForm = JoinCircleForm(),
                 leaveCircleForm = LeaveCircleForm(),
@@ -112,6 +118,48 @@ def create(current_user):
 
     return redirect(url_for("user.circles", username=current_user["username"]))
 
+@circle_bp.route("/<circle_pid>/admin/create", methods=["POST"])
+@session_required
+def create_admin(current_user, circle_pid):
+    createCircleAdminForm = CreateCircleAdminForm(prefix="ccaf")
+    if createCircleAdminForm.validate_on_submit():
+        create_circle_admin = CircleService.create_admin(circle_pid, session["booped_in"], request.form)
+
+        if create_circle_admin.ok:
+            flash(json.loads(create_circle_admin.text)["message"], "success")
+
+            return redirect(url_for("circle.posts", circle_pid=circle_pid))
+        
+        flash(json.loads(create_circle_admin.text)["message"], "danger")
+    
+    if createCircleAdminForm.errors:
+        for key in createCircleAdminForm.errors:
+            for message in createCircleAdminForm.errors[key]:
+                flash(message, "danger")
+
+    return redirect(url_for("circle.posts", circle_pid=circle_pid))
+
+@circle_bp.route("/<circle_pid>/admin/delete", methods=["POST"])
+@session_required
+def delete_admin(current_user, circle_pid):
+    deleteCircleAdminForm = DeleteCircleAdminForm(prefix="dcaf")
+    if deleteCircleAdminForm.validate_on_submit():
+        delete_circle_admin = CircleService.delete_admin(circle_pid, session["booped_in"], request.form)
+
+        if delete_circle_admin.ok:
+            flash(json.loads(delete_circle_admin.text)["message"], "success")
+
+            return redirect(url_for("circle.posts", circle_pid=circle_pid))
+        
+        flash(json.loads(delete_circle_admin.text)["message"], "danger")
+    
+    if deleteCircleAdminForm.errors:
+        for key in deleteCircleAdminForm.errors:
+            for message in deleteCircleAdminForm.errors[key]:
+                flash(message, "danger")
+
+    return redirect(url_for("circle.posts", circle_pid=circle_pid))
+
 @circle_bp.route("/<circle_pid>/edit", methods=["POST"])
 @session_required
 def edit(current_user, circle_pid):
@@ -140,14 +188,13 @@ def edit(current_user, circle_pid):
 @session_required
 def delete(current_user, circle_pid):
     deleteCircleForm = DeleteCircleForm()
-    owner_username = json.loads(CircleService.get_by_pid(circle_pid).text)["admin_username"]
     if deleteCircleForm.validate_on_submit():
         delete_circle = CircleService.delete(circle_pid, request.form)
 
         if delete_circle.ok:
             flash(json.loads(delete_circle.text)["message"], "success")
 
-            return redirect(url_for("user.circles", username=owner_username))
+            return redirect(url_for("user.circles", username=current_user["username"]))
         
         flash(json.loads(delete_circle.text)["message"], "danger")
 

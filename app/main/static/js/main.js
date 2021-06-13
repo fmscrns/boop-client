@@ -1,5 +1,4 @@
 var currentDate = new Date();
-const LOCAL_DOMAINS = ["localhost", "127.0.0.1"];
 
 document.querySelectorAll(".gwac-fg-pw").forEach((formGroup) => {
      const input = formGroup.querySelector("input");
@@ -369,7 +368,7 @@ for (i = 0; i < parentInput.length; i++) {
     }
 }
 // =====================================================================================================================================================================
-autocomplete(document.querySelector(".cpof-autocomplete"));
+autocomplete(document.getElementById("cpof-autocomplete"));
 function autocomplete(div) {
      inp = div.querySelectorAll("input")[0];
      pidHolder = div.querySelectorAll("input")[1];

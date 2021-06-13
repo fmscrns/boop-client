@@ -4,7 +4,7 @@ from wtforms.validators import InputRequired, Length
 from flask_wtf.file import FileField, FileAllowed
 
 class CreatePostForm(FlaskForm):
-    content_input = TextAreaField("Content", validators=[Length(max=280, message="Too long.")])
+    content_input = TextAreaField("Content", validators=[Length(max=280)])
     photo_input = FileField("Photo", validators=[FileAllowed(["jpg", "jpeg", "png"])])
     pinboard_input = StringField()
     confiner_input = StringField()

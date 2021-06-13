@@ -21,6 +21,32 @@ class CircleService:
                 "photo": save_image(data_file.get("photo_input"), 2)
             }
         )
+
+    @staticmethod
+    def create_admin(pid, token, data):
+        return requests.post("{}/circle/{}/admin/".format(
+            current_app.config["API_DOMAIN"], 
+            pid),
+            headers = {
+                "Authorization" : "Bearer {}".format(token)
+            },
+            json = {
+                "public_id": data.get("ccaf-admin_input")
+            }
+        )
+    
+    @staticmethod
+    def delete_admin(pid, token, data):
+        return requests.delete("{}/circle/{}/admin/{}".format(
+            current_app.config["API_DOMAIN"], 
+            pid,
+            data.get("dcaf-admin_input")),
+            headers = {
+                "Authorization" : "Bearer {}".format(token)
+            }, json = {
+                "name_input": data.get("dcaf-name_input")
+            }
+        )
     
     @staticmethod
     def get_all_by_user(token, user_pid):
@@ -93,10 +119,6 @@ class CircleService:
             data.get("member_input")),
             headers = {
                 "Authorization" : "Bearer {}".format(session["booped_in"])
-            },
-            json = {
-                "name": data.get("name_input"),
-                "_type": []
             }
         )
     

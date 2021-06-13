@@ -38,7 +38,6 @@ class PetService:
     
     @staticmethod
     def delete_owner(pid, token, data):
-        print(data.get("dpof-owner_input"))
         return requests.delete("{}/pet/{}/owner/{}".format(
             current_app.config["API_DOMAIN"], 
             pid,

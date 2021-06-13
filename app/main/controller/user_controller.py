@@ -48,7 +48,7 @@ def pets(current_user, username):
             page_title = "Profile",
             current_user = current_user,
             this_user = this_user,
-            editUserForm = editUserForm,
+            editUserForm = editUserForm if this_user["public_id"] == current_user["public_id"] else None,
             createPetForm = createPetForm,
             followPetForm = FollowPetForm(),
             unfollowPetForm = UnfollowPetForm(),
@@ -74,7 +74,7 @@ def posts(current_user, username):
             page_title = "Profile",
             current_user = current_user,
             this_user = this_user,
-            editUserForm = editUserForm,
+            editUserForm = editUserForm if this_user["public_id"] == current_user["public_id"] else None,
             createPostForm = createPostForm,
             post_list = json.loads(PostService.get_all_by_user(session["booped_in"], this_user["public_id"]).text)["data"]
         )
@@ -85,8 +85,7 @@ def posts(current_user, username):
 @user_bp.route("/<username>/businesses", methods=["GET", "POST"])
 @session_required
 def businesses(current_user, username):
-    get_resp = UserService.get_by_username(username)
-    if get_resp.ok:
+    if current_user["username"] == username:
         editUserForm = EditUserForm(prefix="euf")
         editUserForm.name_input.data = current_user["name"]
         editUserForm.username_input.data = current_user["username"]
@@ -94,18 +93,41 @@ def businesses(current_user, username):
         
         createBusinessForm = CreateBusinessForm()
         createBusinessForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in json.loads(BusinessTypeService.get_all(session["booped_in"]).text)["data"]]
-        this_user = json.loads(get_resp.text)
 
         return render_template("user_profile.html",
             page_title = "Profile",
             current_user = current_user,
-            this_user = this_user,
+            this_user = current_user,
             editUserForm = editUserForm,
             createBusinessForm = createBusinessForm,
-            business_list = json.loads(BusinessService.get_all_by_user(session["booped_in"], this_user["public_id"]).text)["data"]
+            business_list = json.loads(BusinessService.get_all_by_user(session["booped_in"], current_user["public_id"]).text)["data"]
         )
     else:
-        abort(404)
+        abort(403)
+
+@user_bp.route("/<username>", methods=["GET", "POST"])
+@user_bp.route("/<username>/circles", methods=["GET", "POST"])
+@session_required
+def circles(current_user, username):
+    if current_user["username"] == username:
+        editUserForm = EditUserForm(prefix="euf")
+        editUserForm.name_input.data = current_user["name"]
+        editUserForm.username_input.data = current_user["username"]
+        editUserForm.email_input.data = current_user["email"]
+        
+        createCircleForm = CreateCircleForm()
+        createCircleForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in json.loads(CircleTypeService.get_all(session["booped_in"]).text)["data"]]
+
+        return render_template("user_profile.html",
+            page_title = "Profile",
+            current_user = current_user,
+            this_user = current_user,
+            editUserForm = editUserForm,
+            createCircleForm = createCircleForm,
+            circle_list = json.loads(CircleService.get_all_by_user(session["booped_in"], current_user["public_id"]).text)["data"]
+        )
+    else:
+        abort(403)
 
 @user_bp.route("/create", methods=["POST"])
 def create():
@@ -148,29 +170,3 @@ def edit(current_user, user_pid):
                 flash(message, "danger")
 
     return redirect(url_for("user.pets", username=current_user["username"]))
-
-@user_bp.route("/<username>", methods=["GET", "POST"])
-@user_bp.route("/<username>/circles", methods=["GET", "POST"])
-@session_required
-def circles(current_user, username):
-    get_resp = UserService.get_by_username(username)
-    if get_resp.ok:
-        editUserForm = EditUserForm(prefix="euf")
-        editUserForm.name_input.data = current_user["name"]
-        editUserForm.username_input.data = current_user["username"]
-        editUserForm.email_input.data = current_user["email"]
-        
-        createCircleForm = CreateCircleForm()
-        createCircleForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in json.loads(CircleTypeService.get_all(session["booped_in"]).text)["data"]]
-        this_user = json.loads(get_resp.text)
-
-        return render_template("user_profile.html",
-            page_title = "Profile",
-            current_user = current_user,
-            this_user = this_user,
-            editUserForm = editUserForm,
-            createCircleForm = createCircleForm,
-            circle_list = json.loads(CircleService.get_all_by_user(session["booped_in"], this_user["public_id"]).text)["data"]
-        )
-    else:
-        abort(404)

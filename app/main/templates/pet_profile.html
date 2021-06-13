@@ -19,8 +19,7 @@
                             {% endfor %}
                         </div>
                         <br>
-                        {% for owner in this_pet["owner"] %}
-                        {% if owner["public_id"] == current_user["public_id"] %}
+                        {% if this_pet["visitor_auth"] == 3 %}
                             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editPetModal">
                                 <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
                             </button>
@@ -98,7 +97,7 @@
                                             <h5 class="mb-3">Add new owner</h5>
                                             {{ createPetOwnerForm.hidden_tag() }}
                                             <div class="d-flex justify-content-between align-items-center">
-                                                <div class="cpof-autocomplete container-fluid p-0">
+                                                <div id="cpof-autocomplete" class="container-fluid p-0">
                                                     <input class="form-control form-control-sm" placeholder="Name or username">
                                                     {{ createPetOwnerForm.owner_input(hidden=True) }}
                                                 </div>
@@ -118,7 +117,7 @@
                                                             <form class="modal-content" method="POST" action="{{ url_for('pet.delete_owner', pet_pid=this_pet.public_id) }}">
                                                                 <div class="modal-header">
                                                                     <h5 class="modal-title" id="staticBackdropLabel">Remove owner</h5>
-                                                                    <button type="button" class="close" data-dismiss="modal" data-target="#deletePetOwnerModal{{ loop.index }}" aria-label="Close">
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                         <span aria-hidden="true">&times;</span>
                                                                     </button>
                                                                 </div>
@@ -128,15 +127,15 @@
                                                                     {{ deletePetOwnerForm.confirm_name_input(hidden=True, value=this_pet.name) }}
                                                                     {% if this_pet["owner"]|length == 1 %}
                                                                         <p>This will also delete the pet profile.</p>
-                                                                        <span class="text-muted small">Confirm by typing the circle's name</span>
+                                                                        <span class="text-muted small">Confirm by typing the pet's name</span>
                                                                         {{ deletePetOwnerForm.name_input(class="form-control form-control-sm", placeholder=this_pet.name, minlength=2) }}
                                                                     {% else %}
-                                                                        Are you sure want to remove {% if owner.public_id == current_user.public_id %}yourself as{% else %}this{% endif %} owner of this pet?
+                                                                        Are you sure you want to remove {% if owner.public_id == current_user.public_id %}yourself as{% else %}this{% endif %} owner of this pet?
                                                                         {{ deletePetOwnerForm.name_input(hidden=True, value=this_pet.name) }}
                                                                     {% endif %}
                                                                 </div>
                                                                 <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-target="#deletePetOwnerModal{{ loop.index }}">Close</button>
+                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                                                     {{ deletePetOwnerForm.submit_input(class="btn btn-danger") }}
                                                                 </div>
                                                             </form>
@@ -160,7 +159,6 @@
                                 </div>
                             </div>
                         {% endif %}
-                        {% endfor %}
                     </div>
                     <div class="d-flex align-items-center">
                         {% if this_pet["visitor_auth"] == 2 %}
@@ -279,9 +277,8 @@
                             <div class="d-flex flex-row">
                                 <img class="home-content-profPic" src="{{ config.MEDIA_STORAGE + owner['photo'] }}" alt="..." class="rounded d-block w-25 border">
                                 <div class="d-flex flex-column ml-2 container">
-                                    <span class="font-weight-bold hci-bb-l">{{ owner.name }}</span> <span style="font-size:15px;">@{{ owner.username }}</span>
+                                    <span class="font-weight-bold hci-bb-l">{% if owner.public_id == current_user.public_id %}You{% else %}{{ owner["name"] }}{% endif %}&nbsp;&nbsp;<span class="badge bg-success text-light">Owner</span></span> <span style="font-size:15px;">@{{ owner.username }}</span>
                                 </div>
-                                <span class="text-muted">Owner</span>
                             </div>
                         </a>
                     {% endfor %}
@@ -291,17 +288,18 @@
                             <div class="d-flex flex-row">
                                 <img class="home-content-profPic" src="{{ config.MEDIA_STORAGE + follower['photo'] }}" alt="..." class="rounded d-block w-25 border">
                                 <div class="d-flex flex-column ml-2 container">
-                                    <span class="font-weight-bold hci-bb-l">{{ follower.name }}</span> <span style="font-size:15px;">@{{ follower.username }}</span>
+                                    <span class="font-weight-bold hci-bb-l">{% if follower.public_id == current_user.public_id %}You{% else %}{{ follower["name"] }}{% endif %}&nbsp;&nbsp;<span class="badge bg-primary text-light">Member</span></span> <span style="font-size:15px;">@{{ follower.username }}</span>
                                 </div>
-                                <span class="text-muted">Follower</span>
-                                {% if acceptPetForm and this_pet["visitor_auth"] == 3 %}
+                                {% if this_pet["visitor_auth"] == 3 %}
                                     <div class="float-right">
                                         <div class="d-flex flex-row">
-                                            <form method="POST" action="{{ url_for('pet.accept', pet_pid=this_pet['public_id']) }}">
-                                                {{ acceptPetForm.hidden_tag() }}
-                                                {{ acceptPetForm.follower_input(hidden=True, value=follower["public_id"]) }}
-                                                {{ acceptPetForm.submit_input(class="btn btn-primary") }}
-                                            </form>
+                                            {% if acceptPetForm %}
+                                                <form method="POST" action="{{ url_for('pet.accept', pet_pid=this_pet['public_id']) }}">
+                                                    {{ acceptPetForm.hidden_tag() }}
+                                                    {{ acceptPetForm.follower_input(hidden=True, value=follower["public_id"]) }}
+                                                    {{ acceptPetForm.submit_input(class="btn btn-primary") }}
+                                                </form>
+                                            {% endif %}
                                             <form method="POST" action="{{ url_for('pet.unfollow', pet_pid=this_pet['public_id']) }}">
                                                 {{ unfollowPetForm.hidden_tag() }}
                                                 {{ unfollowPetForm.follower_input(hidden=True, value=follower["public_id"]) }}

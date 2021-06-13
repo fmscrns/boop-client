@@ -24,12 +24,10 @@ def control(current_user):
 @admin_bp.route("/business_types", methods=["GET", "POST"])
 @admin_session_required
 def business_types(current_user):
-    asd = json.loads(BusinessTypeService.get_all(session["admin_booped_in"]).text)["data"]
-    print(asd)
     return render_template("admin/business_types.html",
         page_title = "Configure Business Types",
         current_user = current_user,
-        businessType_list = asd,
+        businessType_list = json.loads(BusinessTypeService.get_all(session["admin_booped_in"]).text)["data"],
         createBusinessTypeForm = CreateBusinessTypeForm(),
         editBusinessTypeForm = EditBusinessTypeForm(),
         deleteBusinessTypeForm = DeleteBusinessTypeForm()
@@ -38,12 +36,10 @@ def business_types(current_user):
 @admin_bp.route("/circle_types", methods=["GET", "POST"])
 @admin_session_required
 def circle_types(current_user):
-    asd = json.loads(CircleTypeService.get_all(session["admin_booped_in"]).text)["data"]
-    print(asd)
     return render_template("admin/circle_types.html",
         page_title = "Configure Circle Types",
         current_user = current_user,
-        circleType_list = asd,
+        circleType_list = json.loads(CircleTypeService.get_all(session["admin_booped_in"]).text)["data"],
         createCircleTypeForm = CreateCircleTypeForm(),
         editCircleTypeForm = EditCircleTypeForm(),
         deleteCircleTypeForm = DeleteCircleTypeForm()

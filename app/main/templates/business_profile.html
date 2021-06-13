@@ -10,7 +10,6 @@
                     <img src="{{ config.MEDIA_STORAGE + this_business['photo'] }}" alt="..." class="rounded mx-auto d-block w-25">
                     <div class="container">
                         <h1 class="display-6">{{ this_business["name"] }}</h1>
-                        <p class="lead"><a href="{{ url_for('user.businesses', username=this_business['executive_username']) }}">{{ this_business["executive_name"] }}'s</a> business</p>
                         {% if this_business["executive_id"] == current_user["public_id"] %}
                             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editBusinessModal">
                                 <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
