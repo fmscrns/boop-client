@@ -11,7 +11,7 @@
                     <div class="container">
                         <h1 class="display-6">{{ this_post["content"] }}</h1>
                         <p class="lead"><a href="{{ url_for('user.pets', username=this_post['creator_username']) }}">{{ this_post["creator_name"] }}'s</a> post</p>
-                        <p class="text-muted">{{ this_post["registered_on"].strftime("% %d, %Y") }}</p>
+                        <p class="text-muted">{{ this_post.registered_on.strftime("%b %d, %Y") }}</p>
                         
                         {% if this_post["creator_id"] == current_user["public_id"] %}
                             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editProfileModal">
@@ -41,22 +41,73 @@
                     </div>
                 </div>
                 <br>
-                <div class="container d-flex flex-column">
+                <div class="container d-flex flex-row">
                     Tagged pets:
                     {% for subject in this_post.subject %}
-                        <a href="{{ url_for('pet.posts', pet_pid=subject.public_id) }}">{{ subject.name }}</a>
+                        <a href="{{ url_for('pet.posts', pet_pid=subject.public_id) }}" class="badge bg-light">{{ subject.name }}</a>
                     {% endfor %}
+                </div>
+                <br>
+                <div class="col mp-0" style="font-size:13px;">
+                    20 likes · 1 comment
                 </div>
                 <ul class="nav row m-0 border rounded mt-3">
                     <li class="nav-item col d-flex justify-content-center">
                         <img class="hci-bb-p" src="{{ url_for('static', filename='assets/comment.svg') }}">
-                        <a class="nav-link active" href="#">Comments</a>
+                        <a class="nav-link active" href="{{ url_for('post.comments', post_pid=this_post['public_id']) }}">Comments</a>
                     </li>
                     <li class="nav-item col d-flex justify-content-center">
                         <img class="hci-bb-p" src="{{ url_for('static', filename='assets/star.svg') }}">
-                        <a class="nav-link" href="#">Likes</a>
+                        <a class="nav-link" href="#likes">Likes</a>
                     </li>
                 </ul>
+            </div>
+            {% if createCommentForm %}
+                <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#createPostModal">
+                    Add comment
+                </button>
+                <div class="modal fade" id="createPostModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-scrollable">
+                    <form class="modal-content" method="POST" action="{{ url_for('post.comments', post_pid=this_post.public_id) }}" enctype="multipart/form-data">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Add comment</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                {{ createCommentForm.photo_input.label }}
+                                {{ createCommentForm.photo_input(class="form-control form-control-sm") }}
+                            </div>
+                            <div class="form-group">
+                                {{ createCommentForm.content_input.label }}
+                                {{ createCommentForm.content_input(class="form-control form-control-sm") }}
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            {{ createCommentForm.submit_input(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="container-fluid border p-4 mt-3">
+                <div class="d-flex flex-row">
+                    <div class="float-left pt-1">
+                        <img class="home-content-profPic" src="{{ url_for('static', filename='images/default_user.jpg') }}" alt="..." class="rounded d-block w-25 border">
+                    </div>
+                    <div class="d-flex flex-column ml-2 container">
+                        <a href="#" class="lead"><span class="font-weight-bold hci-bb-l">Test</span> <span style="font-size:15px;">@tester · June 14, 2021</span>
+                        </a>
+                        <br>
+                        <a href="#">Content: Hello World</a>
+                            <div class="text-center">
+                                <img class="img-fluid hci-1p" src="{{ url_for('static', filename='images/default_post.jpg') }}" alt="..." class="rounded d-block w-25 border">
+                            </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -1,0 +1,191 @@
+.alert-frame {
+  z-index: 2;
+  width: 350px !important;
+  position: fixed;
+  right: 40px;
+  bottom: 40px;
+}
+
+.gwac {
+  width: 700px;
+}
+
+.gwac > .gwac-illus {
+  width: 300px;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  overflow: hidden;
+}
+
+.comet-anim {
+  -webkit-animation-name: comet-anim;
+          animation-name: comet-anim;
+  -webkit-animation-duration: 10s;
+          animation-duration: 10s;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: ease-in-out;
+          animation-timing-function: ease-in-out;
+}
+
+@-webkit-keyframes comet-anim {
+  from {
+    -webkit-transform: translate(-300px, -300px);
+            transform: translate(-300px, -300px);
+  }
+  10% {
+    -webkit-transform: translate(300px, 300px);
+            transform: translate(300px, 300px);
+  }
+  to {
+    -webkit-transform: translate(300px, 300px);
+            transform: translate(300px, 300px);
+  }
+}
+
+@keyframes comet-anim {
+  from {
+    -webkit-transform: translate(-300px, -300px);
+            transform: translate(-300px, -300px);
+  }
+  10% {
+    -webkit-transform: translate(300px, 300px);
+            transform: translate(300px, 300px);
+  }
+  to {
+    -webkit-transform: translate(300px, 300px);
+            transform: translate(300px, 300px);
+  }
+}
+
+.gwac > .gwac-illus > img {
+  pointer-events: none;
+}
+
+.gwac > .gwac-illus > a > img {
+  width: 80px;
+}
+
+.gwac > .lgn-usr {
+  background: -webkit-gradient(linear, left bottom, left top, from(#BC6E33), color-stop(#DB9A4E), to(#6E6071));
+  background: linear-gradient(0deg, #BC6E33, #DB9A4E, #6E6071);
+}
+
+.gwac > .sgnp-1 {
+  background: -webkit-gradient(linear, left bottom, left top, from(#69A8C8), color-stop(#69A8C8), color-stop(#69A8C8), color-stop(#2893A7), color-stop(#2893A7), color-stop(#2893A7), color-stop(#2893A7), color-stop(#285C9D), to(#4440A5));
+  background: linear-gradient(0deg, #69A8C8, #69A8C8, #69A8C8, #2893A7, #2893A7, #2893A7, #2893A7, #285C9D, #4440A5);
+}
+
+.gwac > .sgnp-2 {
+  background: -webkit-gradient(linear, left bottom, left top, from(#028292), to(#6C17B2));
+  background: linear-gradient(0deg, #028292, #6C17B2);
+}
+
+.gwac > .gwac-bd-grd > .gwac-ld {
+  background-color: rgba(255, 255, 255, 0.5);
+  position: absolute;
+  width: 99%;
+  height: 98.5%;
+  z-index: 10;
+}
+
+.gwac > .gwac-bd-grd > .gwac-fs > .form-group {
+  height: 90px;
+}
+
+.gwac > .gwac-bd-grd > .gwac-ld > div {
+  height: inherit;
+}
+
+.gwac > .gwac-bd-grd > .gwac-fs {
+  background-color: white;
+  height: 500px;
+  position: relative;
+}
+
+.navbar > .navbar-brand > img {
+  width: 70px;
+}
+
+@media (max-width: 900px) {
+  #gww-nvbr-lf {
+    display: none !important;
+  }
+}
+
+.flt-osc {
+  -webkit-animation-name: flt-osc;
+          animation-name: flt-osc;
+  -webkit-animation-duration: 2.5s;
+          animation-duration: 2.5s;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: ease-in-out;
+          animation-timing-function: ease-in-out;
+}
+
+@-webkit-keyframes flt-osc {
+  from {
+    -webkit-transform: translate(0, 0);
+            transform: translate(0, 0);
+  }
+  65% {
+    -webkit-transform: translate(0, 15px);
+            transform: translate(0, 15px);
+  }
+  to {
+    -webkit-transform: translate(0, 0);
+            transform: translate(0, 0);
+  }
+}
+
+@keyframes flt-osc {
+  from {
+    -webkit-transform: translate(0, 0);
+            transform: translate(0, 0);
+  }
+  65% {
+    -webkit-transform: translate(0, 15px);
+            transform: translate(0, 15px);
+  }
+  to {
+    -webkit-transform: translate(0, 0);
+            transform: translate(0, 0);
+  }
+}
+
+.gww > .gww-l > .gww-ptr {
+  width: 90%;
+  height: 90%;
+}
+
+.btn-w-50 {
+  width: 130px;
+}
+
+.red {
+  background-color: red !important;
+}
+
+.blue {
+  background-color: blue !important;
+}
+
+.green {
+  background-color: green !important;
+}
+
+.yellow {
+  background-color: yellow !important;
+}
+
+.cbf-ot-t {
+  pointer-events: none;
+  display: none;
+}
+
+.test {
+  display: none;
+}
+/*# sourceMappingURL=main.css.map */
