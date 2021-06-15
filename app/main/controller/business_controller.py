@@ -50,7 +50,7 @@ def create(current_user):
             resp = json.loads(create_business.text)
             flash(resp["message"], "success")
 
-            return redirect(url_for("user.businesses", username=resp["payload"]))
+            return redirect(url_for("user.businesses", username=current_user["username"]))
         
         flash(json.loads(create_business.text)["message"], "danger")
 
@@ -89,14 +89,13 @@ def edit(current_user, business_pid):
 @session_required
 def delete(current_user, business_pid):
     deleteBusinessForm = DeleteBusinessForm()
-    owner_username = json.loads(BusinessService.get_by_pid(business_pid).text)["exec_username"]
     if deleteBusinessForm.validate_on_submit():
         delete_business = BusinessService.delete(business_pid, request.form)
 
         if delete_business.ok:
             flash(json.loads(delete_business.text)["message"], "success")
 
-            return redirect(url_for("user.businesses", username=owner_username))
+            return redirect(url_for("user.businesses", username=current_user["username"]))
         
         flash(json.loads(delete_business.text)["message"], "danger")
 
