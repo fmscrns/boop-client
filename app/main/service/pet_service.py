@@ -45,7 +45,7 @@ class PetService:
             headers = {
                 "Authorization" : "Bearer {}".format(token)
             }, json = {
-                "name_input": data.get("dpof-name_input")
+                "name": data.get("dpof-name_input")
             }
         )
     

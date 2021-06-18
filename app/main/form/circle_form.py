@@ -40,7 +40,7 @@ class CreateCircleAdminForm(FlaskForm):
     submit_input  = SubmitField("Make admin")
 
 class DeleteCircleAdminForm(FlaskForm):
-    admin_input = StringField(default="")
+    admin_input = StringField()
     confirm_name_input = StringField()
     name_input = StringField("Name", validators=[DataRequired(), Length(min=2, max=30), EqualTo("confirm_name_input", message='Name must match.')])
     submit_input  = SubmitField("Remove")

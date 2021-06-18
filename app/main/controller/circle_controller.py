@@ -1,5 +1,5 @@
 import json
-from flask import Flask, render_template, request, session, flash, redirect, url_for, abort
+from flask import Flask, render_template, request, session, flash, redirect, url_for, abort, jsonify
 from werkzeug.datastructures import Accept
 from ... import circle_bp
 from ..util.decorator import session_required
@@ -46,22 +46,26 @@ def confirmed_members(current_user, circle_pid):
     get_resp = CircleService.get_by_pid(circle_pid)
     if get_resp.ok:
         this_circle = json.loads(get_resp.text)
-        editCircleForm = EditCircleForm(prefix="ebf")
-        editCircleForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in json.loads(CircleTypeService.get_all(session["booped_in"]).text)["data"]]
-        editCircleForm.type_input.data = [_type["public_id"] for _type in this_circle["_type"]]
-        return render_template("circle_profile.html",
-            page_title = "Circle profile",
-            current_user = current_user,
-            this_circle = this_circle,
-            editCircleForm = editCircleForm,
-            deleteCircleForm = DeleteCircleForm(),
-            createCircleAdminForm = CreateCircleAdminForm(prefix="ccaf"),
-            deleteCircleAdminForm = DeleteCircleAdminForm(prefix="dcaf"),
-            inviteMemberForm = 1,
-            joinCircleForm = JoinCircleForm(),
-            leaveCircleForm = LeaveCircleForm(),
-            member_list = json.loads(CircleService.get_all_confirmed_circle_members(session["booped_in"], this_circle["public_id"]).text)["data"]
-        )
+        search_val = request.args.get("search")
+        if not search_val:
+            editCircleForm = EditCircleForm(prefix="ebf")
+            editCircleForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in json.loads(CircleTypeService.get_all(session["booped_in"]).text)["data"]]
+            editCircleForm.type_input.data = [_type["public_id"] for _type in this_circle["_type"]]
+            return render_template("circle_profile.html",
+                page_title = "Circle profile",
+                current_user = current_user,
+                this_circle = this_circle,
+                editCircleForm = editCircleForm,
+                deleteCircleForm = DeleteCircleForm(),
+                createCircleAdminForm = CreateCircleAdminForm(prefix="ccaf"),
+                deleteCircleAdminForm = DeleteCircleAdminForm(prefix="dcaf"),
+                inviteMemberForm = 1,
+                joinCircleForm = JoinCircleForm(),
+                leaveCircleForm = LeaveCircleForm(),
+                member_list = json.loads(CircleService.get_all_members(session["booped_in"], this_circle["public_id"], "1", None).text)["data"]
+            )
+        else:
+            return jsonify(json.loads(CircleService.get_all_members(session["booped_in"], this_circle["public_id"], "1", search_val).text)["data"])
     else:
         abort(404)
 
@@ -88,7 +92,7 @@ def pending_members(current_user, circle_pid):
                 joinCircleForm = JoinCircleForm(),
                 leaveCircleForm = LeaveCircleForm(),
                 acceptCircleForm = AcceptCircleForm(),
-                member_list = json.loads(CircleService.get_all_pending_circle_members(session["booped_in"], this_circle["public_id"]).text)["data"]
+                member_list = json.loads(CircleService.get_all_members(session["booped_in"], this_circle["public_id"], "0", None).text)["data"]
             )
         else:
             abort(403)
@@ -107,7 +111,7 @@ def create(current_user):
             resp = json.loads(create_circle.text)
             flash(resp["message"], "success")
 
-            return redirect(url_for("user.circles", username=resp["payload"]))
+            return redirect(url_for("user.circles", username=current_user["username"]))
         
         flash(json.loads(create_circle.text)["message"], "danger")
 

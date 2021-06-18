@@ -5,6 +5,7 @@ from ..util.decorator import session_required
 from ..service.post_service import PostService
 from ..service.pet_service import PetService
 from ..form.post_form import CreatePostForm, DeletePostForm
+from ..form.comment_form import CreateCommentForm
 from dateutil import parser
 
 @post_bp.route("/<post_pid>", methods=["GET", "POST"])
@@ -20,7 +21,8 @@ def comments(current_user, post_pid):
             page_title = "Post profile",
             current_user = current_user,
             this_post = this_post,
-            deletePostForm = DeletePostForm()
+            deletePostForm = DeletePostForm(),
+            createCommentForm = CreateCommentForm()
         )
     else:
         abort(404)

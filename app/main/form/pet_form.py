@@ -17,7 +17,7 @@ class CreatePetForm(FlaskForm):
     submit_input = SubmitField("Create pet")
 
 class EditPetForm(FlaskForm):
-    name_input = StringField("Name", default="", validators=[DataRequired(), Length(min=2, max=30)])
+    name_input = StringField("Name", validators=[DataRequired(), Length(min=2, max=30)])
     bio_input = TextAreaField("Bio", validators=[Length(max=50)])
     birthday_input = DateField("Birthday", format="%Y-%m-%d")
     status_input = RadioField("Status", coerce=int, choices=[(0, "Closed"), (1, "Open for adoption")], validators=[InputRequired()])
@@ -28,8 +28,8 @@ class EditPetForm(FlaskForm):
     submit_input = SubmitField("Update pet")
 
 class DeletePetForm(FlaskForm):
-    name_input = StringField("Name", default="", validators=[DataRequired(), Length(min=2, max=30), EqualTo("confirm_name_input", message='Name must match.')])
-    confirm_name_input = StringField("The Name", default="")
+    name_input = StringField("Name", validators=[DataRequired(), Length(min=2, max=30), EqualTo("confirm_name_input", message='Name must match.')])
+    confirm_name_input = StringField()
     submit_input = SubmitField("Delete pet")
 
 class FollowPetForm(FlaskForm):
@@ -48,7 +48,7 @@ class CreatePetOwnerForm(FlaskForm):
     submit_input  = SubmitField("Add")
 
 class DeletePetOwnerForm(FlaskForm):
-    owner_input = StringField(default="")
+    owner_input = StringField()
     confirm_name_input = StringField()
     name_input = StringField("Name", validators=[DataRequired(), Length(min=2, max=30), EqualTo("confirm_name_input", message='Name must match.')])
     submit_input  = SubmitField("Remove")

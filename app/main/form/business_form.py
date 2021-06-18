@@ -59,3 +59,20 @@ class DeleteBusinessForm(FlaskForm):
     name_input = StringField("Name", validators=[DataRequired(), Length(max=30), EqualTo("confirm_name_input", message='Name must match.')])
     confirm_name_input = StringField()
     submit_input = SubmitField("Delete business")
+
+class FollowBusinessForm(FlaskForm):
+    submit_input = SubmitField("Follow business")
+
+class UnfollowBusinessForm(FlaskForm):
+    follower_input = StringField()
+    submit_input = SubmitField()
+
+class CreateBusinessExecutiveForm(FlaskForm):
+    executive_input = StringField()
+    submit_input  = SubmitField("Add")
+
+class DeleteBusinessExecutiveForm(FlaskForm):
+    executive_input = StringField()
+    confirm_name_input = StringField()
+    name_input = StringField("Name", validators=[DataRequired(), Length(min=2, max=30), EqualTo("confirm_name_input", message='Name must match.')])
+    submit_input  = SubmitField("Remove")

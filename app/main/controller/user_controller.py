@@ -5,7 +5,7 @@ from ..service.user_service import UserService
 from ..util.decorator import session_required
 from ..form.user_form import EditUserForm
 from ..form.pet_form import CreatePetForm, FollowPetForm, UnfollowPetForm
-from ..form.business_form import CreateBusinessForm
+from ..form.business_form import CreateBusinessForm, FollowBusinessForm, UnfollowBusinessForm
 from ..service.specie_service import SpecieService
 from ..service.breed_service import BreedService
 from ..service.pet_service import PetService
@@ -17,11 +17,6 @@ from ..service.businessType_service import BusinessTypeService
 from ..form.circle_form import CreateCircleForm
 from ..service.circleType_service import CircleTypeService
 from ..service.circle_service import CircleService
-
-@user_bp.route("/", methods=["GET"])
-@session_required
-def search(current_user):
-    return jsonify(json.loads(UserService.search(request.args.get("search")).text)["data"])
 
 @user_bp.route("/<username>", methods=["GET", "POST"])
 @user_bp.route("/<username>/pets", methods=["GET", "POST"])
@@ -100,6 +95,8 @@ def businesses(current_user, username):
             this_user = current_user,
             editUserForm = editUserForm,
             createBusinessForm = createBusinessForm,
+            followBusinessForm = FollowBusinessForm(),
+            unfollowPetForm = UnfollowBusinessForm(),
             business_list = json.loads(BusinessService.get_all_by_user(session["booped_in"], current_user["public_id"]).text)["data"]
         )
     else:
@@ -128,6 +125,11 @@ def circles(current_user, username):
         )
     else:
         abort(403)
+
+@user_bp.route("/", methods=["GET"])
+@session_required
+def search(current_user):
+    return jsonify(json.loads(UserService.search(request.args.get("search")).text)["data"])
 
 @user_bp.route("/create", methods=["POST"])
 def create():

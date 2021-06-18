@@ -368,13 +368,13 @@ for (i = 0; i < parentInput.length; i++) {
     }
 }
 // =====================================================================================================================================================================
-autocomplete(document.getElementById("cpof-autocomplete"));
+autocomplete(document.getElementById("autocomplete"));
 function autocomplete(div) {
      inp = div.querySelectorAll("input")[0];
      pidHolder = div.querySelectorAll("input")[1];
-
+     url = div.getAttribute("href");
+     
      var currentFocus;
-
      var typingTimer;
      var doneTypingInterval = 2000;
      inp.addEventListener("input", function(e) {
@@ -392,7 +392,7 @@ function autocomplete(div) {
           typingTimer = setTimeout(function () {
                $.ajax({
                     type: "GET",
-                    url: "/user/?search=" + val,
+                    url: url + "?search=" + val,
      
                     success: function (response) {
                          for (let user of response) {

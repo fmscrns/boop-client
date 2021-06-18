@@ -104,3 +104,60 @@ class BusinessService:
                 "Authorization" : "Bearer {}".format(session["booped_in"])
             }
         )
+    
+    @staticmethod
+    def follow(pid):
+        return requests.post("{}/business/{}/follower/".format(
+            current_app.config["API_DOMAIN"],
+            pid),
+            headers = {
+                "Authorization" : "Bearer {}".format(session["booped_in"])
+            }
+        )
+    
+    @staticmethod
+    def unfollow(pid, data):
+        return requests.delete("{}/business/{}/follower/{}".format(
+            current_app.config["API_DOMAIN"],
+            pid,
+            data.get("follower_input")),
+            headers = {
+                "Authorization" : "Bearer {}".format(session["booped_in"])
+            }
+        )
+    
+    @staticmethod
+    def get_all_followers(token, pid):
+        return requests.get("{}/business/{}/follower/".format(
+            current_app.config["API_DOMAIN"],
+            pid),
+            headers = {
+                "Authorization" : "Bearer {}".format(token)
+            }
+        )
+
+    @staticmethod
+    def create_executive(pid, token, data):
+        return requests.post("{}/business/{}/executive/".format(
+            current_app.config["API_DOMAIN"], 
+            pid),
+            headers = {
+                "Authorization" : "Bearer {}".format(token)
+            },
+            json = {
+                "public_id": data.get("cbef-executive_input")
+            }
+        )
+    
+    @staticmethod
+    def delete_executive(pid, token, data):
+        return requests.delete("{}/business/{}/executive/{}".format(
+            current_app.config["API_DOMAIN"], 
+            pid,
+            data.get("dbef-executive_input")),
+            headers = {
+                "Authorization" : "Bearer {}".format(token)
+            }, json = {
+                "name": data.get("dbef-name_input")
+            }
+        )

@@ -44,7 +44,7 @@ class CircleService:
             headers = {
                 "Authorization" : "Bearer {}".format(token)
             }, json = {
-                "name_input": data.get("dcaf-name_input")
+                "name": data.get("dcaf-name_input")
             }
         )
     
@@ -123,20 +123,10 @@ class CircleService:
         )
     
     @staticmethod
-    def get_all_pending_circle_members(token, pid):
-        return requests.get("{}/circle/{}/member/?type=0".format(
+    def get_all_members(token, pid, type, search_value):
+        return requests.get("{}/circle/{}/member/?type={}&{}".format(
             current_app.config["API_DOMAIN"],
-            pid),
-            headers = {
-                "Authorization" : "Bearer {}".format(token)
-            }
-        )
-
-    @staticmethod
-    def get_all_confirmed_circle_members(token, pid):
-        return requests.get("{}/circle/{}/member/?type=1".format(
-            current_app.config["API_DOMAIN"],
-            pid),
+            pid, type, "search={}".format(search_value) if search_value else ""),
             headers = {
                 "Authorization" : "Bearer {}".format(token)
             }

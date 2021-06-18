@@ -10,7 +10,16 @@
                     <img src="{{ config.MEDIA_STORAGE + this_business['photo'] }}" alt="..." class="rounded mx-auto d-block w-25">
                     <div class="container">
                         <h1 class="display-6">{{ this_business["name"] }}</h1>
-                        {% if this_business["executive_id"] == current_user["public_id"] %}
+                        {% if this_business["visitor_auth"] == 2 %}
+                            Executives:
+                            <div class="container-fluid d-flex flex-row p-0 mt-1">
+                                {% for executive in this_business["executive"] %}
+                                    <a href="{{ url_for('user.pets', username=executive['username']) }}">
+                                        <img class="pp-opp {%if loop.index > 1%}ml-1{%endif%}" src="{{ url_for('static', filename='images/{}'.format(executive.photo)) }}" alt="..." class="rounded d-block w-25 border">
+                                    </a>
+                                {% endfor %}
+                            </div>
+                            <br>
                             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editBusinessModal">
                                 <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
                             </button>
@@ -45,6 +54,53 @@
                                         </div>
                                         {{ editBusinessForm.submit_input(class="btn btn-primary float-right btn-block") }}
                                     </form>
+                                    <form class="border-top modal-body" method="POST" action="{{ url_for('business.create_executive', business_pid=this_business.public_id) }}">
+                                        <h5 class="mb-3">Add new executive</h5>
+                                        {{ createBusinessExecutiveForm.hidden_tag() }}
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div id="autocomplete" href="/user/" class="container-fluid p-0">
+                                                <input class="form-control form-control-sm" placeholder="Name or username">
+                                                {{ createBusinessExecutiveForm.executive_input(hidden=True) }}
+                                            </div>
+                                            {{ createBusinessExecutiveForm.submit_input(class="btn btn-primary ml-2 btn-sm") }}
+                                        </div>
+                                    </form>
+                                    <div class="container border-top pt-3">
+                                        <h5>Executives</h5>
+                                        {% for executive in this_business["executive"] %}
+                                            <div class="d-flex justify-content-between p-2">
+                                                <span>{% if executive.public_id == current_user.public_id %}You{% else %}{{ executive["name"] }}{% endif %}</span>
+                                                {% if this_business["executive"]|length > 1 %}
+                                                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deletePetOwnerModal{{ loop.index }}">
+                                                        Remove
+                                                    </button>
+                                                    <div class="modal fade" id="deletePetOwnerModal{{ loop.index }}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <form class="modal-content" method="POST" action="{{ url_for('business.delete_executive', business_pid=this_business.public_id) }}">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="staticBackdropLabel">Remove executive</h5>
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">&times;</span>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="border-top modal-body">
+                                                                    {{ deleteBusinessExecutiveForm.hidden_tag() }}
+                                                                    {{ deleteBusinessExecutiveForm.executive_input(hidden=True, value=executive["public_id"]) }}
+                                                                    {{ deleteBusinessExecutiveForm.confirm_name_input(hidden=True, value=this_business.name) }}
+                                                                        Are you sure you want to remove {% if executive.public_id == current_user.public_id %}yourself as{% else %}this{% endif %} executive of this business?
+                                                                        {{ deleteBusinessExecutiveForm.name_input(hidden=True, value=this_business.name) }}
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                    {{ deleteBusinessExecutiveForm.submit_input(class="btn btn-danger") }}
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
                                     <form class="border-top modal-body" method="POST" action="{{ url_for('business.delete', business_pid=this_business.public_id) }}">
                                         <h5 class="mb-3">Delete business</h5>
                                         {{ deleteBusinessForm.hidden_tag() }}
@@ -60,60 +116,82 @@
                                 </div>
                             </div>
                         {% else %}
-                            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#createAppointmentModal">
-                                Create appointment
-                            </button>
-                            <div class="modal fade" id="createAppointmentModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                <form class="modal-content" method="POST" action="{{ url_for('appointment.create') }}" enctype="multipart/form-data">
-                                    <div class="modal-header">
-                                    <h5 class="modal-title" id="staticBackdropLabel">Create appointment</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
+                            <div class="d-flex flex-row">
+                                <div class="mr-2">
+                                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#createAppointmentModal">
+                                        Create appointment
                                     </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        {{ createAppointmentForm.hidden_tag() }}
-                                        <div class="form-group">
-                                            {{ createAppointmentForm.details_input.label }}
-                                            {{ createAppointmentForm.details_input(class="form-control form-control-sm") }}
+                                    <div class="modal fade" id="createAppointmentModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                        <form class="modal-content" method="POST" action="{{ url_for('appointment.create') }}" enctype="multipart/form-data">
+                                            <div class="modal-header">
+                                            <h5 class="modal-title" id="staticBackdropLabel">Create appointment</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                {{ createAppointmentForm.hidden_tag() }}
+                                                <div class="form-group">
+                                                    {{ createAppointmentForm.details_input.label }}
+                                                    {{ createAppointmentForm.details_input(class="form-control form-control-sm") }}
+                                                </div>
+                                                <div class="form-group">
+                                                    {{ createAppointmentForm.type_input.label }}
+                                                    {{ createAppointmentForm.type_input(class="form-control form-control-sm") }}
+                                                </div>
+                                                <div class="form-group">
+                                                    {{ createAppointmentForm.pet_input.label }}
+                                                    {{ createAppointmentForm.pet_input(class="form-control form-control-sm") }}
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            {{ createAppointmentForm.submit_input(class="btn btn-primary") }}
+                                            </div>
+                                        </form>
                                         </div>
-                                        <div class="form-group">
-                                            {{ createAppointmentForm.type_input.label }}
-                                            {{ createAppointmentForm.type_input(class="form-control form-control-sm") }}
-                                        </div>
-                                        <div class="form-group">
-                                            {{ createAppointmentForm.pet_input.label }}
-                                            {{ createAppointmentForm.pet_input(class="form-control form-control-sm") }}
-                                        </div>
                                     </div>
-                                    <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    {{ createAppointmentForm.submit_input(class="btn btn-primary") }}
-                                    </div>
-                                </form>
                                 </div>
+                                {% if this_business["visitor_auth"] == 1 %}
+                                    <form method="POST" action="{{ url_for('business.unfollow', business_pid=this_business['public_id']) }}">
+                                        {{ unfollowBusinessForm.hidden_tag() }}
+                                        <div class="form-group">
+                                            {{ unfollowBusinessForm.follower_input(hidden=True, value=current_user["public_id"]) }}
+                                            {{ unfollowBusinessForm.submit_input(class="btn btn-outline-primary btn-sm", value="Unfollow") }}
+                                        </div>
+                                    </form>
+                                {% else %}
+                                    <form method="POST" action="{{ url_for('business.follow', business_pid=this_business['public_id']) }}">
+                                        {{ followBusinessForm.hidden_tag() }}
+                                        <div class="form-group">
+                                            {{ followBusinessForm.submit_input(class="btn btn-primary btn-sm") }}
+                                        </div>
+                                    </form>
+                                {% endif %}
                             </div>
                         {% endif %}
                     </div>
                 </div>
-                <div class="">
-                    <div class="d-flex flex-column ml-2 container">
-                        <span>Bio: {{ this_business.bio }}</span>
-                        <span>Type: {% for type in this_business._type %}| {{ type.name }} {% endfor %}</span>
-                    </div>
+                <br>
+                <div class="d-flex flex-column ml-2 container">
+                    <span>Bio: {{ this_business.bio }}</span>
+                    <span>Type: {% for type in this_business._type %}| {{ type.name }} {% endfor %}</span>
                 </div>
                 <ul class="nav row m-0 border rounded mt-3">
                     <li class="nav-item col d-flex justify-content-center">
-                      <a class="nav-link active" href="{{ url_for('business.posts', business_pid=this_business['public_id']) }}">Posts</a>
+                      <a class="nav-link" href="{{ url_for('business.posts', business_pid=this_business['public_id']) }}">Posts</a>
                     </li>
                     <li class="nav-item col d-flex justify-content-center">
                       <a class="nav-link" href="#">Media</a>
                     </li>
+                    <li class="nav-item col d-flex justify-content-center">
+                        <a class="nav-link" href="{{ url_for('business.followers', business_pid=this_business['public_id']) }}">Followers</a>
+                      </li>
                 </ul>
             </div>
             {% if createPostForm %}
-                {% if this_business["executive_id"] == current_user["public_id"] %}
+                {% if this_business["visitor_auth"] == 2 %}
                     <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#createPostModal">
                         Create post
                     </button>
@@ -198,6 +276,39 @@
                       </li>
                     </ul>
                 </nav>
+            {% elif inviteFollowerForm %}
+            {% if this_business["executive"] %}
+            {% for executive in this_business["executive"] %}
+                <a href="{{ url_for('user.pets', username=executive.username) }}" class="container-fluid border p-4 mt-3">
+                    <div class="d-flex flex-row">
+                        <img class="home-content-profPic" src="{{ config.MEDIA_STORAGE + executive['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                        <div class="d-flex flex-column ml-2 container">
+                            <span class="font-weight-bold hci-bb-l">{% if executive.public_id == current_user.public_id %}You{% else %}{{ executive["name"] }}{% endif %}&nbsp;&nbsp;<span class="badge bg-success text-light">Executive</span></span> <span style="font-size:15px;">@{{ executive.username }}</span>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+            {% endif %}
+            {% for follower in follower_list %}
+                <a href="{{ url_for('user.pets', username=follower.username) }}" class="container-fluid border p-4 mt-3">
+                    <div class="d-flex flex-row">
+                        <img class="home-content-profPic" src="{{ config.MEDIA_STORAGE + follower['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                        <div class="d-flex flex-column ml-2 container">
+                            <span class="font-weight-bold hci-bb-l">{% if follower.public_id == current_user.public_id %}You{% else %}{{ follower["name"] }}{% endif %}&nbsp;&nbsp;<span class="badge bg-primary text-light">Follower</span></span> <span style="font-size:15px;">@{{ follower.username }}</span>
+                        </div>
+                        {% if this_business["visitor_auth"] == 2 %}
+                            <div class="float-right">
+                                {#<form method="POST" action="{{ url_for('circle.leave', circle_pid=this_business['public_id']) }}">
+                                    {{ unfollowBusinessForm.hidden_tag() }}
+                                    {{ unfollowBusinessForm.follower_input(hidden=True, value=follower["public_id"]) }}
+                                    {{ unfollowBusinessForm.submit_input(class="btn btn-outline-danger ml-2", value="Remove") }}
+                                </form>#}
+                                <button class="btn btn-outline-danger ml-2">Remove</button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </a>
+            {% endfor %}
             {% endif %}
         </div>
     </div>
