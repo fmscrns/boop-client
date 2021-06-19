@@ -238,6 +238,12 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             </div>
+                            <div class="modal-header">
+                                <img class="home-content-profPic" src="{{ config.MEDIA_STORAGE + current_user['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                                <div class="d-flex flex-column ml-2 container">
+                                    <span class="font-weight-bold hci-bb-l">{% if current_user.public_id == current_user.public_id %}{{ current_user.name}}{% else %}{{ current_user["name"] }}{% endif %}&nbsp;&nbsp;<span class="badge bg-primary text-light">You're going to post something</span></span> <span style="font-size:15px;">@{{ current_user.username }}</span>
+                                </div>
+                            </div>
                             <div class="modal-body">
                                 {{ createPostForm.hidden_tag() }}
                                 {{ createPostForm.pinboard_input(class="d-none") }}
