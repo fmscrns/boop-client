@@ -179,7 +179,7 @@
     object-fit:cover;
     background:white;
     display: block;
-    border: 1px solid lightgray;
+    border: 1px solid #d3d3d3;
 }
 .pp-opp {
     border-radius:50%;
@@ -198,12 +198,250 @@
     object-fit:cover;
 }
 
-a {
-    color: #212529;
-    text-decoration: none;
-    background-color: transparent;
+// a {
+//     color: #212529;
+//     text-decoration: none;
+//     background-color: transparent;
+// }
+// a:hover {
+//     color: black;
+//     text-decoration: underline;
+// }
+
+.tooltip-cont > .tooltip-photo {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
 }
-a:hover {
-    color: black;
-    text-decoration: underline;
+
+.post > .post-user-photo {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    margin: 10px;
+    z-index: 1;
+}
+
+.pcp-1 {
+    width: 31px;
+    height: 60px;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+    border: 1px solid #dee2e6;
+    background-color: white;
+}
+
+.pcp-2 {
+    left: 30px;
+    width:19px;
+    height: 60px;
+    border-top: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+    background-color: white;
+}
+
+.post > .post-content {
+    border-top-left-radius: 0 !important;
+    background-color: white;
+}
+
+.post > .post-content > .post-body {
+    margin-top: 7px;
+}
+
+.post > .post-content > .post-photo-cont {
+    overflow: hidden;
+}
+
+.post > .post-content > .post-relevant-pets > span > a > img {
+    width:20px;
+    height:20px;
+    object-fit: cover;
+}
+
+.post > .post-content > .post-relevant-pets > span > a:hover {
+    cursor: pointer;
+}
+
+.post > .post-content > .post-footer > .nav-item :hover .st0 {
+    fill: gray;
+}
+
+.comm-list > .comm-li {
+    background-color: transparent !important;
+    border-bottom: none !important;
+}
+
+.mp-0 {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.gall-i-s1 {
+    height: 400px !important;
+    width: 100%;
+    object-fit: cover;
+}
+
+.gall-i-s2 {
+    height: 300px !important;
+    width: 100%;
+    object-fit: cover;
+}
+
+.gall-i-s3 {
+    height: 200px !important;
+    width: 100%;
+    object-fit: cover;
+}
+
+.gall-i-s4 {
+    object-fit: cover;
+}
+
+.gall-i-s5 {
+    height: 300px !important;
+    object-fit: cover;
+}
+
+.gall-i-s6 {
+    width: 100%;
+    height: 150px !important;
+    object-fit: cover;
+}
+
+.gall-br-tl {
+    border-top-left-radius: 0.25rem;
+}
+
+.gall-br-tr {
+    border-top-right-radius: 0.25rem;
+}
+
+.gall-br-bl {
+    border-bottom-left-radius: 0.25rem;
+}
+
+.gall-br-br {
+    border-bottom-right-radius: 0.25rem;
+}
+
+
+.gall-p-t {
+    padding-top: 0.15rem;
+}
+
+.gall-p-b {
+    padding-left: 0.15rem;
+}
+
+.gall-p-l {
+    padding-left: 0.15rem;
+}
+
+.gall-p-r {
+    padding-right: 0.15rem;
+}
+
+.gall-p-tblr {
+    padding: 0.15rem;
+}
+
+.gall-p-blr {
+    padding: 0 0.15rem 0.15rem 0.15rem;
+}
+
+.gall-p-tbr {
+    padding: 0.15rem 0.15rem 0.15rem 0;
+}
+
+.gall-p-tlr {
+    padding: 0.15rem 0.15rem 0 0.15rem;
+}
+
+.gall-p-tbl {
+    padding: 0.15rem 0 0.15rem 0.15rem;
+}
+
+.gall-p-tl {
+    padding-top: 0.15rem;
+    padding-left: 0.15rem;
+}
+
+.gall-p-tr {
+    padding-top: 0.15rem;
+    padding-right: 0.15rem;
+}
+
+.gall-p-bl {
+    padding-bottom: 0.15rem;
+    padding-left: 0.15rem;
+}
+
+.gall-p-br {
+    padding-bottom: 0.15rem;
+    padding-right: 0.15rem;
+}
+
+.gall-p-lr {
+    padding-left: 0.15rem;
+    padding-right: 0.15rem;
+}
+
+.cr-post > .cr-post-user-photo {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    margin: 10px;
+    z-index: 1;
+}
+
+.cr-post > .cr-pcp-1 {
+    width: 31px;
+    height: 60px;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+    border: 1px solid #dee2e6;
+    background-color: white;
+}
+
+.cr-post > .cr-pcp-2 {
+    left: 30px;
+    width:19px;
+    height: 60px;
+    border-top: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+    background-color: white;
+}
+
+.cr-post > .cr-post-content {
+    border-top-left-radius: 0 !important;
+    background-color: white;
+    width: 100%;
+}
+
+.cr-post > .cr-post-content > .cr-post-pre-aa {
+    margin-top: 13px;
+}
+
+.cr-post > .cr-post-content > .cr-post-pre-aa > a {
+    text-decoration: none;
+}
+
+.input-pretend {
+    background-color: whitesmoke;
+    border-radius: 0.25rem;
+    margin-top: 13px;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.input-pretend:hover {
+    background-color: rgba(231, 231, 231, 0.918);
+    cursor: pointer;
+}
+
+.border-glow-dark-sm {
+    box-shadow: 1px 1px 10px -7.5px#888888;
 }

@@ -169,6 +169,6 @@ def edit(current_user, user_pid):
     if editUserForm.errors:
         for key in editUserForm.errors:
             for message in editUserForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("user.pets", username=current_user["username"]))

@@ -1,3 +1,4 @@
+from app.main.service.comment_service import CommentService
 import json
 from flask import Flask, render_template, request, session, flash, redirect, url_for, abort
 from ... import post_bp
@@ -5,8 +6,7 @@ from ..util.decorator import session_required
 from ..service.post_service import PostService
 from ..service.pet_service import PetService
 from ..form.post_form import CreatePostForm, DeletePostForm
-from ..form.comment_form import CreateCommentForm
-from dateutil import parser
+from ..form.comment_form import CreateCommentForm, DeleteCommentForm
 
 @post_bp.route("/<post_pid>", methods=["GET", "POST"])
 @post_bp.route("/<post_pid>/comments", methods=["GET", "POST"])
@@ -15,15 +15,15 @@ def comments(current_user, post_pid):
     get_resp = PostService.get_by_pid(post_pid)
     if get_resp.ok:
         this_post = json.loads(get_resp.text)
-        this_post["registered_on"] = parser.parse(this_post["registered_on"])
-        
         return render_template("post_profile.html",
             page_title = "Post profile",
             current_user = current_user,
             this_post = this_post,
             deletePostForm = DeletePostForm(),
-            createCommentForm = CreateCommentForm()
-        )
+            createCommentForm = CreateCommentForm(),
+            deleteCommentForm = DeleteCommentForm(),
+            comment_list = json.loads(CommentService.get_all_by_post(session["booped_in"], this_post["public_id"]).text)["data"]
+        )        
     else:
         abort(404)
 
@@ -64,14 +64,13 @@ def create(current_user):
 @session_required
 def delete(current_user, post_pid):
     deletePostForm = DeletePostForm()
-    creator_username = json.loads(PostService.get_by_pid(post_pid).text)["creator_username"]
     if deletePostForm.validate_on_submit():
         delete_post = PostService.delete(post_pid)
 
         if delete_post.ok:
             flash(json.loads(delete_post.text)["message"], "success")
 
-            return redirect(url_for("user.posts", username=creator_username))
+            return redirect(url_for("user.posts", username=current_user["username"]))
         
         flash(json.loads(delete_post.text), "danger")
 
@@ -80,4 +79,4 @@ def delete(current_user, post_pid):
             for message in deletePostForm.errors[key]:
                 flash(message, "danger")
 
-    return redirect(url_for("post.comments", post_pid=pid))
+    return redirect(url_for("post.comments", post_pid=post_pid))

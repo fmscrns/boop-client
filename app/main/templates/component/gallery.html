@@ -1,0 +1,248 @@
+{% macro gallery(config, type, photo_cont) %}
+    {% set length = photo_cont|length %}
+    {% if type == "d1" %} {# 4 maximum images only and return a square container #}
+        <div class="row p-0">
+            {% for n in range(length) %}
+                {% if loop.length == 1 %}
+                    <div class="col mp-0">
+                        <img class="img-fluid gall-item gall-i-s1" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                    </div>
+                {% elif loop.length == 2 %}
+                    {% if loop.index == 1 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s5 gall-p-r" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                        </div>
+                    {% elif loop.index == 2 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s5 gall-p-l" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                        </div>
+                    {% endif %}
+                {% elif loop.length == 3 %}
+                    {% if loop.index == 1 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s5 gall-p-r" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                        </div>
+                        <div class="col row mp-0">
+                    {% elif loop.index == 2 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s6 gall-p-bl" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                        </div>
+                        <div class="w-100"></div>
+                    {% elif loop.index == 3 %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s6 gall-p-tl" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                            </div>
+                        </div>
+                    {% endif %}
+                {% elif loop.length == 4 %}
+                    {% if loop.index == 1 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s6 gall-p-br" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                        </div>
+                    {% elif loop.index == 2 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s6 gall-p-bl" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                        </div>
+                        <div class="w-100"></div>
+                    {% elif loop.index == 3 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s6 gall-p-tr" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                        </div>
+                    {% elif loop.index == 4 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s6 gall-p-tl" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% elif type == "d2" %} {# neverending height and 3 images per row #}
+        <div class="row p-0 {% if length <= 3 %}rounded{% elif length > 3 %}rounded-top{% endif %} hide-overflow">
+            {% for n in range(length) %}
+                {% if loop.length == 1 %}
+                    <div class="col mp-0">
+                        <img class="img-fluid gall-item gall-i-s1" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                    </div>
+                {% elif loop.length == 2 %}
+                    {% if loop.index == 1 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s2 gall-p-r" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}>
+                        </div>
+                    {% elif loop.index == 2 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s2 gall-p-l" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                        </div>
+                    {% endif %}
+                {% elif loop.length == 3 %}
+                    {% if loop.index == 1 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s3 gall-p-r" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                        </div>
+                    {% elif loop.index == 2 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s3 gall-p-lr" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}>
+                        </div>
+                    {% elif loop.index == 3 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s3 gall-p-l" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}>
+                        </div>
+                    {% endif %}
+                {% elif loop.length > 3 %}
+                    {% if loop.index == 1 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s3 gall-p-br" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                        </div>
+                    {% elif loop.index == 2 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s3 gall-p-blr" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}>
+                        </div>
+                    {% elif loop.index == 3 %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s3 gall-p-bl" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                            </div>
+                        </div>
+                        <div class="row rounded-bottom hide-overflow">
+                    {% elif loop.length % 3 == 1 %}
+                        {% if (loop.index % 3 == 1) and (loop.index <= loop.length - 1 ) %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s3 gall-p-tbr" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}>
+                            </div>
+                        {% elif (loop.index % 3 == 2) and (loop.index <= loop.length - 1 ) %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s3 gall-p-tblr" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}>
+                            </div>
+                        {% elif (loop.index % 3 == 0) and (loop.index <= loop.length - 1 ) %}
+                                <div class="col mp-0">
+                                    <img class="img-fluid gall-item gall-i-s3 gall-p-tbl" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}>
+                                </div>
+                            </div>
+                            <div class="row rounded-bottom hide-overflow">
+                        {% else %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s1 gall-p-t" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                            </div>
+                        {% endif %}
+                    {% elif loop.length % 3 == 2 %}
+                        {% if (loop.index % 3 == 1) and (loop.index <= loop.length - 2 ) %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s3 gall-p-tbr" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                            </div>
+                        {% elif (loop.index % 3 == 2) and (loop.index <= loop.length - 2 ) %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s3 gall-p-tblr" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}>
+                            </div>
+                        {% elif (loop.index % 3 == 0) and (loop.index <= loop.length - 2 ) %}
+                                <div class="col mp-0">
+                                    <img class="img-fluid gall-item gall-i-s3 gall-p-tbl" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}>
+                                </div>
+                            </div>
+                            <div class="row rounded-bottom hide-overflow">
+                        {% elif loop.index == (loop.length - 1) %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s2 gall-p-tr" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                            </div>
+                        {% else %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s2 gall-p-tl" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                            </div>
+                        {% endif %}
+                    {% elif loop.length % 3 == 0 %}
+                        {% if (loop.index % 3 == 1) and (loop.index <= loop.length - 3 ) %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s3 gall-p-tbr" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                            </div>
+                        {% elif (loop.index % 3 == 2) and (loop.index <= loop.length - 3 ) %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s3 gall-p-tblr" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                            </div>
+                        {% elif (loop.index % 3 == 0) and (loop.index <= loop.length - 3 ) %}
+                                <div class="col mp-0">
+                                    <img class="img-fluid gall-item gall-i-s3 gall-p-tbl" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                                </div>
+                            </div>
+                            <div class="row rounded-bottom hide-overflow">
+                        {% elif loop.index == (loop.length - 2) %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s3 gall-p-tr" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}>
+                            </div>
+                        {% elif loop.index == (loop.length - 1) %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s3 gall-p-tlr" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                            </div>
+                        {% else %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s3 gall-p-tl" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% elif type == "d3" %} {# neverending height and 2 images per row #}
+        <div class="row p-0 {% if length <= 2 %}rounded{% elif length > 2 %}rounded-top{% endif %} hide-overflow">
+            {% for n in range(length) %}
+                {% if loop.length == 1 %}
+                    <div class="col mp-0">
+                        <img class="img-fluid gall-item gall-i-s1" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}>
+                    </div>
+                {% elif loop.length == 2 %}
+                    {% if loop.index == 1 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s2 gall-p-r" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}>
+                        </div>
+                    {% elif loop.index == 2 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s2 gall-p-l" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                        </div>
+                    {% endif %}
+                {% elif loop.length > 2 %}
+                    {% if loop.index == 1 %}
+                        <div class="col mp-0">
+                            <img class="img-fluid gall-item gall-i-s2 gall-p-br" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}>
+                        </div>
+                    {% elif loop.index == 2 %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s2 gall-p-bl" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                            </div>
+                        </div>
+                        <div class="row rounded-bottom hide-overflow">
+                    {% elif loop.length % 2 == 1 %}
+                        {% if (loop.index % 2 == 1) and (loop.index <= loop.length - 1 ) %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s2 gall-p-tbr" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                            </div>
+                        {% elif (loop.index % 2 == 0) and (loop.index <= loop.length - 1 ) %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s2 gall-p-tbl" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}>
+                            </div>
+                            <div class="row rounded-bottom hide-overflow">
+                        {% else %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s1 gall-p-t" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                            </div>
+                        {% endif %}
+                    {% elif loop.length % 2 == 0 %}
+                        {% if (loop.index % 2 == 1) and (loop.index <= loop.length - 2 ) %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s2 gall-p-tbr" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                            </div>
+                        {% elif (loop.index % 2 == 0) and (loop.index <= loop.length - 2 ) %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s2 gall-p-tbl" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}>
+                            </div>
+                            <div class="row rounded-bottom hide-overflow">
+                        {% elif loop.index == (loop.length - 1) %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s2 gall-p-tr" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                            </div>
+                        {% else %}
+                            <div class="col mp-0">
+                                <img class="img-fluid gall-item gall-i-s2 gall-p-tl" src="{{ config.MEDIA_STORAGE + photo_cont[loop.index-1]['filename'] }}">
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endmacro %}

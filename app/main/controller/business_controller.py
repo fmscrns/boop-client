@@ -90,7 +90,7 @@ def create(current_user):
     if createBusinessForm.errors:
         for key in createBusinessForm.errors:
             for message in createBusinessForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("user.businesses", username=current_user["username"]))
 
@@ -114,7 +114,7 @@ def edit(current_user, business_pid):
     if editBusinessForm.errors:
         for key in editBusinessForm.errors:
             for message in editBusinessForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("business.posts", business_pid=business_pid))
 
@@ -135,7 +135,7 @@ def delete(current_user, business_pid):
     if deleteBusinessForm.errors:
         for key in deleteBusinessForm.errors:
             for message in deleteBusinessForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("business.posts", business_pid=business_pid))
 
@@ -157,7 +157,7 @@ def follow(current_user, business_pid):
     if followBusinessForm.errors:
         for key in followBusinessForm.errors:
             for message in followBusinessForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("business.posts", business_pid=business_pid))
 
@@ -179,7 +179,7 @@ def unfollow(current_user, business_pid):
     if unfollowBusinessForm.errors:
         for key in unfollowBusinessForm.errors:
             for message in unfollowBusinessForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("business.posts", business_pid=business_pid))
 
@@ -200,7 +200,7 @@ def create_executive(current_user, business_pid):
     if createBusinessExecutiveForm.errors:
         for key in createBusinessExecutiveForm.errors:
             for message in createBusinessExecutiveForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("business.posts", business_pid=business_pid))
 
@@ -221,6 +221,6 @@ def delete_executive(current_user, business_pid):
     if deleteBusinessExecutiveForm.errors:
         for key in deleteBusinessExecutiveForm.errors:
             for message in deleteBusinessExecutiveForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("business.posts", business_pid=business_pid))

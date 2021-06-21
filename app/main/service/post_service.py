@@ -12,7 +12,11 @@ class PostService:
             },
             json = {
                 "content": data_form.get("content_input"),
-                "photo": save_image(data_file.get("photo_input"), 2),
+                "photo": [
+                    dict(
+                        filename = save_image(data_file.get("photo_input"), 2)
+                    )
+                ],
                 "pinboard_id": data_form.get("pinboard_input"),
                 "confiner_id": data_form.get("confiner_input"),
                 "subject": [

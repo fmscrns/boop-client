@@ -97,7 +97,7 @@ def create_businessType(current_user):
     if createBusinessTypeForm.errors:
         for key in createBusinessTypeForm.errors:
             for message in createBusinessTypeForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("admin.business_types"))
 
@@ -120,7 +120,7 @@ def edit_businessType(current_user, pid):
     if editBusinessTypeForm.errors:
         for key in editBusinessTypeForm.errors:
             for message in editBusinessTypeForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("admin.business_types"))
 
@@ -142,7 +142,7 @@ def delete_businessType(current_user, pid):
     if deleteBusinessTypeForm.errors:
         for key in deleteBusinessTypeForm.errors:
             for message in deleteBusinessTypeForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("admin.business_types"))
 
@@ -166,7 +166,7 @@ def create_circleType(current_user):
     if createCircleTypeForm.errors:
         for key in createCircleTypeForm.errors:
             for message in createCircleTypeForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("admin.circle_types"))
 
@@ -189,7 +189,7 @@ def edit_circleType(current_user, pid):
     if editCircleTypeForm.errors:
         for key in editCircleTypeForm.errors:
             for message in editCircleTypeForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("admin.circle_types"))
 
@@ -211,7 +211,7 @@ def delete_circleType(current_user, pid):
     if deleteCircleTypeForm.errors:
         for key in deleteCircleTypeForm.errors:
             for message in deleteCircleTypeForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("admin.circle_types"))
 
@@ -234,7 +234,7 @@ def create_specie(current_user):
     if createSpecieForm.errors:
         for key in createSpecieForm.errors:
             for message in createSpecieForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("admin.species"))
 
@@ -257,7 +257,7 @@ def edit_specie(current_user, pid):
     if editSpecieForm.errors:
         for key in editSpecieForm.errors:
             for message in editSpecieForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("admin.species"))
 
@@ -279,7 +279,7 @@ def delete_specie(current_user, pid):
     if deleteSpecieForm.errors:
         for key in deleteSpecieForm.errors:
             for message in deleteSpecieForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("admin.species"))
 
@@ -303,7 +303,7 @@ def create_breed(current_user):
     if createBreedForm.errors:
         for key in createBreedForm.errors:
             for message in createBreedForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("admin.breeds"))
 
@@ -327,7 +327,7 @@ def edit_breed(current_user, pid):
     if editBreedForm.errors:
         for key in editBreedForm.errors:
             for message in editBreedForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("admin.breeds"))
 
@@ -350,6 +350,6 @@ def delete_breed(current_user, pid):
     if deleteBreedForm.errors:
         for key in deleteBreedForm.errors:
             for message in deleteBreedForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("admin.breeds"))

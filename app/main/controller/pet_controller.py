@@ -109,7 +109,7 @@ def create(current_user):
     if createPetForm.errors:
         for key in createPetForm.errors:
             for message in createPetForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("user.pets", username=current_user["username"]))
 
@@ -130,7 +130,7 @@ def create_owner(current_user, pet_pid):
     if createPetOwnerForm.errors:
         for key in createPetOwnerForm.errors:
             for message in createPetOwnerForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("pet.posts", pet_pid=pet_pid))
 
@@ -151,7 +151,7 @@ def delete_owner(current_user, pet_pid):
     if deletePetOwnerForm.errors:
         for key in deletePetOwnerForm.errors:
             for message in deletePetOwnerForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("pet.posts", pet_pid=pet_pid))
 
@@ -174,7 +174,7 @@ def edit(current_user, pet_pid):
     if editPetForm.errors:
         for key in editPetForm.errors:
             for message in editPetForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("pet.posts", pet_pid=pet_pid))
 
@@ -195,7 +195,7 @@ def delete(current_user, pet_pid):
     if deletePetForm.errors:
         for key in deletePetForm.errors:
             for message in deletePetForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("pet.posts", pet_pid=pet_pid))
 
@@ -217,7 +217,7 @@ def follow(current_user, pet_pid):
     if followPetForm.errors:
         for key in followPetForm.errors:
             for message in followPetForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("pet.posts", pet_pid=pet_pid))
 
@@ -239,7 +239,7 @@ def unfollow(current_user, pet_pid):
     if unfollowPetForm.errors:
         for key in unfollowPetForm.errors:
             for message in unfollowPetForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("pet.posts", pet_pid=pet_pid))
 
@@ -261,6 +261,6 @@ def accept(current_user, pet_pid):
     if acceptPetForm.errors:
         for key in acceptPetForm.errors:
             for message in acceptPetForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("pet.pending_followers", pet_pid=pet_pid))

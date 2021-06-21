@@ -1,5 +1,14 @@
 var currentDate = new Date();
 
+document.querySelectorAll(".dc-mb").forEach((button) => {
+     modal = document.getElementById("deleteCommentModal");
+
+     button.addEventListener("click", (e) => {
+          methodAction = button.getAttribute("method-action");
+          modal.querySelector(".modal-content").setAttribute("action", methodAction);
+     });
+});
+
 document.querySelectorAll(".gwac-fg-pw").forEach((formGroup) => {
      const input = formGroup.querySelector("input");
      const countDisplayCont = formGroup.querySelector(".c-cnt");
@@ -367,9 +376,8 @@ for (i = 0; i < parentInput.length; i++) {
         }
     }
 }
-// =====================================================================================================================================================================
-autocomplete(document.getElementById("autocomplete"));
-function autocomplete(div) {
+
+document.querySelectorAll(".autocomplete").forEach((div) => {
      inp = div.querySelectorAll("input")[0];
      pidHolder = div.querySelectorAll("input")[1];
      url = div.getAttribute("href");
@@ -476,8 +484,9 @@ function autocomplete(div) {
        }
      }
    }
-   /*execute a function when someone clicks in the document:*/
-//    document.addEventListener("click", function (e) {
-//        closeAllLists(e.target);
-//    });
-}
+});
+
+document.querySelectorAll(".p-dt").forEach((dateCont) => {
+     dateCont.innerHTML = moment(dateCont.innerHTML).fromNow()
+});
+     

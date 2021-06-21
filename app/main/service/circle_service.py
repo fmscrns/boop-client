@@ -18,7 +18,7 @@ class CircleService:
                         public_id = _type
                     ) for _type in data_form.getlist("type_input")
                 ],
-                "photo": save_image(data_file.get("photo_input"), 2)
+                "photo": save_image(data_file.get("photo_input"), 4)
             }
         )
 

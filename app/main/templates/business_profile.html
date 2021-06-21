@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% from "component/navbar.html" import loaded_navbar %}
+{% from "component/post.html" import post_creator, post %}
 
 {% block content %}
     {{ loaded_navbar(current_user) }}
@@ -58,7 +59,7 @@
                                         <h5 class="mb-3">Add new executive</h5>
                                         {{ createBusinessExecutiveForm.hidden_tag() }}
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <div id="autocomplete" href="/user/" class="container-fluid p-0">
+                                            <div href="/user/" class="autocomplete container-fluid p-0">
                                                 <input class="form-control form-control-sm" placeholder="Name or username">
                                                 {{ createBusinessExecutiveForm.executive_input(hidden=True) }}
                                             </div>
@@ -191,91 +192,33 @@
                 </ul>
             </div>
             {% if createPostForm %}
-                {% if this_business["visitor_auth"] == 2 %}
-                    <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#createPostModal">
-                        Create post
-                    </button>
-                    <div class="modal fade" id="createPostModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-scrollable">
-                        <form class="modal-content" method="POST" action="{{ url_for('post.create') }}" enctype="multipart/form-data">
-                            <div class="modal-header">
-                            <h5 class="modal-title" id="staticBackdropLabel">Create post</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                <div class="container">
+                    <div class="row row-cols-1 row-cols-md-1 p-0">
+                        <div class="col p-0">
+                            <div class="pt-3">
+                                {{ post_creator(current_user, createPostForm, this_business, none) }}
                             </div>
-                            <div class="modal-body">
-                                {{ createPostForm.hidden_tag() }}
-                                {{ createPostForm.pinboard_input(class="d-none", value=this_business["public_id"]) }}
-                                {{ createPostForm.confiner_input(class="d-none") }}
-                                <div class="form-group">
-                                    {{ createPostForm.photo_input.label }}
-                                    {{ createPostForm.photo_input(class="form-control form-control-sm") }}
-                                </div>
-                                <div class="form-group">
-                                    {{ createPostForm.content_input.label }}
-                                    {{ createPostForm.content_input(class="form-control form-control-sm") }}
-                                </div>
-                                <div class="form-group">
-                                    {{ createPostForm.subject_input.label }}
-                                    {{ createPostForm.subject_input(class="form-control form-control-sm") }}
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            {{ createPostForm.submit_input(class="btn btn-primary") }}
-                            </div>
-                        </form>
                         </div>
+                        {% for _post in post_list %}
+                            <div class="col p-0">
+                                {{ post(current_user, _post) }}
+                            </div>
+                        {% endfor %}
                     </div>
-                {% endif %}
-                {% for post in post_list %}
-                <div class="container-fluid border p-4 mt-3">
-                    <div class="d-flex flex-row">
-                        <div class="float-left pt-1">
-                            <img class="home-content-profPic" src="{{ url_for('static', filename='images/{}'.format(post.creator_photo)) }}" alt="..." class="rounded d-block w-25 border">
-                        </div>
-                        <div class="d-flex flex-column ml-2 container">
-                            <a href="{{ url_for('user.pets', username=post['creator_username']) }}" class="lead"><span class="font-weight-bold hci-bb-l">{{ post.creator_name }}</span> <span style="font-size:15px;">@{{ post.creator_username }} · {{ post.registered_on }}</span>
-                            </a>
-                            <br>
-                            <a href="{{ url_for('post.comments', post_pid=post.public_id) }}">Content: {{ post.content }}</a>
-                            {% if post.photo != None %}
-                                <div class="text-center">
-                                    <img class="img-fluid hci-1p" src="{{ config.MEDIA_STORAGE + post['photo'] }}" alt="..." class="rounded d-block w-25 border">
-                                </div>
-                            {% endif %}
-                            {% if post.pinboard_id %}
-                                <span>Within business: <a href="{{ url_for('business.posts', business_pid=post.pinboard_id) }}">{{ post.pinboard_name }}</a></span>
-                            {% endif %}
-                            {% if post.confiner_id %}
-                                <span>Within circle: <a href="{{ url_for('circle.posts', circle_pid=post.confiner_id) }}">{{ post.confiner_name }}</a></span>
-                            {% endif %}
-                            <span>
-                                Tagged pets:
-                                <div class="d-flex flex-row">
-                                    {% for subject in post.subject %}
-                                        <a href="{{ url_for('pet.posts', pet_pid=subject.public_id) }}" class="badge bg-light">{{ subject.name }}</a>
-                                    {% endfor %}
-                                </div>
-                            </span>
-                        </div>
-                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination rounded mt-3 justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                        </ul>
+                    </nav>
                 </div>
-                {% endfor %}
-                <nav aria-label="Page navigation">
-                    <ul class="pagination rounded mt-3 justify-content-center">
-                      <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1">Previous</a>
-                      </li>
-                      <li class="page-item"><a class="page-link" href="#">1</a></li>
-                      <li class="page-item"><a class="page-link" href="#">2</a></li>
-                      <li class="page-item"><a class="page-link" href="#">3</a></li>
-                      <li class="page-item">
-                        <a class="page-link" href="#">Next</a>
-                      </li>
-                    </ul>
-                </nav>
             {% elif inviteFollowerForm %}
             {% if this_business["executive"] %}
             {% for executive in this_business["executive"] %}

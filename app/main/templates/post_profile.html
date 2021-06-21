@@ -1,114 +1,67 @@
 {% extends "layout.html" %}
 {% from "component/navbar.html" import loaded_navbar %}
+{% from "component/post.html" import comment_creator, post, comment %}
 
 {% block content %}
     {{ loaded_navbar(current_user) }}
     <div class="container-fluid d-flex justify-content-center pt-5 my-3">
         <div class="d-flex flex-column w-50">
-            <div class="jumbotron jumbotron-fluid rounded w-100 d-flex flex-column mb-3 pb-0">
-                <div class="d-flex flex-row px-4">
-                    <img src="{{ config.MEDIA_STORAGE + this_post['photo'] }}" alt="..." class="rounded mx-auto d-block w-25">
-                    <div class="container">
-                        <h1 class="display-6">{{ this_post["content"] }}</h1>
-                        <p class="lead"><a href="{{ url_for('user.pets', username=this_post['creator_username']) }}">{{ this_post["creator_name"] }}'s</a> post</p>
-                        <p class="text-muted">{{ this_post.registered_on.strftime("%b %d, %Y") }}</p>
-                        
-                        {% if this_post["creator_id"] == current_user["public_id"] %}
-                            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editProfileModal">
-                                <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
-                            </button>
-                            <div class="modal fade" id="editProfileModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                        <h5 class="modal-title" id="staticBackdropLabel">Post Settings</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                        </div>
-                                        <form class="modal-body" method="POST" action="{{ url_for('post.delete', post_pid=this_post.public_id) }}">
-                                            <h5 class="mb-3">Delete post</h5>
-                                            {{ deletePostForm.hidden_tag() }}
-                                            {{ deletePostForm.submit_input(class="btn btn-danger float-right btn-block mt-3") }}
-                                        </form>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
+            {{ post(current_user, this_post) }}
+            <div class="container pl-5 mr-5">
+                <div class="row row-cols-1 row-cols-md-1 p-0">
+                    <div class="col p-0">
+                        <div class="pt-3">
+                            {{ comment_creator(current_user, this_post, createCommentForm) }}
+                        </div>
                     </div>
-                </div>
-                <br>
-                <div class="container d-flex flex-row">
-                    Tagged pets:
-                    {% for subject in this_post.subject %}
-                        <a href="{{ url_for('pet.posts', pet_pid=subject.public_id) }}" class="badge bg-light">{{ subject.name }}</a>
+                    {% for _comment in comment_list %}
+                        <div class="col p-0">
+                            {{ comment(current_user, _comment) }}
+                        </div>
                     {% endfor %}
                 </div>
-                <br>
-                <div class="col mp-0" style="font-size:13px;">
-                    20 likes · 1 comment
-                </div>
-                <ul class="nav row m-0 border rounded mt-3">
-                    <li class="nav-item col d-flex justify-content-center">
-                        <img class="hci-bb-p" src="{{ url_for('static', filename='assets/comment.svg') }}">
-                        <a class="nav-link active" href="{{ url_for('post.comments', post_pid=this_post['public_id']) }}">Comments</a>
-                    </li>
-                    <li class="nav-item col d-flex justify-content-center">
-                        <img class="hci-bb-p" src="{{ url_for('static', filename='assets/star.svg') }}">
-                        <a class="nav-link" href="#likes">Likes</a>
-                    </li>
-                </ul>
             </div>
-            {% if createCommentForm %}
-                <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#createPostModal">
-                    Add comment
-                </button>
-                <div class="modal fade" id="createPostModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-scrollable">
-                    <form class="modal-content" method="POST" action="{{ url_for('post.comments', post_pid=this_post.public_id) }}" enctype="multipart/form-data">
-                        <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel">Add comment</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                {{ createCommentForm.photo_input.label }}
-                                {{ createCommentForm.photo_input(class="form-control form-control-sm") }}
-                            </div>
-                            <div class="form-group">
-                                {{ createCommentForm.content_input.label }}
-                                {{ createCommentForm.content_input(class="form-control form-control-sm") }}
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            {{ createCommentForm.submit_input(class="btn btn-primary") }}
-                        </div>
-                    </form>
-                    </div>
-                </div>
-            {% endif %}
-            <div class="container-fluid border p-4 mt-3">
-                <div class="d-flex flex-row">
-                    <div class="float-left pt-1">
-                        <img class="home-content-profPic" src="{{ url_for('static', filename='images/default_user.jpg') }}" alt="..." class="rounded d-block w-25 border">
-                    </div>
-                    <div class="d-flex flex-column ml-2 container">
-                        <a href="#" class="lead"><span class="font-weight-bold hci-bb-l">Test</span> <span style="font-size:15px;">@tester · June 14, 2021</span>
-                        </a>
-                        <br>
-                        <a href="#">Content: Hello World</a>
-                            <div class="text-center">
-                                <img class="img-fluid hci-1p" src="{{ url_for('static', filename='images/default_post.jpg') }}" alt="..." class="rounded d-block w-25 border">
-                            </div>
-                    </div>
-                </div>
+        </div>
+    </div>
+    <div class="modal" id="deleteCommentModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+        <form class="modal-content" method="POST" action="{{ url_for('comment.delete', comment_pid='') }}" enctype="multipart/form-data">
+            <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Delete comment</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
             </div>
+            <div class="modal-body">
+                {{ deleteCommentForm.hidden_tag() }}
+                {{ deleteCommentForm.parent_input(hidden=True, value=this_post.public_id) }}
+                Are you sure you want to delete your comment?
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            {{ deleteCommentForm.submit_input(class="btn btn-primary") }}
+            </div>
+        </form>
+        </div>
+    </div>
+    <div class="modal" id="deletePostModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+        <form class="modal-content" method="POST" action="{{ url_for('comment.delete', comment_pid='') }}" enctype="multipart/form-data">
+            <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Delete comment</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                {{ deletePostForm.hidden_tag() }}
+                Are you sure you want to delete your comment?
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            {{ deletePostForm.submit_input(class="btn btn-primary") }}
+            </div>
+        </form>
         </div>
     </div>
 {% endblock %}
