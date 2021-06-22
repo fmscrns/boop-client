@@ -1,3 +1,4 @@
+from app.main.form.post_form import DeletePostForm
 import json
 from flask import render_template, request, session, flash, redirect, url_for, abort
 from ... import pet_bp
@@ -24,7 +25,7 @@ def posts(current_user, pet_pid):
             current_user = current_user,
             this_pet = this_pet,
             editPetForm = EditPetForm(prefix="epf"),
-            createPostForm = 1,
+            deletePostForm = DeletePostForm(),
             deletePetForm = DeletePetForm(),
             createPetOwnerForm = CreatePetOwnerForm(prefix="cpof"),
             deletePetOwnerForm = DeletePetOwnerForm(prefix="dpof"),

@@ -4,7 +4,7 @@ from ..util.decorator import session_required
 from ..service.pet_service import PetService
 from ..service.post_service import  PostService
 from ..service.user_service import *
-from ..form.post_form import CreatePostForm
+from ..form.post_form import CreatePostForm, DeletePostForm
 import json
 from dateutil import parser
 
@@ -20,6 +20,7 @@ def feed(current_user):
             page_title = "Feed",
             current_user = current_user,
             createPostForm = createPostForm,
+            deletePostForm = DeletePostForm(prefix="dptf"),
             all_Posts = json.loads(all_post_request.text)["data"]
         )
     else:

@@ -9,7 +9,7 @@ from ..service.circle_service import CircleService
 from ..service.breed_service import BreedService
 from ..service.circleType_service import CircleTypeService
 from ..service.post_service import PostService
-from ..form.post_form import CreatePostForm
+from ..form.post_form import CreatePostForm, DeletePostForm
 
 @circle_bp.route("/<circle_pid>", methods=["GET", "POST"])
 @circle_bp.route("/<circle_pid>/posts", methods=["GET", "POST"])
@@ -32,6 +32,7 @@ def posts(current_user, circle_pid):
             createCircleAdminForm = CreateCircleAdminForm(prefix="ccaf"),
             deleteCircleAdminForm = DeleteCircleAdminForm(prefix="dcaf"),
             createPostForm = createPostForm,
+            deletePostForm = DeletePostForm(prefix="dptf"),
             joinCircleForm = JoinCircleForm(),
             leaveCircleForm = LeaveCircleForm(),
             post_list = json.loads(PostService.get_all_by_circle(session["booped_in"], this_circle["public_id"]).text)["data"]

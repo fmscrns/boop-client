@@ -13,6 +13,8 @@ class CreatePostForm(FlaskForm):
     submit_input = SubmitField("Create post")
 
 class DeletePostForm(FlaskForm):
+    pinboard_input = StringField()
+    confiner_input = StringField()
     submit_input = SubmitField("Delete post")
 
 class LikePostForm(FlaskForm):

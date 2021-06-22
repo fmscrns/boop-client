@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "component/navbar.html" import loaded_navbar %}
-{% from "component/post.html" import post_creator, post %}
+{% from "component/post.html" import post_creator, post_remover, post %}
 
 {% block content %}
     {{ loaded_navbar(current_user) }}
@@ -226,6 +226,7 @@
                     </ul>
                 </nav>
             {% elif createPostForm %}
+                {{ post_remover(deletePostForm) }}
                 <div class="container">
                     <div class="row row-cols-1 row-cols-md-1 p-0">
                         {% if this_user["public_id"] == current_user["public_id"] %}

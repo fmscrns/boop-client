@@ -12,7 +12,7 @@ from ..service.pet_service import PetService
 from ..service.post_service import PostService
 from ..service.business_service import BusinessService
 from ..form.user_form import CreateUserTwoForm
-from ..form.post_form import CreatePostForm
+from ..form.post_form import CreatePostForm, DeletePostForm
 from ..service.businessType_service import BusinessTypeService
 from ..form.circle_form import CreateCircleForm
 from ..service.circleType_service import CircleTypeService
@@ -71,6 +71,7 @@ def posts(current_user, username):
             this_user = this_user,
             editUserForm = editUserForm if this_user["public_id"] == current_user["public_id"] else None,
             createPostForm = createPostForm,
+            deletePostForm = DeletePostForm(prefix="dptf"),
             post_list = json.loads(PostService.get_all_by_user(session["booped_in"], this_user["public_id"]).text)["data"]
         )
     else:

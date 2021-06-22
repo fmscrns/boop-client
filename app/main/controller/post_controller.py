@@ -19,7 +19,7 @@ def comments(current_user, post_pid):
             page_title = "Post profile",
             current_user = current_user,
             this_post = this_post,
-            deletePostForm = DeletePostForm(),
+            deletePostForm = DeletePostForm(prefix="dptf"),
             createCommentForm = CreateCommentForm(),
             deleteCommentForm = DeleteCommentForm(),
             comment_list = json.loads(CommentService.get_all_by_post(session["booped_in"], this_post["public_id"]).text)["data"]
@@ -68,14 +68,19 @@ def like(current_user, post_pid):
 @post_bp.route("/<post_pid>/delete", methods=["POST"])
 @session_required
 def delete(current_user, post_pid):
-    deletePostForm = DeletePostForm()
+    deletePostForm = DeletePostForm(prefix="dptf")
     if deletePostForm.validate_on_submit():
         delete_post = PostService.delete(post_pid)
 
         if delete_post.ok:
             flash(json.loads(delete_post.text)["message"], "success")
 
-            return redirect(url_for("user.posts", username=current_user["username"]))
+            if deletePostForm.pinboard_input.data:
+                return redirect(url_for("business.posts", business_pid=deletePostForm.pinboard_input.data))
+            elif deletePostForm.confiner_input.data:
+                return redirect(url_for("circle.posts", circle_pid=deletePostForm.confiner_input.data))
+            else:
+                return redirect(url_for("user.posts", username=current_user["username"]))
         
         flash(json.loads(delete_post.text), "danger")
 

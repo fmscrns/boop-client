@@ -1,14 +1,12 @@
 var currentDate = new Date();
 
 document.querySelectorAll(".dc-mb").forEach((button) => {
-     modal = document.getElementById("deleteCommentModal");
+     modal = document.querySelector(button.getAttribute("data-target"));
      button.addEventListener("click", (e) => {
           methodAction = button.getAttribute("method-action");
           modal.querySelector(".modal-content").setAttribute("action", methodAction);
      });
 });
-
-
 
 document.querySelectorAll(".pst-lk").forEach((buttonCont) => {
      buttonCont.querySelector("a").addEventListener("click", (e) => {

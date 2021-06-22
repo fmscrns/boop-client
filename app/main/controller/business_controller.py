@@ -8,7 +8,7 @@ from ..service.pet_service import PetService
 from ..service.business_service import BusinessService
 from ..service.businessType_service import BusinessTypeService
 from ..service.post_service import PostService
-from ..form.post_form import CreatePostForm
+from ..form.post_form import CreatePostForm, DeletePostForm
 
 @business_bp.route("/<business_pid>", methods=["GET", "POST"])
 @business_bp.route("/<business_pid>/posts", methods=["GET", "POST"])
@@ -35,6 +35,7 @@ def posts(current_user, business_pid):
             deleteBusinessExecutiveForm = DeleteBusinessExecutiveForm(prefix="dbef"),
             createAppointmentForm = createAppointmentForm,
             createPostForm = createPostForm,
+            deletePostForm = DeletePostForm(prefix="dptf"),
             followBusinessForm = FollowBusinessForm(),
             unfollowBusinessForm = UnfollowBusinessForm(),
             post_list = json.loads(PostService.get_all_by_business(session["booped_in"], this_business["public_id"]).text)["data"]

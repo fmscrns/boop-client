@@ -67,6 +67,63 @@
     </div>
 {% endmacro %}
 
+{% macro post_remover(deletePostForm, business, circle) %}
+    <div class="modal" id="deletePostModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+        <form class="modal-content" method="POST" action="{{ url_for('post.delete', post_pid='') }}" enctype="multipart/form-data">
+            <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Delete post</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                {{ deletePostForm.hidden_tag() }}
+                {% if business %}
+                    {{ deletePostForm.pinboard_input(hidden=True, value=business.public_id) }}
+                    {{ deletePostForm.confiner_input(hidden=True) }}
+                {% elif circle %}
+                    {{ deletePostForm.pinboard_input(hidden=True) }}
+                    {{ deletePostForm.confiner_input(hidden=True, value=circle.public_id) }}
+                {% else %}
+                    {{ deletePostForm.pinboard_input(hidden=True) }}
+                    {{ deletePostForm.confiner_input(hidden=True) }}
+                {% endif %}
+                Are you sure you want to delete your post?
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            {{ deletePostForm.submit_input(class="btn btn-primary") }}
+            </div>
+        </form>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro comment_remover(deleteCommentForm, post) %}
+    <div class="modal" id="deleteCommentModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+        <form class="modal-content" method="POST" action="{{ url_for('comment.delete', comment_pid='') }}" enctype="multipart/form-data">
+            <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Delete comment</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                {{ deleteCommentForm.hidden_tag() }}
+                {{ deleteCommentForm.parent_input(hidden=True, value=post.public_id) }}
+                Are you sure you want to delete your comment?
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            {{ deleteCommentForm.submit_input(class="btn btn-primary") }}
+            </div>
+        </form>
+        </div>
+    </div>
+{% endmacro %}
+
 {% macro comment_creator(current_user, parent_post, createCommentForm) %}
     <div class="cr-post p-0 d-flex flex-row">
         <div class="position-absolute" style="width:2px;height:100%;left:25px;bottom:1px;background-color: #dee2e6;"></div>
