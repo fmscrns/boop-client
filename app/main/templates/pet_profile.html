@@ -228,7 +228,7 @@
             {% if (this_pet["is_private"] == 0) or (this_pet["visitor_auth"] > 1) %}
                 {% if createPostForm %}
                     {% for _post in post_list %}
-                        {{ post(_post) }}
+                        {{ post(current_user, _post) }}
                     {% endfor %}
                 {% elif inviteFollowerForm %}
                     {% if this_pet["visitor_auth"] == 3 %}
