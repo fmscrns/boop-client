@@ -2,10 +2,33 @@ var currentDate = new Date();
 
 document.querySelectorAll(".dc-mb").forEach((button) => {
      modal = document.getElementById("deleteCommentModal");
-
      button.addEventListener("click", (e) => {
           methodAction = button.getAttribute("method-action");
           modal.querySelector(".modal-content").setAttribute("action", methodAction);
+     });
+});
+
+
+
+document.querySelectorAll(".pst-lk").forEach((buttonCont) => {
+     buttonCont.querySelector("a").addEventListener("click", (e) => {
+          if ($(buttonCont).hasClass("pst-lk-active")) {
+               buttonCont.querySelector(".p-lc").innerHTML = parseInt(buttonCont.querySelector(".p-lc").innerHTML) - 1;
+               $(buttonCont).removeClass("pst-lk-active");
+               $(buttonCont.querySelectorAll("path")[1]).addClass("d-none");
+
+          } else {
+               buttonCont.querySelector(".p-lc").innerHTML = parseInt(buttonCont.querySelector(".p-lc").innerHTML) + 1;
+               $(buttonCont).addClass("pst-lk-active");
+               $(buttonCont.querySelectorAll("path")[1]).removeClass("d-none");
+          }
+          $.ajax({
+               type: "POST",
+               beforeSend: function (request) {
+
+               },
+               url: "/post/" + buttonCont.getAttribute("post-pid") + "/like"
+          });
      });
 });
 
@@ -349,7 +372,6 @@ document.querySelectorAll("#createPetModal").forEach((creator) => {
             type: "GET",
             beforeSend: function (request) {
                  request.setRequestHeader("Authorization", "Bearer " + token);
-
             },
             url: APIDomain + "/breed/parent/" + specieId,
 

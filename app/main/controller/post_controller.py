@@ -1,11 +1,11 @@
 from app.main.service.comment_service import CommentService
 import json
-from flask import Flask, render_template, request, session, flash, redirect, url_for, abort
+from flask import Flask, render_template, request, session, flash, redirect, url_for, abort,jsonify
 from ... import post_bp
 from ..util.decorator import session_required
 from ..service.post_service import PostService
 from ..service.pet_service import PetService
-from ..form.post_form import CreatePostForm, DeletePostForm
+from ..form.post_form import CreatePostForm, DeletePostForm, LikePostForm
 from ..form.comment_form import CreateCommentForm, DeleteCommentForm
 
 @post_bp.route("/<post_pid>", methods=["GET", "POST"])
@@ -59,6 +59,11 @@ def create(current_user):
         return redirect(url_for("circle.posts", circle_pid=createPostForm.confiner_input.data))
     else:
         return redirect(url_for("user.posts", username=current_user["username"]))
+
+@post_bp.route("/<post_pid>/like", methods=["POST"])
+@session_required
+def like(current_user, post_pid):
+    return jsonify(json.loads(PostService.like(post_pid).text))
 
 @post_bp.route("/<post_pid>/delete", methods=["POST"])
 @session_required

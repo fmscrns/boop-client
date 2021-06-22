@@ -53,8 +53,11 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="{{ url_for('home.feed') }}">Home <span class="sr-only">(current)</span></a>
                 </li>
+                <div class="nav-item mr-auto">
+                    <img class="pp-opp ml-1 mt-1" src="{{ url_for('static', filename='images/{}'.format(current_user.photo)) }}" alt="..." class="rounded d-block w-25 border">
+                </div>
                 <li class="nav-item active">
-                    <a class="nav-link" href="{{ url_for('user.pets', username=current_user['username']) }}">Profile <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="{{ url_for('user.pets', username=current_user['username']) }}"><span class="font-weight-bold hci-bb-l">{{ current_user.name }}</span> <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Settings</a>

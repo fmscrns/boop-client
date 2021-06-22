@@ -14,3 +14,6 @@ class CreatePostForm(FlaskForm):
 
 class DeletePostForm(FlaskForm):
     submit_input = SubmitField("Delete post")
+
+class LikePostForm(FlaskForm):
+    submit_input = SubmitField("Like post")

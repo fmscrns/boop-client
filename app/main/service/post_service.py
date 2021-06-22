@@ -77,6 +77,15 @@ class PostService:
         )
 
     @staticmethod
+    def like(pid):
+        return requests.post("{}/post/{}".format(
+            current_app.config["API_DOMAIN"], pid),
+            headers = {
+                "Authorization" : "Bearer {}".format(session["booped_in"])
+            }
+        )
+
+    @staticmethod
     def delete(pid):
         return requests.delete("{}/post/{}".format(
             current_app.config["API_DOMAIN"],
