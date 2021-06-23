@@ -5,7 +5,7 @@
 {% block content %}
     {{ loaded_navbar(current_user) }}
     <div class="container-fluid d-flex justify-content-center pt-5 my-3">
-        <div class="circleprof-cont d-flex flex-column w-50">
+        <div class="c-center d-flex flex-column">
             <div class="jumbotron jumbotron-fluid rounded w-100 d-flex flex-column mb-3 pb-0">
                 <div class="d-flex flex-row px-4">
                     <img src="{{ config.MEDIA_STORAGE + this_circle['photo'] }}" alt="..." class="rounded mx-auto d-block w-25">
@@ -24,7 +24,7 @@
                             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editCircleModal">
                                 <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
                             </button>
-                            <div class="modal fade" id="editCircleModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal" id="editCircleModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -60,7 +60,7 @@
                                         {{ createCircleAdminForm.hidden_tag() }}
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div href="/circle/{{this_circle['public_id']}}/members" class="autocomplete container-fluid p-0">
-                                                <input class="form-control form-control-sm" placeholder="Name or username">
+                                                {{ createCircleAdminForm.name_input(class="form-control form-control-sm", placeholder="Member name or username") }}
                                                 {{ createCircleAdminForm.admin_input(hidden=True) }}
                                             </div>
                                             {{ createCircleAdminForm.submit_input(class="btn btn-primary ml-2 btn-sm") }}
@@ -75,7 +75,7 @@
                                                     <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteCircleAdminModal{{ loop.index }}">
                                                         Remove
                                                     </button>
-                                                    <div class="modal fade" id="deleteCircleAdminModal{{ loop.index }}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                    <div class="modal" id="deleteCircleAdminModal{{ loop.index }}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                                         <div class="modal-dialog">
                                                             <form class="modal-content" method="POST" action="{{ url_for('circle.delete_admin', circle_pid=this_circle.public_id) }}">
                                                                 <div class="modal-header">
@@ -131,7 +131,7 @@
                             <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#cancelJoinModal">
                                 Pending
                             </button>
-                            <div class="modal fade" id="cancelJoinModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal" id="cancelJoinModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-scrollable">
                                 <form class="modal-content" method="POST" action="{{ url_for('circle.leave', circle_pid=this_circle['public_id']) }}" enctype="multipart/form-data">
                                     <div class="modal-header">
@@ -233,38 +233,97 @@
                     {% endfor %}
                     {% endif %}
                     {% for member in member_list %}
-                        <a href="{{ url_for('user.pets', username=member.username) }}" class="container-fluid border p-4 mt-3">
-                            <div class="d-flex flex-row">
-                                <img class="home-content-profPic" src="{{ config.MEDIA_STORAGE + member['photo'] }}" alt="..." class="rounded d-block w-25 border">
-                                <div class="d-flex flex-column ml-2 container">
-                                    <span class="font-weight-bold hci-bb-l">{% if member.public_id == current_user.public_id %}You{% else %}{{ member["name"] }}{% endif %}&nbsp;&nbsp;<span class="badge bg-primary text-light">Member</span></span> <span style="font-size:15px;">@{{ member.username }}</span>
-                                </div>
+                        <div class="container-fluid border p-4 mt-3">
+                            <div class="d-flex flex-row justify-content-between">
+                                <a class="d-flex flex-row" href="{{ url_for('user.pets', username=member.username) }}">
+                                    <img class="home-content-profPic" src="{{ config.MEDIA_STORAGE + member['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                                    <div class="d-flex flex-column ml-2 container">
+                                        <span class="font-weight-bold hci-bb-l">{% if member.public_id == current_user.public_id %}You{% else %}{{ member["name"] }}{% endif %}&nbsp;&nbsp;<span class="badge bg-primary text-light">Member</span></span> <span style="font-size:15px;">@{{ member.username }}</span>
+                                    </div>
+                                </a>
                                 {% if this_circle["visitor_auth"] == 3 %}
                                     <div class="float-right">
                                         <div class="d-flex flex-row">
                                             {% if acceptCircleForm %}
-                                                <form method="POST" action="{{ url_for('circle.accept', circle_pid=this_circle['public_id']) }}">
-                                                    {{ acceptCircleForm.hidden_tag() }}
-                                                    {{ acceptCircleForm.member_input(hidden=True, value=member["public_id"]) }}
-                                                    {{ acceptCircleForm.submit_input(class="btn btn-primary") }}
-                                                </form>
+                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#acceptCircleMember{{ loop.index }}">
+                                                    Accept
+                                                </button>
+                                                <div class="modal fade" id="acceptCircleMember{{ loop.index }}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <form class="modal-content" method="POST" action="{{ url_for('circle.accept', circle_pid=this_circle['public_id']) }}">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="staticBackdropLabel">Accept pending member</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="border-top modal-body">
+                                                                {{ acceptCircleForm.hidden_tag() }}
+                                                                {{ acceptCircleForm.member_input(hidden=True, value=member["public_id"]) }}
+                                                                Are you sure you want to accept this as member?
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                {{ acceptCircleForm.submit_input(class="btn btn-primary") }}
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
                                             {% else %}
-                                                <form method="POST" action="{{ url_for('circle.create_admin', circle_pid=this_circle.public_id) }}">
-                                                    {{ createCircleAdminForm.hidden_tag() }}
-                                                    {{ createCircleAdminForm.admin_input(hidden=True, value=member["public_id"]) }}
-                                                    {{ createCircleAdminForm.submit_input(class="btn btn-primary") }}
-                                                </form>
+                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createCircleAdminModal{{ loop.index }}">
+                                                    Make admin
+                                                </button>
+                                                <div class="modal" id="createCircleAdminModal{{ loop.index }}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <form class="modal-content" method="POST" action="{{ url_for('circle.create_admin', circle_pid=this_circle.public_id) }}">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="staticBackdropLabel">Remove follower</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="border-top modal-body">
+                                                                {{ createCircleAdminForm.hidden_tag() }}
+                                                                {{ createCircleAdminForm.admin_input(hidden=True, value=member["public_id"]) }}
+                                                                Are you sure you make this member an admin?
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                {{ createCircleAdminForm.submit_input(class="btn btn-primary") }}
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
                                             {% endif %}
-                                            <form method="POST" action="{{ url_for('circle.leave', circle_pid=this_circle['public_id']) }}">
-                                                {{ leaveCircleForm.hidden_tag() }}
-                                                {{ leaveCircleForm.member_input(hidden=True, value=member["public_id"]) }}
-                                                {{ leaveCircleForm.submit_input(class="btn btn-outline-danger ml-2", value="Remove") }}
-                                            </form>
+                                            <button type="button" class="btn btn-outline-danger ml-2" data-toggle="modal" data-target="#removeCircleMemberModal{{ loop.index }}">
+                                                Remove
+                                            </button>
+                                            <div class="modal fade" id="removeCircleMemberModal{{ loop.index }}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <form class="modal-content" method="POST" action="{{ url_for('circle.leave', circle_pid=this_circle['public_id']) }}">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="staticBackdropLabel">Remove follower</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="border-top modal-body">
+                                                            {{ leaveCircleForm.hidden_tag() }}
+                                                            {{ leaveCircleForm.member_input(hidden=True, value=member["public_id"]) }}
+                                                            Are you sure you want to remove this member?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                            {{ leaveCircleForm.submit_input(class="btn btn-danger", value="Remove") }}
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 {% endif %}
                             </div>
-                        </a>
+                        </div>
                     {% endfor %}
                     <nav aria-label="Page navigation">
                         <ul class="pagination rounded mt-3 justify-content-center">

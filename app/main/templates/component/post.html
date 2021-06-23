@@ -1,53 +1,300 @@
-{% from "component/gallery.html" import gallery %}
+{% from "component/gallery.html" import post_gallery, post_create_gallery %}
+
+{% macro post(current_user, post) %}
+<div class="col p-0">
+    <div class="post pt-3 d-flex flex-row">
+        <img class="post-user-photo position-absolute rounded-circle border" src="{{ config.MEDIA_STORAGE + post['creator_photo'] }}" alt="default">
+        <div class="pcp-1 position-absolute"></div>
+        <div class="pcp-2 position-absolute"></div>
+        <div class="post-content container-fluid ml-5 p-0 border rounded">
+            <div class="post-details d-flex flex-column mx-3 mt-2">
+                <span class="w-100 d-flex flex-row">
+                    <div class="w-100" style="cursor: pointer;" onclick="window.location='{{ url_for('post.comments', post_pid=post.public_id) }}';">
+                        <a href="{{ url_for('user.pets', username=post['creator_username']) }}" class="font-weight-bold">
+                            {{ post.creator_name }}
+                        </a>
+                        {% if post.pinboard_id %}
+                            <img src="{{ url_for('static', filename='assets/right-arrow.svg') }}" class="mx-1" style="width:10px">
+                            <a href="{{ url_for('business.posts', business_pid=post['pinboard_id']) }}" class="font-weight-bold">
+                                {{ post.pinboard_name }}
+                            </a>
+                        {% elif post.confiner_id %}
+                            <img src="{{ url_for('static', filename='assets/right-arrow.svg') }}" class="mx-1" style="width:10px">
+                            <a href="{{ url_for('circle.posts', circle_pid=post['confiner_id']) }}" class="font-weight-bold">
+                                {{ post.confiner_name }}
+                            </a>
+                        {% endif %}
+                        <span class="small text-muted">
+                            <span class="h6">&middot; </span> 
+                            <span class="p-dt">
+                                {{ post.registered_on }}
+                            </span>
+                        </span>
+                    </div>
+                    {% if post.creator_id == current_user.public_id %}
+                    <div class="dropdown float-right">
+                        <a data-toggle="dropdown">
+                            <img src="{{ url_for('static', filename='assets/more.svg') }}" style="width:15px;">
+                        </a>
+                        <ul class="dropdown-menu py-3" role="menu" aria-labelledby="dLabel">            
+                            <li>
+                                <button type="button" class="dc-mb dropdown-item" data-toggle="modal" data-target="#deletePostModal" method-action="{{ url_for('post.delete', post_pid=post.public_id) }}">
+                                    Delete post
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </span>
+                <span class="small">
+                    <a href="{{ url_for('user.pets', username=post['creator_username']) }}" class="text-muted">
+                        @{{ post.creator_username }}
+                    </a>
+                </span>
+            </div>
+            <div class="post-body border-top pt-3 px-3" style="cursor: pointer;" onclick="window.location='{{ url_for('post.comments', post_pid=post.public_id) }}';">
+                {{ post.content }}
+            </div>
+            {% if post.photo %}
+                <div class="mt-3" style="cursor: pointer;" onclick="window.location='{{ url_for('post.comments', post_pid=post.public_id) }}';">
+                    {{ post_gallery(post.photo) }}
+                </div>
+            {% endif %}
+            <div class="post-relevant-pets mx-3 mt-3">
+                <small class="text-muted">Tagged pets:</small>
+                <span class="d-flex flex-row" style="max-width: 6.5rem;">
+                    {% for pet in post["subject"] %}
+                        <a class="pt-tt-c mr-1" href="{{ url_for('pet.posts', pet_pid=pet['public_id']) }}">
+                            <img class="rounded-circle border" src="{{ config.MEDIA_STORAGE + pet.photo }}" data-toggle="tooltip" data-placement="top" data-html="true" data-trigger="manual" title="
+                                <div class='tooltip-cont container-fluid m-0 p-0 d-flex flex-column align-items-center bd-highlight mb-3'>
+                                    <img class='mx-5 mt-3 tooltip-photo rounded-circle border' src='{{ config.MEDIA_STORAGE + pet.photo }}' alt='default'>
+                                    <div class='d-flex flex-column'>
+                                        <span class='mt-1 font-weight-bold text-dark'>{{ pet['name'] }}</span>
+                                        <span class='small text-muted'>{{ pet.group_name }} &middot; {{ pet.subgroup_name }}</span>
+                                    </div>
+                                    <a class='mt-3 mx-3 mb-2 btn btn-primary btn-sm btn-block' role='button' href='{{ url_for('pet.posts', pet_pid=pet['public_id']) }}'>Visit profile</a>
+                                </div>
+                            ">
+                        </a>
+                    {% endfor %}
+                    {#{{ list_modal() }}#}
+                </span>
+            </div>
+            <ul class="post-footer container-fluid nav m-0 mt-3 pl-0 pr-5 py-0 justify-content-around d-flex flex-row border-top">
+                <li class="pst-lk {% if post.is_liked == 1 %}pst-lk-active{% endif %} nav-item mx-2 d-flex align-items-center" post-pid="{{ post.public_id }}">
+                    <span class="small text-muted p-lc" style="width:15px;">
+                        {{ post.like_count }}&nbsp;&nbsp;
+                    </span>
+                    <a class="nav-link" style="width:15px;">
+                        <div style="width:auto;height:auto;">
+                            <svg viewBox="0 0 512 512" width="18px" height="18px">
+                                <style type="text/css">
+                                    .heart-st0{fill:#007bff;}
+                                </style>
+                                <path d="M474.644,74.27C449.391,45.616,414.358,29.836,376,29.836c-53.948,0-88.103,32.22-107.255,59.25    c-4.969,7.014-9.196,14.047-12.745,20.665c-3.549-6.618-7.775-13.651-12.745-20.665c-19.152-27.03-53.307-59.25-107.255-59.25    c-38.358,0-73.391,15.781-98.645,44.435C13.267,101.605,0,138.213,0,177.351c0,42.603,16.633,82.228,52.345,124.7    c31.917,37.96,77.834,77.088,131.005,122.397c19.813,16.884,40.302,34.344,62.115,53.429l0.655,0.574    c2.828,2.476,6.354,3.713,9.88,3.713s7.052-1.238,9.88-3.713l0.655-0.574c21.813-19.085,42.302-36.544,62.118-53.431    c53.168-45.306,99.085-84.434,131.002-122.395C495.367,259.578,512,219.954,512,177.351    C512,138.213,498.733,101.605,474.644,74.27z M309.193,401.614c-17.08,14.554-34.658,29.533-53.193,45.646    c-18.534-16.111-36.113-31.091-53.196-45.648C98.745,312.939,30,254.358,30,177.351c0-31.83,10.605-61.394,29.862-83.245    C79.34,72.007,106.379,59.836,136,59.836c41.129,0,67.716,25.338,82.776,46.594c13.509,19.064,20.558,38.282,22.962,45.659    c2.011,6.175,7.768,10.354,14.262,10.354c6.494,0,12.251-4.179,14.262-10.354c2.404-7.377,9.453-26.595,22.962-45.66    c15.06-21.255,41.647-46.593,82.776-46.593c29.621,0,56.66,12.171,76.137,34.27C471.395,115.957,482,145.521,482,177.351    C482,254.358,413.255,312.939,309.193,401.614z" data-original="#000000" class="heart-st0" data-old_color="#000000"/>
+                                <path d="M474.644,74.27C449.391,45.616,414.358,29.836,376,29.836c-53.948,0-88.103,32.22-107.255,59.25    c-4.969,7.014-9.196,14.047-12.745,20.665c-3.549-6.618-7.775-13.651-12.745-20.665c-19.152-27.03-53.307-59.25-107.255-59.25    c-38.358,0-73.391,15.781-98.645,44.435C13.267,101.605,0,138.213,0,177.351c0,42.603,16.633,82.228,52.345,124.7    c31.917,37.96,77.834,77.088,131.005,122.397c19.813,16.884,40.302,34.344,62.115,53.429l0.655,0.574    c2.828,2.476,6.354,3.713,9.88,3.713s7.052-1.238,9.88-3.713l0.655-0.574c21.813-19.085,42.302-36.544,62.118-53.431    c53.168-45.306,99.085-84.434,131.002-122.395C495.367,259.578,512,219.954,512,177.351    C512,138.213,498.733,101.605,474.644,74.27z" data-original="#000000" class="heart-st0 {% if post.is_liked == 0 %}d-none{% endif %}" data-old_color="#000000"/>
+                            </svg>
+                        </div>
+                    </a>
+                </li>
+                <li class="pst-cmt nav-item mx-2 d-flex align-items-center">
+                    <span class="small text-muted" style="width:15px;">
+                        {{ post.comment_count }}&nbsp;&nbsp;
+                    </span>
+                    <a class="nav-link" href="{{ url_for('post.comments', post_pid=post.public_id) }}" style="width:15px;">
+                        <div style="width:auto;height:auto;">
+                            <svg viewBox="0 -45 512 511" width="18px" height="18px">
+                                <style type="text/css">
+                                    .st0{fill:#007bff;}
+                                </style>
+                                <path d="m407 .5h-302c-57.898438 0-105 47.101562-105 105v162.171875c0 46.199219 30.332031 86.4375 74.285156 99.316406l50.710938 50.714844c2.816406 2.8125 6.628906 4.394531 10.609375 4.394531 3.976562 0 7.792969-1.582031 10.605469-4.394531l46.519531-46.523437h214.269531c57.898438 0 105-47.101563 105-105v-160.679688c0-57.898438-47.101562-105-105-105zm75 265.679688c0 41.355468-33.644531 75-75 75h-220.480469c-3.976562 0-7.792969 1.582031-10.605469 4.394531l-40.308593 40.308593-42.929688-42.929687c-1.925781-1.925781-4.339843-3.292969-6.984375-3.949219-32.789062-8.160156-55.691406-37.492187-55.691406-71.332031v-162.171875c0-41.355469 33.644531-75 75-75h302c41.355469 0 75 33.644531 75 75zm0 0" data-original="#000000" class="st0" data-old_color="#000000" fill="#007BFF"/>
+                                <path d="m351.242188 144.328125h-190.484376c-8.285156 0-15 6.71875-15 15 0 8.285156 6.714844 15 15 15h190.484376c8.285156 0 15-6.714844 15-15 0-8.28125-6.714844-15-15-15zm0 0" data-original="#000000" class="st0" data-old_color="#000000" fill="#007BFF"/>
+                                <path d="m351.242188 197.351562h-190.484376c-8.285156 0-15 6.714844-15 15 0 8.285157 6.714844 15 15 15h190.484376c8.285156 0 15-6.714843 15-15 0-8.285156-6.714844-15-15-15zm0 0" data-original="#000000" class="st0" data-old_color="#000000" fill="#007BFF"/>
+                            </svg>
+                        </div>
+                    </a>
+                </li>
+                {#<li class="nav-item mx-2">
+                    <a class="nav-link d-flex align-items-center" href="#">
+                        <div style="width:auto;height:auto;">
+                            <svg viewBox="0 0 227.216 227.216" width="18px" height="18px">
+                                <style type="text/css">
+                                    .st0{fill:#007bff;}
+                                </style>
+                                <path d="M175.897,141.476c-13.249,0-25.11,6.044-32.98,15.518l-51.194-29.066c1.592-4.48,2.467-9.297,2.467-14.317  c0-5.019-0.875-9.836-2.467-14.316l51.19-29.073c7.869,9.477,19.732,15.523,32.982,15.523c23.634,0,42.862-19.235,42.862-42.879  C218.759,19.229,199.531,0,175.897,0C152.26,0,133.03,19.229,133.03,42.865c0,5.02,0.874,9.838,2.467,14.319L84.304,86.258  c-7.869-9.472-19.729-15.514-32.975-15.514c-23.64,0-42.873,19.229-42.873,42.866c0,23.636,19.233,42.865,42.873,42.865  c13.246,0,25.105-6.042,32.974-15.513l51.194,29.067c-1.593,4.481-2.468,9.3-2.468,14.321c0,23.636,19.23,42.865,42.867,42.865  c23.634,0,42.862-19.23,42.862-42.865C218.759,160.71,199.531,141.476,175.897,141.476z M175.897,15  c15.363,0,27.862,12.5,27.862,27.865c0,15.373-12.499,27.879-27.862,27.879c-15.366,0-27.867-12.506-27.867-27.879  C148.03,27.5,160.531,15,175.897,15z M51.33,141.476c-15.369,0-27.873-12.501-27.873-27.865c0-15.366,12.504-27.866,27.873-27.866  c15.363,0,27.861,12.5,27.861,27.866C79.191,128.975,66.692,141.476,51.33,141.476z M175.897,212.216  c-15.366,0-27.867-12.501-27.867-27.865c0-15.37,12.501-27.875,27.867-27.875c15.363,0,27.862,12.505,27.862,27.875  C203.759,199.715,191.26,212.216,175.897,212.216z" data-original="#000000" class="st0" data-old_color="#000000" fill="#007BFF"/>
+                            </svg>
+                        </div>
+                    </a>
+                </li>#}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro comment(current_user, comment) %}
+    <div class="post pt-3 d-flex flex-row">
+        <div class="position-absolute" style="width:2px;height:100%;left:25px;bottom:1px;background-color: #dee2e6;"></div>
+        <img class="post-user-photo position-absolute rounded-circle" src="{{ config.MEDIA_STORAGE + comment['creator_photo'] }}" alt="default">
+        <div class="pcp-1 position-absolute"></div>
+        <div class="pcp-2 position-absolute"></div>
+        <div class="post-content container-fluid ml-5 px-0 pt-0 pb-4 border rounded">
+            <div class="post-details d-flex flex-column mx-3 mt-2">
+                <span>
+                    <a href="{{ url_for('user.pets', username=comment['creator_username']) }}" class="font-weight-bold">{{ comment.creator_name }}</a>
+                    <span class="small text-muted">
+                        <span class="h6">&middot; </span> 
+                        <span class="p-dt">
+                            {{ comment.registered_on }}
+                        </span>
+                    </span>
+                    {% if comment.creator_id == current_user.public_id %}
+                    <div class="dropdown float-right">
+                        <a data-toggle="dropdown">
+                            <img src="{{ url_for('static', filename='assets/more.svg') }}" style="width:15px;">
+                        </a>
+                        <ul class="dropdown-menu py-3" role="menu" aria-labelledby="dLabel">            
+                            <li>
+                                <button type="button" class="dc-mb dropdown-item" data-toggle="modal" data-target="#deleteCommentModal" cont="{{ comment.content }}" method-action="{{ url_for('comment.delete', comment_pid=comment.public_id) }}">
+                                    Delete comment
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </span>
+                <a href="{{ url_for('user.pets', username=comment['creator_username']) }}" class="small text-muted">@{{ comment.creator_username }}</a>
+            </div>
+            <div class="post-body border-top pt-3 px-3">
+                {{ comment.content }}
+            </div>
+            {% if comment.photo %}
+                <div class="post-photo-cont mx-3 mt-3 border rounded">
+                    {{ post_gallery(comment.photo) }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endmacro %}
 
 {% macro post_creator(current_user, createPostForm, business, circle) %}
     <div class="cr-post p-0 d-flex flex-row">
         <img class="cr-post-user-photo position-absolute rounded-circle" src="{{ config.MEDIA_STORAGE + current_user['photo']}}" alt="default">
         <div class="cr-pcp-1 position-absolute"></div>
         <div class="cr-pcp-2 position-absolute"></div>
-        <div class="cr-post-content ml-5 p-0 border border-glow-dark-sm rounded">
-            <div class="cr-post-facade-input input-pretend mx-3 px-3 py-1 text-muted" data-toggle="modal" data-target="#createPostModal">
+        <div class="cr-post-content ml-5 p-0 border rounded">
+            <div class="cr-post-facade-input input-pretend mx-3 px-3 py-1 text-muted" user-pet-count="{{ current_user.pet_count }}" data-toggle="modal" data-target="#createPostModal">
                 How are your pets?
             </div>
-            <div class="modal" id="createPostModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            {% if current_user.pet_count > 0 %}
+                <div class="modal" id="createPostModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-scrollable">
+                        <form class="modal-content" method="POST" action="{{ url_for('post.create') }}" enctype="multipart/form-data">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Create post</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                {{ createPostForm.hidden_tag() }}
+                                {% if business %}
+                                    {{ createPostForm.pinboard_input(hidden=True, value=business.public_id) }}
+                                    {{ createPostForm.confiner_input(hidden=True) }}
+                                {% elif circle %}
+                                    {{ createPostForm.pinboard_input(hidden=True) }}
+                                    {{ createPostForm.confiner_input(hidden=True, value=circle.public_id) }}
+                                {% else %}
+                                    {{ createPostForm.pinboard_input(hidden=True) }}
+                                    {{ createPostForm.confiner_input(hidden=True) }}
+                                {% endif %}
+
+                                <div class="form-group">
+                                    {{ createPostForm.content_input.label }}
+                                    {{ createPostForm.content_input(class="form-control form-control-sm") }}
+                                </div>
+                                <div class="form-group">
+                                    {{ createPostForm.subject_input.label }}
+                                    {{ createPostForm.subject_input(class="form-control form-control-sm") }}
+                                </div>
+                                {{ post_create_gallery() }}
+                                <div class="crp-ump-fg d-flex my-3 justify-content-start align-items-center border rounded">
+                                    <div class="input-pretend-reverse px-3 py-2 text-muted m-1">
+                                        <svg class="mb-1" viewBox="0 0 512 512" width="15px" height="15px">
+                                            <style type="text/css">
+                                                .st0{fill:#007bff;}
+                                            </style>
+                                            <path d="M464,128h-16v-16c0-26.51-21.49-48-48-48h-16V48c0-26.51-21.49-48-48-48H48C21.49,0,0,21.49,0,48v288    c0,26.51,21.49,48,48,48h16v16c0,26.51,21.49,48,48,48h16v16c0,26.51,21.49,48,48,48h288c26.51,0,48-21.49,48-48V176    C512,149.49,490.51,128,464,128z M32,265.44V48c0-8.837,7.163-16,16-16h288c8.837,0,16,7.163,16,16v153.44l-36.64-36.64    c-6.241-6.204-16.319-6.204-22.56,0L224,233.44l-68.64-68.8c-6.241-6.204-16.319-6.204-22.56,0L32,265.44z M112,416    c-8.837,0-16-7.163-16-16v-16h240c26.51,0,48-21.49,48-48V96h16c8.837,0,16,7.163,16,16v288c0,8.837-7.163,16-16,16H112z M480,464    c0,8.837-7.163,16-16,16H176c-8.837,0-16-7.163-16-16v-16h240c26.51,0,48-21.49,48-48V160h16c8.837,0,16,7.163,16,16V464z" data-original="#000000" class="st0" data-old_color="#000000" fill="#007BFF"/>
+                                        </svg>
+                                    </div>
+                                    {{ createPostForm.photos_fn_input(hidden=True, accept=".jpg, .jpeg, .png") }}
+                                    {{ createPostForm.photo_1_input(hidden=True) }}
+                                    {{ createPostForm.photo_2_input(hidden=True) }}
+                                    {{ createPostForm.photo_3_input(hidden=True) }}
+                                    {{ createPostForm.photo_4_input(hidden=True) }}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                {{ createPostForm.submit_input(class="btn btn-primary") }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="cr-post-pre-aa d-flex flex-row justify-content-around border-top">
+                <a>
+                    <div class="input-pretend-reverse mx-3 my-2 px-3 py-2 text-muted">
+                        {#<svg viewBox="0 0 512 512" width="18px" height="18px">
+                            <style type="text/css">
+                                .st0{fill:#007bff;}
+                            </style>
+                            <path d="M464,128h-16v-16c0-26.51-21.49-48-48-48h-16V48c0-26.51-21.49-48-48-48H48C21.49,0,0,21.49,0,48v288    c0,26.51,21.49,48,48,48h16v16c0,26.51,21.49,48,48,48h16v16c0,26.51,21.49,48,48,48h288c26.51,0,48-21.49,48-48V176    C512,149.49,490.51,128,464,128z M32,265.44V48c0-8.837,7.163-16,16-16h288c8.837,0,16,7.163,16,16v153.44l-36.64-36.64    c-6.241-6.204-16.319-6.204-22.56,0L224,233.44l-68.64-68.8c-6.241-6.204-16.319-6.204-22.56,0L32,265.44z M112,416    c-8.837,0-16-7.163-16-16v-16h240c26.51,0,48-21.49,48-48V96h16c8.837,0,16,7.163,16,16v288c0,8.837-7.163,16-16,16H112z M480,464    c0,8.837-7.163,16-16,16H176c-8.837,0-16-7.163-16-16v-16h240c26.51,0,48-21.49,48-48V160h16c8.837,0,16,7.163,16,16V464z" data-original="#000000" class="st0" data-old_color="#000000" fill="#007BFF"/>
+                        </svg>
+                        &nbsp;Photo#}
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro comment_creator(current_user, parent_post, createCommentForm) %}
+    <div class="cr-post p-0 d-flex flex-row">
+        <div class="position-absolute" style="width:2px;height:100%;left:25px;bottom:1px;background-color: #dee2e6;"></div>
+        <img class="cr-post-user-photo position-absolute rounded-circle" src="{{ config.MEDIA_STORAGE + current_user['photo']}}" alt="default">
+        <div class="cr-pcp-1 position-absolute"></div>
+        <div class="cr-pcp-2 position-absolute"></div>
+        <div class="cr-post-content ml-5 p-0 border rounded">
+            <div class="cr-post-facade-input input-pretend mx-3 px-3 py-1 text-muted" data-toggle="modal" data-target="#createCommentModal">
+                Add a comment
+            </div>
+            <div class="modal" id="createCommentModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-scrollable">
-                    <form class="modal-content" method="POST" action="{{ url_for('post.create') }}" enctype="multipart/form-data">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="staticBackdropLabel">Create post</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                <form class="modal-content" method="POST" action="{{ url_for('comment.create') }}" enctype="multipart/form-data">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Add comment</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                        {{ createCommentForm.hidden_tag() }}
+                        {{ createCommentForm.parent_input(hidden=True, value=parent_post.public_id) }}
+                        <div class="form-group">
+                            {{ createCommentForm.photo_input.label }}
+                            {{ createCommentForm.photo_input(class="form-control form-control-sm") }}
                         </div>
-                        <div class="modal-body">
-                            {{ createPostForm.hidden_tag() }}
-                            {% if business %}
-                                {{ createPostForm.pinboard_input(hidden=True, value=business.public_id) }}
-                                {{ createPostForm.confiner_input(hidden=True) }}
-                            {% elif circle %}
-                                {{ createPostForm.pinboard_input(hidden=True) }}
-                                {{ createPostForm.confiner_input(hidden=True, value=circle.public_id) }}
-                            {% else %}
-                                {{ createPostForm.pinboard_input(hidden=True) }}
-                                {{ createPostForm.confiner_input(hidden=True) }}
-                            {% endif %}
-                            <div class="form-group">
-                                {{ createPostForm.photo_input.label }}
-                                {{ createPostForm.photo_input(class="form-control form-control-sm") }}
-                            </div>
-                            <div class="form-group">
-                                {{ createPostForm.content_input.label }}
-                                {{ createPostForm.content_input(class="form-control form-control-sm") }}
-                            </div>
-                            <div class="form-group">
-                                {{ createPostForm.subject_input.label }}
-                                {{ createPostForm.subject_input(class="form-control form-control-sm") }}
-                            </div>
+                        <div class="form-group">
+                            {{ createCommentForm.content_input.label }}
+                            {{ createCommentForm.content_input(class="form-control form-control-sm") }}
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            {{ createPostForm.submit_input(class="btn btn-primary") }}
-                        </div>
-                    </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        {{ createCommentForm.submit_input(class="btn btn-primary") }}
+                    </div>
+                </form>
                 </div>
             </div>
             <div class="cr-post-pre-aa d-flex flex-row justify-content-around border-top">
@@ -120,218 +367,6 @@
             {{ deleteCommentForm.submit_input(class="btn btn-primary") }}
             </div>
         </form>
-        </div>
-    </div>
-{% endmacro %}
-
-{% macro comment_creator(current_user, parent_post, createCommentForm) %}
-    <div class="cr-post p-0 d-flex flex-row">
-        <div class="position-absolute" style="width:2px;height:100%;left:25px;bottom:1px;background-color: #dee2e6;"></div>
-        <img class="cr-post-user-photo position-absolute rounded-circle" src="{{ config.MEDIA_STORAGE + current_user['photo']}}" alt="default">
-        <div class="cr-pcp-1 position-absolute"></div>
-        <div class="cr-pcp-2 position-absolute"></div>
-        <div class="cr-post-content ml-5 p-0 border border-glow-dark-sm rounded">
-            <div class="cr-post-facade-input input-pretend mx-3 px-3 py-1 text-muted" data-toggle="modal" data-target="#createCommentModal">
-                Add a comment
-            </div>
-            <div class="modal" id="createCommentModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-scrollable">
-                <form class="modal-content" method="POST" action="{{ url_for('comment.create') }}" enctype="multipart/form-data">
-                    <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">Add comment</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    </div>
-                    <div class="modal-body">
-                        {{ createCommentForm.hidden_tag() }}
-                        {{ createCommentForm.parent_input(hidden=True, value=parent_post.public_id) }}
-                        <div class="form-group">
-                            {{ createCommentForm.photo_input.label }}
-                            {{ createCommentForm.photo_input(class="form-control form-control-sm") }}
-                        </div>
-                        <div class="form-group">
-                            {{ createCommentForm.content_input.label }}
-                            {{ createCommentForm.content_input(class="form-control form-control-sm") }}
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        {{ createCommentForm.submit_input(class="btn btn-primary") }}
-                    </div>
-                </form>
-                </div>
-            </div>
-            <div class="cr-post-pre-aa d-flex flex-row justify-content-around border-top">
-                <a>
-                    <div class="input-pretend-reverse mx-3 my-2 px-3 py-2 text-muted">
-                        {#<svg viewBox="0 0 512 512" width="18px" height="18px">
-                            <style type="text/css">
-                                .st0{fill:#007bff;}
-                            </style>
-                            <path d="M464,128h-16v-16c0-26.51-21.49-48-48-48h-16V48c0-26.51-21.49-48-48-48H48C21.49,0,0,21.49,0,48v288    c0,26.51,21.49,48,48,48h16v16c0,26.51,21.49,48,48,48h16v16c0,26.51,21.49,48,48,48h288c26.51,0,48-21.49,48-48V176    C512,149.49,490.51,128,464,128z M32,265.44V48c0-8.837,7.163-16,16-16h288c8.837,0,16,7.163,16,16v153.44l-36.64-36.64    c-6.241-6.204-16.319-6.204-22.56,0L224,233.44l-68.64-68.8c-6.241-6.204-16.319-6.204-22.56,0L32,265.44z M112,416    c-8.837,0-16-7.163-16-16v-16h240c26.51,0,48-21.49,48-48V96h16c8.837,0,16,7.163,16,16v288c0,8.837-7.163,16-16,16H112z M480,464    c0,8.837-7.163,16-16,16H176c-8.837,0-16-7.163-16-16v-16h240c26.51,0,48-21.49,48-48V160h16c8.837,0,16,7.163,16,16V464z" data-original="#000000" class="st0" data-old_color="#000000" fill="#007BFF"/>
-                        </svg>
-                        &nbsp;Photo#}
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-{% endmacro %}
-
-{% macro post(current_user, post) %}
-<div class="col p-0">
-    <div class="post pt-3 d-flex flex-row">
-        <img class="post-user-photo position-absolute rounded-circle" src="{{ config.MEDIA_STORAGE + post['creator_photo'] }}" alt="default">
-        <div class="pcp-1 position-absolute"></div>
-        <div class="pcp-2 position-absolute"></div>
-        <div class="post-content container-fluid ml-5 p-0 border border-glow-dark-sm rounded">
-            <div class="post-details d-flex flex-column mx-3 mt-2">
-                <span class="w-100 d-flex flex-row">
-                    <div class="w-100" style="cursor: pointer;" onclick="window.location='{{ url_for('post.comments', post_pid=post.public_id) }}';">
-                        <a href="{{ url_for('user.pets', username=post['creator_username']) }}" class="font-weight-bold">
-                            {{ post.creator_name }}
-                        </a>
-                        {% if post.pinboard_id %}
-                            <img src="{{ url_for('static', filename='assets/right-arrow.svg') }}" class="mx-1" style="width:10px">
-                            <a href="{{ url_for('business.posts', business_pid=post['pinboard_id']) }}" class="font-weight-bold">
-                                {{ post.pinboard_name }}
-                            </a>
-                        {% elif post.confiner_id %}
-                            <img src="{{ url_for('static', filename='assets/right-arrow.svg') }}" class="mx-1" style="width:10px">
-                            <a href="{{ url_for('circle.posts', circle_pid=post['confiner_id']) }}" class="font-weight-bold">
-                                {{ post.confiner_name }}
-                            </a>
-                        {% endif %}
-                        <span class="small text-muted">
-                            <span class="h6">&middot; </span> 
-                            <span class="p-dt">
-                                {{ post.registered_on }}
-                            </span>
-                        </span>
-                    </div>
-                    {% if post.creator_id == current_user.public_id %}
-                    <div class="dropdown float-right">
-                        <a data-toggle="dropdown">
-                            <img src="{{ url_for('static', filename='assets/more.svg') }}" style="width:15px;">
-                        </a>
-                        <ul class="dropdown-menu py-3" role="menu" aria-labelledby="dLabel">            
-                            <li>
-                                <button type="button" class="dc-mb dropdown-item" data-toggle="modal" data-target="#deletePostModal" method-action="{{ url_for('post.delete', post_pid=post.public_id) }}">
-                                    Delete post
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                    {% endif %}
-                </span>
-                <span class="small">
-                    <a href="{{ url_for('user.pets', username=post['creator_username']) }}" class="text-muted">
-                        @{{ post.creator_username }}
-                    </a>
-                </span>
-            </div>
-            <div class="post-body border-top pt-2 px-3" style="cursor: pointer;" onclick="window.location='{{ url_for('post.comments', post_pid=post.public_id) }}';">
-                {{ post.content }}
-            </div>
-            {% if post.photo %}
-            <div class="post-photo-cont mx-3 mt-3 border rounded" style="cursor: pointer;" onclick="window.location='{{ url_for('post.comments', post_pid=post.public_id) }}';">
-                {{ gallery(config, "d2", post.photo) }}
-            </div>
-            {% endif %}
-            <ul class="post-footer container-fluid nav m-0 mt-3 pl-0 pr-5 py-0 justify-content-around d-flex flex-row border-top">
-                <li class="pst-lk {% if post.is_liked == 1 %}pst-lk-active{% endif %} nav-item mx-2 d-flex align-items-center" post-pid="{{ post.public_id }}">
-                    <span class="small text-muted p-lc" style="width:15px;">
-                        {{ post.like_count }}&nbsp;&nbsp;
-                    </span>
-                    <a class="nav-link" style="width:15px;">
-                        <div style="width:auto;height:auto;">
-                            <svg viewBox="0 0 512 512" width="18px" height="18px">
-                                <style type="text/css">
-                                    .heart-st0{fill:#007bff;}
-                                </style>
-                                <path d="M474.644,74.27C449.391,45.616,414.358,29.836,376,29.836c-53.948,0-88.103,32.22-107.255,59.25    c-4.969,7.014-9.196,14.047-12.745,20.665c-3.549-6.618-7.775-13.651-12.745-20.665c-19.152-27.03-53.307-59.25-107.255-59.25    c-38.358,0-73.391,15.781-98.645,44.435C13.267,101.605,0,138.213,0,177.351c0,42.603,16.633,82.228,52.345,124.7    c31.917,37.96,77.834,77.088,131.005,122.397c19.813,16.884,40.302,34.344,62.115,53.429l0.655,0.574    c2.828,2.476,6.354,3.713,9.88,3.713s7.052-1.238,9.88-3.713l0.655-0.574c21.813-19.085,42.302-36.544,62.118-53.431    c53.168-45.306,99.085-84.434,131.002-122.395C495.367,259.578,512,219.954,512,177.351    C512,138.213,498.733,101.605,474.644,74.27z M309.193,401.614c-17.08,14.554-34.658,29.533-53.193,45.646    c-18.534-16.111-36.113-31.091-53.196-45.648C98.745,312.939,30,254.358,30,177.351c0-31.83,10.605-61.394,29.862-83.245    C79.34,72.007,106.379,59.836,136,59.836c41.129,0,67.716,25.338,82.776,46.594c13.509,19.064,20.558,38.282,22.962,45.659    c2.011,6.175,7.768,10.354,14.262,10.354c6.494,0,12.251-4.179,14.262-10.354c2.404-7.377,9.453-26.595,22.962-45.66    c15.06-21.255,41.647-46.593,82.776-46.593c29.621,0,56.66,12.171,76.137,34.27C471.395,115.957,482,145.521,482,177.351    C482,254.358,413.255,312.939,309.193,401.614z" data-original="#000000" class="heart-st0" data-old_color="#000000"/>
-                                <path d="M474.644,74.27C449.391,45.616,414.358,29.836,376,29.836c-53.948,0-88.103,32.22-107.255,59.25    c-4.969,7.014-9.196,14.047-12.745,20.665c-3.549-6.618-7.775-13.651-12.745-20.665c-19.152-27.03-53.307-59.25-107.255-59.25    c-38.358,0-73.391,15.781-98.645,44.435C13.267,101.605,0,138.213,0,177.351c0,42.603,16.633,82.228,52.345,124.7    c31.917,37.96,77.834,77.088,131.005,122.397c19.813,16.884,40.302,34.344,62.115,53.429l0.655,0.574    c2.828,2.476,6.354,3.713,9.88,3.713s7.052-1.238,9.88-3.713l0.655-0.574c21.813-19.085,42.302-36.544,62.118-53.431    c53.168-45.306,99.085-84.434,131.002-122.395C495.367,259.578,512,219.954,512,177.351    C512,138.213,498.733,101.605,474.644,74.27z" data-original="#000000" class="heart-st0 {% if post.is_liked == 0 %}d-none{% endif %}" data-old_color="#000000"/>
-                            </svg>
-                        </div>
-                    </a>
-                </li>
-                <li class="pst-cmt nav-item mx-2 d-flex align-items-center">
-                    <span class="small text-muted" style="width:15px;">
-                        {{ post.comment_count }}&nbsp;&nbsp;
-                    </span>
-                    <a class="nav-link" href="{{ url_for('post.comments', post_pid=post.public_id) }}" style="width:15px;">
-                        <div style="width:auto;height:auto;">
-                            <svg viewBox="0 -45 512 511" width="18px" height="18px">
-                                <style type="text/css">
-                                    .st0{fill:#007bff;}
-                                </style>
-                                <path d="m407 .5h-302c-57.898438 0-105 47.101562-105 105v162.171875c0 46.199219 30.332031 86.4375 74.285156 99.316406l50.710938 50.714844c2.816406 2.8125 6.628906 4.394531 10.609375 4.394531 3.976562 0 7.792969-1.582031 10.605469-4.394531l46.519531-46.523437h214.269531c57.898438 0 105-47.101563 105-105v-160.679688c0-57.898438-47.101562-105-105-105zm75 265.679688c0 41.355468-33.644531 75-75 75h-220.480469c-3.976562 0-7.792969 1.582031-10.605469 4.394531l-40.308593 40.308593-42.929688-42.929687c-1.925781-1.925781-4.339843-3.292969-6.984375-3.949219-32.789062-8.160156-55.691406-37.492187-55.691406-71.332031v-162.171875c0-41.355469 33.644531-75 75-75h302c41.355469 0 75 33.644531 75 75zm0 0" data-original="#000000" class="st0" data-old_color="#000000" fill="#007BFF"/>
-                                <path d="m351.242188 144.328125h-190.484376c-8.285156 0-15 6.71875-15 15 0 8.285156 6.714844 15 15 15h190.484376c8.285156 0 15-6.714844 15-15 0-8.28125-6.714844-15-15-15zm0 0" data-original="#000000" class="st0" data-old_color="#000000" fill="#007BFF"/>
-                                <path d="m351.242188 197.351562h-190.484376c-8.285156 0-15 6.714844-15 15 0 8.285157 6.714844 15 15 15h190.484376c8.285156 0 15-6.714843 15-15 0-8.285156-6.714844-15-15-15zm0 0" data-original="#000000" class="st0" data-old_color="#000000" fill="#007BFF"/>
-                            </svg>
-                        </div>
-                    </a>
-                </li>
-                {#<li class="nav-item mx-2">
-                    <a class="nav-link d-flex align-items-center" href="#">
-                        <div style="width:auto;height:auto;">
-                            <svg viewBox="0 0 227.216 227.216" width="18px" height="18px">
-                                <style type="text/css">
-                                    .st0{fill:#007bff;}
-                                </style>
-                                <path d="M175.897,141.476c-13.249,0-25.11,6.044-32.98,15.518l-51.194-29.066c1.592-4.48,2.467-9.297,2.467-14.317  c0-5.019-0.875-9.836-2.467-14.316l51.19-29.073c7.869,9.477,19.732,15.523,32.982,15.523c23.634,0,42.862-19.235,42.862-42.879  C218.759,19.229,199.531,0,175.897,0C152.26,0,133.03,19.229,133.03,42.865c0,5.02,0.874,9.838,2.467,14.319L84.304,86.258  c-7.869-9.472-19.729-15.514-32.975-15.514c-23.64,0-42.873,19.229-42.873,42.866c0,23.636,19.233,42.865,42.873,42.865  c13.246,0,25.105-6.042,32.974-15.513l51.194,29.067c-1.593,4.481-2.468,9.3-2.468,14.321c0,23.636,19.23,42.865,42.867,42.865  c23.634,0,42.862-19.23,42.862-42.865C218.759,160.71,199.531,141.476,175.897,141.476z M175.897,15  c15.363,0,27.862,12.5,27.862,27.865c0,15.373-12.499,27.879-27.862,27.879c-15.366,0-27.867-12.506-27.867-27.879  C148.03,27.5,160.531,15,175.897,15z M51.33,141.476c-15.369,0-27.873-12.501-27.873-27.865c0-15.366,12.504-27.866,27.873-27.866  c15.363,0,27.861,12.5,27.861,27.866C79.191,128.975,66.692,141.476,51.33,141.476z M175.897,212.216  c-15.366,0-27.867-12.501-27.867-27.865c0-15.37,12.501-27.875,27.867-27.875c15.363,0,27.862,12.505,27.862,27.875  C203.759,199.715,191.26,212.216,175.897,212.216z" data-original="#000000" class="st0" data-old_color="#000000" fill="#007BFF"/>
-                            </svg>
-                        </div>
-                    </a>
-                </li>#}
-            </ul>
-        </div>
-    </div>
-</div>
-{% endmacro %}
-
-{% macro comment(current_user, comment) %}
-    <div class="post pt-3 d-flex flex-row">
-        <div class="position-absolute" style="width:2px;height:100%;left:25px;bottom:1px;background-color: #dee2e6;"></div>
-        <img class="post-user-photo position-absolute rounded-circle" src="{{ config.MEDIA_STORAGE + comment['creator_photo'] }}" alt="default">
-        <div class="pcp-1 position-absolute"></div>
-        <div class="pcp-2 position-absolute"></div>
-        <div class="post-content container-fluid ml-5 px-0 pt-0 pb-4 border border-glow-dark-sm rounded">
-            <div class="post-details d-flex flex-column mx-3 mt-2">
-                <span>
-                    <a href="{{ url_for('user.pets', username=comment['creator_username']) }}" class="font-weight-bold">{{ comment.creator_name }}</a>
-                    <span class="small text-muted">
-                        <span class="h6">&middot; </span> 
-                        <span class="p-dt">
-                            {{ comment.registered_on }}
-                        </span>
-                    </span>
-                    {% if comment.creator_id == current_user.public_id %}
-                    <div class="dropdown float-right">
-                        <a data-toggle="dropdown">
-                            <img src="{{ url_for('static', filename='assets/more.svg') }}" style="width:15px;">
-                        </a>
-                        <ul class="dropdown-menu py-3" role="menu" aria-labelledby="dLabel">            
-                            <li>
-                                <button type="button" class="dc-mb dropdown-item" data-toggle="modal" data-target="#deleteCommentModal" cont="{{ comment.content }}" method-action="{{ url_for('comment.delete', comment_pid=comment.public_id) }}">
-                                    Delete comment
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                    {% endif %}
-                </span>
-                <a href="{{ url_for('user.pets', username=comment['creator_username']) }}" class="small text-muted">@{{ comment.creator_username }}</a>
-            </div>
-            <div class="post-body border-top pt-3 px-3">
-                {{ comment.content }}
-            </div>
-            {% if comment.photo %}
-                <div class="post-photo-cont mx-3 mt-3 border rounded">
-                    {{ gallery(config, "d2", comment.photo) }}
-                </div>
-            {% endif %}
         </div>
     </div>
 {% endmacro %}

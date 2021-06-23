@@ -1,6 +1,6 @@
 import requests, json
 from flask import current_app, session
-from . import save_image
+from . import save_image, save_base64image
 
 class PostService:
     @staticmethod
@@ -14,8 +14,13 @@ class PostService:
                 "content": data_form.get("content_input"),
                 "photo": [
                     dict(
-                        filename = save_image(data_file.get("photo_input"), 2)
-                    )
+                        filename = save_base64image(photo)
+                    ) for photo in [
+                        data_form.get("photo_1_input"),
+                        data_form.get("photo_2_input"),
+                        data_form.get("photo_3_input"),
+                        data_form.get("photo_4_input")
+                    ] if photo
                 ],
                 "pinboard_id": data_form.get("pinboard_input"),
                 "confiner_id": data_form.get("confiner_input"),

@@ -44,6 +44,7 @@ class AcceptPetForm(FlaskForm):
     submit_input  = SubmitField("Accept")
 
 class CreatePetOwnerForm(FlaskForm):
+    name_input = StringField(validators=[DataRequired()])
     owner_input = StringField()
     submit_input  = SubmitField("Add")
 

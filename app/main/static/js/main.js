@@ -1,5 +1,144 @@
 var currentDate = new Date();
 
+$(function () {
+     $('[data-toggle="tooltip"]').tooltip();
+     document.querySelectorAll(".pt-tt-c").forEach((cont) => {
+          $(cont).on("mouseenter", function(e) {
+               $(cont.querySelector(".rounded-circle")).tooltip('show');
+
+               let tooltipCont = document.querySelector(".tooltip");
+               $(tooltipCont).on("mouseenter", function(e) {
+                    $(cont.querySelector(".rounded-circle")).tooltip('show');
+               })
+               $(tooltipCont).on("mouseleave", function(e) {
+                    $(cont.querySelector(".rounded-circle")).tooltip('hide');
+               })
+          })
+          $(cont).on("mouseleave", function(e) {
+               $(cont.querySelector(".rounded-circle")).tooltip('hide');
+          })
+     })
+})
+
+disablePostCreator(document.querySelector(".cr-post-facade-input"));
+function disablePostCreator(input) {
+     $(input).one("click", function(e) {
+          petCount = parseInt(input.getAttribute("user-pet-count"));
+          if (petCount === 0) {
+               let alertCont = document.querySelector(".alert-frame");
+               let alert = document.createElement("div");
+               alert.classList.add("alert", "alert-warning", "alert-dismissible", "fade", "show", "small");
+               alert.innerHTML = "Create pet profile first."
+               $(alert).fadeTo(5000, 500).slideUp(500, function (e) {
+                    $(e).alert("close");
+               });
+               alertCont.appendChild(alert);
+          } else {
+               postCreatorMechanism(document.getElementById("createPostModal"));
+          }
+     });
+}
+function postCreatorMechanism (modal) {
+     const modalBody = modal.querySelector(".modal-body");
+     const form = modal.querySelector(".modal-content");
+     const inputs = form.querySelectorAll("input");
+     const submit = form.querySelector("input[type='submit']");
+
+     const uploadPhotoFormGroup = modal.querySelector(".crp-ump-fg");
+     const facadeUploadInput = uploadPhotoFormGroup.querySelector(".input-pretend-reverse");
+     const actualUploadInput = uploadPhotoFormGroup.querySelector("input");
+
+     facadeUploadInput.addEventListener("click", (e) => {
+          actualUploadInput.click();
+     });
+
+     var photosArr = [];
+     actualUploadInput.addEventListener("change", (e) => {
+          $(".crp-gallc-disposable").remove();
+          photosArr = [];
+          if (actualUploadInput.files.length <= 4) {
+               for (let file of actualUploadInput.files) {
+                    photosArr.push(file);
+               }
+               displayLoadedPostPhotos();
+          } else {
+               let alertCont = document.querySelector(".alert-frame");
+               let alert = document.createElement("div");
+               alert.classList.add("alert", "alert-warning", "alert-dismissible", "fade", "show", "small");
+               alert.innerHTML = "You can choose up to 4 photos only."
+               $(alert).fadeTo(5000, 500).slideUp(500, function (e) {
+                    $(e).alert("close");
+               });
+               actualUploadInput.value = ""
+               $(modal).modal("hide");
+               alertCont.appendChild(alert);
+          }
+     });
+     function readyGallDisp () {
+          let baseGall = modalBody.querySelector("#crp-gallc-" + photosArr.length);  
+          let gallDisp = $(baseGall).clone().removeAttr("id").removeClass("d-none").addClass("crp-gallc-disposable");
+          let photoDispList = gallDisp.find(".inc-cnt");
+          for (var i = 1; i <= 4; i++) {
+               let file = photosArr[i-1];
+               let disp =  $(photoDispList[i-1]).find(".inc-c");
+               let imageClose = disp.find("span");
+               let loading = $(photoDispList[i-1]).find(".inc-c-ld");
+               let photo = disp.find(".img-fluid");
+               let base64ContInput = modalBody.querySelector("#photo_" + i + "_input");
+               base64ContInput.value = "";
+               if (file) {
+                    let reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => {
+                         photo.css("background-image", "url('" + reader.result + "')");
+                         base64ContInput.value = reader.result;
+                         loading.hide();
+                    }
+                    imageClose.one("click", function(e) {
+                         let index = photosArr.indexOf(file);
+                         if (index > -1) {
+                              photosArr.splice(index, 1);
+                         }
+                         displayLoadedPostPhotos();
+                    });
+               }
+          }
+          return gallDisp[0];
+     }
+     function displayLoadedPostPhotos () {
+          $(".crp-gallc-disposable").remove();
+          if (photosArr.length) {     
+               modalBody.insertBefore(readyGallDisp(), uploadPhotoFormGroup);
+          } else {
+               actualUploadInput.value = "";
+          }
+     }
+
+     form.addEventListener("dragover", (e) => {
+          e.preventDefault();
+
+          form.classList.add("anticipate-drop-dark");
+     });
+
+     ["dragleave", "dragend"].forEach((type) => {
+          form.addEventListener(type, (e) => {
+               form.classList.remove("anticipate-drop-dark");
+          });
+     });
+
+     form.addEventListener("drop", (e) => {
+          if (e.dataTransfer.files.length) {
+               let regex = /^.*\.(jpg|jpeg|png)$/;
+
+               if (regex.test(e.dataTransfer.files[0].name)) {
+                    actualUploadInput.files = e.dataTransfer.files;
+               }
+          }
+
+          form.classList.remove("anticipate-drop-dark");
+     });
+};
+
 document.querySelectorAll(".dc-mb").forEach((button) => {
      modal = document.querySelector(button.getAttribute("data-target"));
      button.addEventListener("click", (e) => {
@@ -509,4 +648,3 @@ document.querySelectorAll(".autocomplete").forEach((div) => {
 document.querySelectorAll(".p-dt").forEach((dateCont) => {
      dateCont.innerHTML = moment(dateCont.innerHTML).fromNow()
 });
-     

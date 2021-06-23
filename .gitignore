@@ -133,4 +133,7 @@ dmypy.json
 
 #Ignore Images
 app/main/static/images/*
-!app/main/static/images/default.jpg
+!app/main/static/images/default_business.jpg
+!app/main/static/images/default_circle.jpg
+!app/main/static/images/default_pet.jpg
+!app/main/static/images/default_user.jpg

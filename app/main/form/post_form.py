@@ -1,11 +1,15 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectMultipleField, TextAreaField, SubmitField
+from wtforms import StringField, SelectMultipleField, TextAreaField, SubmitField, MultipleFileField
 from wtforms.validators import InputRequired, Length
-from flask_wtf.file import FileField, FileAllowed
+from flask_wtf.file import FileAllowed
 
 class CreatePostForm(FlaskForm):
     content_input = TextAreaField("Content", validators=[Length(min=1, max=280)])
-    photo_input = FileField("Photo", validators=[FileAllowed(["jpg", "jpeg", "png"])])
+    photos_fn_input = MultipleFileField(validators=[FileAllowed(["jpg", "jpeg", "png"])])
+    photo_1_input = TextAreaField()
+    photo_2_input = TextAreaField()
+    photo_3_input = TextAreaField()
+    photo_4_input = TextAreaField()
     pinboard_input = StringField()
     confiner_input = StringField()
     subject_input = SelectMultipleField("Tag pets", coerce=str, choices=[], validators=[InputRequired()])

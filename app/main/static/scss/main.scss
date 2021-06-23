@@ -6,6 +6,10 @@
     bottom: 40px;
 }
 
+.c-center {
+    width: 600px;
+}
+
 .gwac {
     width: 700px;
 }
@@ -198,6 +202,19 @@
     object-fit:cover;
 }
 
+.bs-tooltip-left .arrow::before {
+    border-left-color: lightgray !important;
+} 
+.bs-tooltip-right .arrow::before {
+    border-right-color: lightgray !important;
+} 
+.bs-tooltip-bottom .arrow::before {
+    border-bottom-color: lightgray !important;
+}
+.bs-tooltip-top .arrow::before {
+    border-top-color: lightgray !important;
+}
+
 .tooltip-cont > .tooltip-photo {
     width: 45px;
     height: 45px;
@@ -237,10 +254,6 @@
 
 .post > .post-content > .post-body {
     margin-top: 7px;
-}
-
-.post > .post-content > .post-photo-cont {
-    overflow: hidden;
 }
 
 .post > .post-content > .post-relevant-pets > span > a > img {
@@ -432,6 +445,110 @@
     cursor: pointer;
 }
 
+.input-pretend-reverse:hover {
+    background-color: whitesmoke;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.crp-gallc {
+    height: 250px;
+}
+
+.crp-gallc > .flex-row > .flex-column > .inc-cnt > .inc-c > .img-fluid {
+    background-size: cover;
+    background-position: 50% 50%;
+}
+
+.crp-gallc > .flex-row > .flex-column > .inc-cnt > .inc-c > span > img {
+    background-color: rgba($color: black, $alpha: 0.5);
+    width: 20px;
+    height: 20px;
+    padding: 4px;
+}
+
+.crp-gallc > .flex-row > .flex-column > .inc-cnt > .inc-c > span:hover {
+    cursor: pointer;
+}
+
+.crp-gallc > .flex-row > .flex-column > .inc-cnt {
+    overflow: hidden;
+}
+
+.crp-gallc > .flex-row > .flex-column > .inc-cnt > .inc-c-ld {
+    background-color: lightgray;
+    width: 100%;
+    height: 100%;
+}
+
+.crp-gallc {
+    height: 250px;
+}
+
+.crp-gallc > .flex-row > .flex-column > .inc-cnt > .inc-c > .img-fluid {
+    background-size: cover;
+    background-position: 50% 50%;
+}
+
+.crp-gallc > .flex-row > .flex-column > .inc-cnt > .inc-c > span > img {
+    background-color: rgba($color: black, $alpha: 0.5);
+    width: 20px;
+    height: 20px;
+    padding: 4px;
+}
+
+.crp-gallc > .flex-row > .flex-column > .inc-cnt > .inc-c > span:hover {
+    cursor: pointer;
+}
+
+.crp-gallc > .flex-row > .flex-column > .inc-cnt {
+    overflow: hidden;
+}
+
+.crp-gallc > .flex-row > .flex-column > .inc-cnt > .inc-c-ld {
+    background-color: lightgray;
+    width: 100%;
+    height: 100%;
+}
+
+.hide-overflow {
+    overflow: hidden;
+}
+
 .border-glow-dark-sm {
     box-shadow: 1px 1px 10px -7.5px#888888;
+}
+
+.anticipate-drop {
+    border-color: gray;
+    box-shadow: 0 0 10px lightgray;
+}
+
+.anticipate-drop-dark {
+    border-color: darkslategray;
+    box-shadow: 0 0 10px darkslategray;
+}
+
+.tooltip.show {
+    opacity: 1 !important;
+    background-color: transparent !important;
+    border: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.tooltip-inner {
+    background-color: white !important;
+    border: 1px solid lightgray !important;
+}
+
+.tooltip-cont {
+    width: 100%;
+    color: black !important;
+}
+
+.tooltip-cont > .tooltip-photo {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
 }

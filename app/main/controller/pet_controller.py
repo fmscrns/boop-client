@@ -25,13 +25,39 @@ def posts(current_user, pet_pid):
             current_user = current_user,
             this_pet = this_pet,
             editPetForm = EditPetForm(prefix="epf"),
-            deletePostForm = DeletePostForm(),
+            createPostForm = 1,
+            deletePostForm = DeletePostForm(prefix="dptf"),
             deletePetForm = DeletePetForm(),
             createPetOwnerForm = CreatePetOwnerForm(prefix="cpof"),
             deletePetOwnerForm = DeletePetOwnerForm(prefix="dpof"),
             followPetForm = FollowPetForm(),
             unfollowPetForm = UnfollowPetForm(),
             post_list = json.loads(PostService.get_all_by_pet(session["booped_in"], this_pet["public_id"]).text)["data"]
+        )
+    else:
+        abort(404)
+
+@pet_bp.route("/<pet_pid>", methods=["GET", "POST"])
+@pet_bp.route("/<pet_pid>/media", methods=["GET", "POST"])
+@session_required
+def media(current_user, pet_pid):
+    get_resp = PetService.get_by_pid(pet_pid)
+    if get_resp.ok:
+        this_pet = json.loads(get_resp.text)
+        this_pet["birthday"] = parser.parse(this_pet["birthday"])
+        
+        return render_template("pet_profile.html",
+            page_title = "Pet profile",
+            current_user = current_user,
+            this_pet = this_pet,
+            uploadPhotoForm = 1,
+            editPetForm = EditPetForm(prefix="epf"),
+            deletePetForm = DeletePetForm(),
+            createPetOwnerForm = CreatePetOwnerForm(prefix="cpof"),
+            deletePetOwnerForm = DeletePetOwnerForm(prefix="dpof"),
+            followPetForm = FollowPetForm(),
+            unfollowPetForm = UnfollowPetForm(),
+            media_list = json.loads(PostService.get_all_by_pet(session["booped_in"], this_pet["public_id"] + "?w_media_only=1").text)["data"]
         )
     else:
         abort(404)
@@ -49,13 +75,13 @@ def confirmed_followers(current_user, pet_pid):
             page_title = "Pet profile",
             current_user = current_user,
             this_pet = this_pet,
+            inviteFollowerForm = 1,
             editPetForm = EditPetForm(prefix="epf"),
             deletePetForm = DeletePetForm(),
             createPetOwnerForm = CreatePetOwnerForm(prefix="cpof"),
             deletePetOwnerForm = DeletePetOwnerForm(prefix="dpof"),
             followPetForm = FollowPetForm(),
             unfollowPetForm = UnfollowPetForm(),
-            inviteFollowerForm = 1,
             follower_list = json.loads(PetService.get_all_confirmed_pet_followers(session["booped_in"], this_pet["public_id"]).text)["data"]
         )
     else:
@@ -74,13 +100,13 @@ def pending_followers(current_user, pet_pid):
                 page_title = "Pet profile",
                 current_user = current_user,
                 this_pet = this_pet,
+                inviteFollowerForm = 1,
                 editPetForm = EditPetForm(prefix="epf"),
                 deletePetForm = DeletePetForm(),
                 createPetOwnerForm = CreatePetOwnerForm(prefix="cpof"),
                 deletePetOwnerForm = DeletePetOwnerForm(prefix="dpof"),
                 followPetForm = FollowPetForm(),
                 unfollowPetForm = UnfollowPetForm(),
-                inviteFollowerForm = 1,
                 acceptPetForm = AcceptPetForm(),
                 follower_list = json.loads(PetService.get_all_pending_pet_followers(session["booped_in"], this_pet["public_id"]).text)["data"]
             )

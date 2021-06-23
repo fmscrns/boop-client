@@ -5,7 +5,7 @@
 {% block content %}
     {{ loaded_navbar(current_user) }}
     <div class="container-fluid d-flex justify-content-center pt-5 my-3">
-        <div class="d-flex flex-column w-50">
+        <div class="c-center d-flex flex-column">
             <div class="jumbotron jumbotron-fluid rounded w-100 d-flex flex-column mb-3 pb-0">
                 <div class="d-flex flex-row px-4">
                     <img src="{{ config.MEDIA_STORAGE + this_user['photo'] }}" alt="..." class="rounded mx-auto d-block w-25">
@@ -16,7 +16,7 @@
                             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editProfileModal">
                                 <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
                             </button>
-                            <div class="modal fade" id="editProfileModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal" id="editProfileModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                 <form class="modal-content" method="POST" action="{{ url_for('user.edit', user_pid=current_user['public_id']) }}" enctype="multipart/form-data">
                                     <div class="modal-header">
@@ -84,7 +84,7 @@
                     <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#createPetModal">
                         Create pet profile
                     </button>
-                    <div class="modal fade" id="createPetModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal" id="createPetModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-scrollable">
                         <form class="modal-content" method="POST" action="{{ url_for('pet.create') }}" enctype="multipart/form-data" token="{{ session['booped_in'] }}" api-domain="{{ config.API_DOMAIN }}">
                             <div class="modal-header">
@@ -179,7 +179,7 @@
                                     <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#cancelFollowModal">
                                         Pending
                                     </button>
-                                    <div class="modal fade" id="cancelFollowModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                    <div class="modal" id="cancelFollowModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-scrollable">
                                         <form class="modal-content" method="POST" action="{{ url_for('pet.unfollow', pet_pid=pet['public_id']) }}">
                                             <div class="modal-header">
@@ -260,7 +260,7 @@
                 <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#createBusinessModal">
                     Create business profile
                 </button>
-                <div class="modal fade" id="createBusinessModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal" id="createBusinessModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-scrollable">
                     <form class="modal-content" method="POST" action="{{ url_for('business.create') }}" enctype="multipart/form-data">
                         <div class="modal-header">
@@ -413,7 +413,7 @@
                 <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#createCircleModal">
                     Create Circle profile
                 </button>
-                <div class="modal fade" id="createCircleModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal" id="createCircleModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-scrollable">
                     <form class="modal-content" method="POST" action="{{ url_for('circle.create') }}" enctype="multipart/form-data">
                         <div class="modal-header">

@@ -5,7 +5,7 @@
 {% block content %}
     {{ loaded_navbar(current_user) }}
     <div class="container-fluid d-flex justify-content-center pt-5 my-3">
-        <div class="d-flex flex-column w-50">
+        <div class="c-center d-flex flex-column">
             <div class="jumbotron jumbotron-fluid rounded w-100 d-flex flex-column mb-3 pb-0">
                 <div class="d-flex flex-row px-4">
                     <img src="{{ config.MEDIA_STORAGE + this_business['photo'] }}" alt="..." class="rounded mx-auto d-block w-25">
@@ -24,7 +24,7 @@
                             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editBusinessModal">
                                 <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
                             </button>
-                            <div class="modal fade" id="editBusinessModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal" id="editBusinessModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -60,7 +60,7 @@
                                         {{ createBusinessExecutiveForm.hidden_tag() }}
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div href="/user/" class="autocomplete container-fluid p-0">
-                                                <input class="form-control form-control-sm" placeholder="Name or username">
+                                                {{ createBusinessExecutiveForm.name_input(class="form-control form-control-sm", placeholder="Name or username") }}
                                                 {{ createBusinessExecutiveForm.executive_input(hidden=True) }}
                                             </div>
                                             {{ createBusinessExecutiveForm.submit_input(class="btn btn-primary ml-2 btn-sm") }}
@@ -72,10 +72,10 @@
                                             <div class="d-flex justify-content-between p-2">
                                                 <span>{% if executive.public_id == current_user.public_id %}You{% else %}{{ executive["name"] }}{% endif %}</span>
                                                 {% if this_business["executive"]|length > 1 %}
-                                                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deletePetOwnerModal{{ loop.index }}">
+                                                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#removeBusinessExecutiveModal{{ loop.index }}">
                                                         Remove
                                                     </button>
-                                                    <div class="modal fade" id="deletePetOwnerModal{{ loop.index }}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                    <div class="modal" id="removeBusinessExecutiveModal{{ loop.index }}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                                         <div class="modal-dialog">
                                                             <form class="modal-content" method="POST" action="{{ url_for('business.delete_executive', business_pid=this_business.public_id) }}">
                                                                 <div class="modal-header">
@@ -122,7 +122,7 @@
                                     <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#createAppointmentModal">
                                         Create appointment
                                     </button>
-                                    <div class="modal fade" id="createAppointmentModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                    <div class="modal" id="createAppointmentModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                         <div class="modal-dialog">
                                         <form class="modal-content" method="POST" action="{{ url_for('appointment.create') }}" enctype="multipart/form-data">
                                             <div class="modal-header">
@@ -234,24 +234,44 @@
             {% endfor %}
             {% endif %}
             {% for follower in follower_list %}
-                <a href="{{ url_for('user.pets', username=follower.username) }}" class="container-fluid border p-4 mt-3">
-                    <div class="d-flex flex-row">
-                        <img class="home-content-profPic" src="{{ config.MEDIA_STORAGE + follower['photo'] }}" alt="..." class="rounded d-block w-25 border">
-                        <div class="d-flex flex-column ml-2 container">
-                            <span class="font-weight-bold hci-bb-l">{% if follower.public_id == current_user.public_id %}You{% else %}{{ follower["name"] }}{% endif %}&nbsp;&nbsp;<span class="badge bg-primary text-light">Follower</span></span> <span style="font-size:15px;">@{{ follower.username }}</span>
-                        </div>
+                <div class="container-fluid border p-4 mt-3">
+                    <div class="d-flex flex-row justify-content-between">
+                        <a class="d-flex flex-row" href="{{ url_for('user.pets', username=follower.username) }}" >
+                            <img class="home-content-profPic" src="{{ config.MEDIA_STORAGE + follower['photo'] }}" alt="..." class="rounded d-block w-25 border">
+                            <div class="d-flex flex-column ml-2 container">
+                                <span class="font-weight-bold hci-bb-l">{% if follower.public_id == current_user.public_id %}You{% else %}{{ follower["name"] }}{% endif %}&nbsp;&nbsp;<span class="badge bg-primary text-light">Follower</span></span> <span style="font-size:15px;">@{{ follower.username }}</span>
+                            </div>
+                        </a>
                         {% if this_business["visitor_auth"] == 2 %}
                             <div class="float-right">
-                                {#<form method="POST" action="{{ url_for('circle.leave', circle_pid=this_business['public_id']) }}">
-                                    {{ unfollowBusinessForm.hidden_tag() }}
-                                    {{ unfollowBusinessForm.follower_input(hidden=True, value=follower["public_id"]) }}
-                                    {{ unfollowBusinessForm.submit_input(class="btn btn-outline-danger ml-2", value="Remove") }}
-                                </form>#}
-                                <button class="btn btn-outline-danger ml-2">Remove</button>
+                                <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#removeBusinessFollowerModal{{ loop.index }}">
+                                    Remove
+                                </button>
+                                <div class="modal" id="removeBusinessFollowerModal{{ loop.index }}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <form class="modal-content" method="POST" action="{{ url_for('business.unfollow', business_pid=this_business.public_id) }}">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="staticBackdropLabel">Remove follower</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="border-top modal-body">
+                                                {{ unfollowBusinessForm.hidden_tag() }}
+                                                {{ unfollowBusinessForm.follower_input(hidden=True, value=follower["public_id"]) }}
+                                                Are you sure you want to remove this follower?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                {{ unfollowBusinessForm.submit_input(class="btn btn-danger", value="Remove") }}
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         {% endif %}
                     </div>
-                </a>
+                </div>
             {% endfor %}
             {% endif %}
         </div>

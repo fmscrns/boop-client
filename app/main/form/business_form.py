@@ -68,6 +68,7 @@ class UnfollowBusinessForm(FlaskForm):
     submit_input = SubmitField()
 
 class CreateBusinessExecutiveForm(FlaskForm):
+    name_input = StringField(validators=[DataRequired()])
     executive_input = StringField()
     submit_input  = SubmitField("Add")
 
