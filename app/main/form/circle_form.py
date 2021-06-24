@@ -13,7 +13,7 @@ class CreateCircleForm(FlaskForm):
 
 class EditCircleForm(FlaskForm):
     name_input = StringField("Name", validators=[DataRequired(), Length(min=2, max=30)])
-    bio_input = TextAreaField("Bio", validators=[Length(min=2, max=50)])
+    bio_input = TextAreaField("Bio", validators=[Length(max=50)])
     type_input = SelectMultipleField("Type", coerce=str, choices=[], validators=[InputRequired()])
     photo_input = FileField("Profile photo", validators=[FileAllowed(["jpg", "jpeg", "png"])])
 
