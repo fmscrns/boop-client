@@ -1,9 +1,48 @@
 .alert-frame {
   z-index: 2;
-  width: 350px !important;
   position: fixed;
   right: 40px;
   bottom: 40px;
+}
+
+.alert-frame > .alert {
+  width: 250px;
+  white-space: initial;
+}
+
+.ntf-nb > .dropdown-menu {
+  max-width: 450px;
+  max-height: 500px;
+  overflow-y: scroll;
+}
+
+.ntf-nb > .dropdown-menu > a > .ntf-nb-img-c > img {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  background: white;
+  border: 1px solid lightgray;
+}
+
+.ntf-nb > .dropdown-menu > a > .small {
+  width: 300px;
+  white-space: initial;
+}
+
+.ntf-nb-unr {
+  background-color: #CCE5FF;
+}
+
+.ntf-nb-unr:hover {
+  background-color: #80bdff;
+}
+
+.ntf-dt-vs {
+  width: 100px;
+  font-size: 9px;
+  white-space: initial;
 }
 
 .c-center {

@@ -40,7 +40,7 @@
     </nav>
 {% endmacro %}
 
-{% macro loaded_navbar(current_user) %}
+{% macro loaded_navbar(current_user, homeNavbarActive, profileNavbarActive) %}
     <nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light">
         <span class="navbar-brand">
             Boop
@@ -50,16 +50,28 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="{{ url_for('home.feed') }}">Home <span class="sr-only">(current)</span></a>
+                <li class="nav-item font-weight-bold {{ homeNavbarActive }}">
+                    <a class="nav-link" href="{{ url_for('home.feed') }}">
+                        Home
+                    </a>
                 </li>
-                <div class="nav-item mr-auto">
+                <div class="nav-item {{ profileNavbarActive }}">
                     <img class="pp-opp ml-1 mt-1" src="{{ url_for('static', filename='images/{}'.format(current_user.photo)) }}" alt="..." class="rounded d-block w-25 border">
                 </div>
-                <li class="nav-item active">
+                <li class="nav-item {{ profileNavbarActive }}">
                     <a class="nav-link" href="{{ url_for('user.pets', username=current_user['username']) }}"><span class="font-weight-bold hci-bb-l">{{ current_user.name }}</span> <span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item dropdown">
+                <li class="ntf-nb nav-item font-weight-bold dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Notifications 
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary text-white">
+                            0
+                        </span>
+                    </a>
+                    <div class="dropdown-menu mp-0 hide-overflow" aria-labelledby="notificationDropdown">
+                    </div>
+                </li>
+                <li class="nav-item font-weight-bold dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Settings</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="#">Action</a>
@@ -69,9 +81,6 @@
                             <button type="submit" class="btn btn-primary btn-sm btn-block" href="#">Sign out</a>
                         </form>
                     </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
                 </li>
             </ul>
             <form class="form-inline my-2 my-lg-0">

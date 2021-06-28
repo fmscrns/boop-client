@@ -4,9 +4,12 @@ from .config import config_by_name
 from .util.decorator import no_session_required
 from .form.auth_form import GetAuthTokenForm
 from .service.auth_service import AuthService
+from flask_socketio import SocketIO
+
+app = Flask(__name__)
+sio = SocketIO(app)
 
 def create_app(config_name):
-    app = Flask(__name__)
     app.config.from_object(config_by_name[config_name])
 
     myCloudinary.config(
@@ -14,6 +17,18 @@ def create_app(config_name):
         api_key=app.config["KEY_API_CLOUDINARY"],
         api_secret=app.config["SECRET_API_CLOUDINARY"]
     )
+
+    @app.after_request
+    def add_header(r):
+        """
+        Add headers to both force latest IE rendering engine or Chrome Frame,
+        and also to cache the rendered page for 10 minutes.
+        """
+        r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        r.headers["Pragma"] = "no-cache"
+        r.headers["Expires"] = "0"
+        r.headers['Cache-Control'] = 'public, max-age=0'
+        return r
 
     @app.route("/", methods=["GET", "POST"])
     @app.route("/welcome", methods=["GET", "POST"])
@@ -40,4 +55,4 @@ def create_app(config_name):
             page_title="Welcome",
             getAuthTokenForm = getAuthTokenForm
         )
-    return app
+    return app, sio

@@ -3,7 +3,7 @@
 {% from "component/post.html" import post_creator, post_remover, post %}
 
 {% block content %}
-    {{ loaded_navbar(current_user) }}
+    {{ loaded_navbar(current_user, homeNavbarActive="active") }}
     {{ post_remover(deletePostForm) }}
     <div class="container-fluid d-flex justify-content-center pt-5 my-3">
         <div class="c-center d-flex flex-column">           

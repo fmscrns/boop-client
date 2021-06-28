@@ -3,7 +3,7 @@
 {% from "component/post.html" import post_creator, post_remover, post %}
 
 {% block content %}
-    {{ loaded_navbar(current_user) }}
+    {{ loaded_navbar(current_user, profileNavbarActive="active") }}
     <div class="container-fluid d-flex justify-content-center pt-5 my-3">
         <div class="c-center d-flex flex-column">
             <div class="jumbotron jumbotron-fluid rounded w-100 d-flex flex-column mb-3 pb-0">

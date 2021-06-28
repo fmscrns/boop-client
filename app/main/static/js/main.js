@@ -1,6 +1,77 @@
 var currentDate = new Date();
 
 $(function () {
+     let notifCont = document.querySelector(".ntf-nb");
+     let notifUnreadCount = notifCont.querySelector(".position-absolute");
+     let notifBtn = notifCont.querySelector(".nav-link");
+     let notifMenu = notifCont.querySelector(".dropdown-menu");
+
+     $.ajax({
+          type: "GET",
+          url: "/notification/get",
+
+          success: function (data) {
+               notifUnreadCount.innerHTML = 0;
+               if (data.length > 0) {
+                    for (let notification of data) {
+                         thisNotif = document.createElement("a");
+                         thisNotif.classList.add("dropdown-item", "p-3", "d-flex", "flex-row", "align-items-center", "justify-content-between");
+     
+                         if (notification["is_read"] == false) {
+                              notifUnreadCount.innerHTML = parseInt(notifUnreadCount.innerHTML) + 1;
+                              thisNotif.classList.add("ntf-nb-unr");
+                         }
+                         notifImageCont = document.createElement("div");
+                         notifImageCont.classList.add("mr-3", "ntf-nb-img-c");
+                         notifImage = document.createElement("img");
+                         notifImage.setAttribute("src", "/static/images/" + notification["sender_photo"]);
+                         notifImageCont.append(notifImage);
+                         thisNotif.append(notifImageCont);
+
+                         notifMessage = document.createElement("span");
+                         notifMessage.classList.add("small", "mr-3");
+                         notifMessage.innerHTML = notification["content"];
+                         thisNotif.append(notifMessage);
+
+                         notifDatetime = document.createElement("div");
+                         notifDatetime.classList.add("text-muted", "d-flex", "justify-content-end", "ntf-dt-vs");
+                         notifDatetime.innerHTML =  moment(notification["registered_on"]).fromNow();
+                         thisNotif.append(notifDatetime);
+
+                         if (notification["post_subject_id"]) {
+                              thisNotif.setAttribute("href", "/post/" + notification["post_subject_id"] + "/comments");
+                         } else if (notification["circle_subject_id"]) {
+                              if (notification["_type"] == 1) {
+                                   thisNotif.setAttribute("href", "/circle/" + notification["circle_subject_id"] + "/members/pending");
+                              } else {
+                                   thisNotif.setAttribute("href", "/circle/" + notification["circle_subject_id"] + "/posts");
+                              }
+                         } else if (notification["pet_subject_id"]) {
+                              if (notification["_type"] == 1) {
+                                   thisNotif.setAttribute("href", "/pet/" + notification["pet_subject_id"] + "/followers/pending");
+                              } else {
+                                   thisNotif.setAttribute("href", "/pet/" + notification["pet_subject_id"] + "/posts");
+                              }
+                         } else if (notification["business_subject_id"]) {
+                              thisNotif.setAttribute("href", "/business/" + notification["business_subject_id"] + "/posts");
+                         }
+
+                         notifMenu.append(thisNotif);
+                         dividerCont = document.createElement("li");
+                         notifMenu.append(dividerCont);
+                    }
+               } else {
+                    let noNotifMessage = document.createElement("div");
+                    noNotifMessage.style.width = "200px";
+                    noNotifMessage.classList.add("ntf-e", "pt-2", "mx-4", "text-muted", "h6");
+                    noNotifMessage.innerHTML = "You have no notifications as of now."
+                    notifMenu.append(noNotifMessage);
+               }
+          }
+     });
+});
+
+$(function () {
      $('[data-toggle="tooltip"]').tooltip();
      document.querySelectorAll(".pt-tt-c").forEach((cont) => {
           $(cont).on("mouseenter", function(e) {
