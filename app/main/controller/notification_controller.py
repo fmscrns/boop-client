@@ -8,16 +8,12 @@ from itsdangerous import URLSafeTimedSerializer
 from .. import sio
 
 @notification_bp.route("/receiver", methods=["POST"])
-def dispatcher():
+def receiver():
     serializer = URLSafeTimedSerializer(os.environ.get("SECRET_KEY"))
-
     try:
         data = serializer.loads(request.json["token"], salt="new-notif")
         sio.emit('notif-for-{}'.format(data["recipient_username"]), data)
-
         return jsonify(data)
-    # except Exception as e:
-    #     print(e)
     except:
         return None
 
