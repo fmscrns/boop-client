@@ -1,23 +1,27 @@
 {% extends "layout.html" %}
 {% from "component/navbar.html" import loaded_navbar %}
-{% from "component/post.html" import post_creator, post_remover, post %}
+{% from "component/post.html" import post_creator, post_remover, post_bi %}
 
 {% block content %}
     {{ loaded_navbar(current_user, homeNavbarActive="active") }}
     {{ post_remover(deletePostForm) }}
     <div class="container-fluid d-flex justify-content-center pt-5 my-3">
         <div class="c-center d-flex flex-column">           
-            <div class="row row-cols-1 row-cols-md-1 p-0">
+            <div class="fd-cont row row-cols-1 row-cols-md-1 p-0">
                 <div class="col p-0">
                     <div class="pt-3">
                         {{ post_creator(current_user, createPostForm) }}
                     </div>
                 </div>
-                {% for _post in all_Posts %}
-                    <div class="col p-0">
-                        {{ post(current_user, _post) }}
-                    </div>
-                {% endfor %}
+                <div class="fd-ld col p-0 d-flex align-items-center justify-content-center mt-3">
+                    <div class="spinner-grow text-primary" role="status"></div>
+                </div>
+                <div class="fd-st mt-2 d-flex align-items-center justify-content-center">
+                    <span class="badge badge-light"></span>
+                </div>
+                <div hidden=True class="fd-pi col p-0" query-url="/post/">
+                    {{ post_bi() }}
+                </div>
             </div>
         </div> 
     </div>

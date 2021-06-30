@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "component/navbar.html" import loaded_navbar %}
-{% from "component/post.html" import post_remover, post %}
+{% from "component/post.html" import post_remover, post_bi %}
 {% from "component/gallery.html" import media_gallery %}
 
 {% block content %}
@@ -229,12 +229,30 @@
             {% if (this_pet["is_private"] == 0) or (this_pet["visitor_auth"] > 1) %}
                 {% if createPostForm %}
                     {{ post_remover(deletePostForm) }}
-                    {% for _post in post_list %}
-                        {{ post(current_user, _post) }}
-                    {% endfor %}
+                    <div class="container">
+                        <div class="fd-cont row row-cols-1 row-cols-md-1 p-0">
+                            <div class="fd-ld col p-0 d-flex align-items-center justify-content-center mt-3">
+                                <div class="spinner-grow text-primary" role="status"></div>
+                            </div>
+                            <div class="fd-st mt-2 d-flex align-items-center justify-content-center">
+                                <span class="badge badge-light"></span>
+                            </div>
+                            <div hidden=True class="fd-pi col p-0" query-url="/post/subject/{{ this_pet['public_id'] }}">
+                                {{ post_bi() }}
+                            </div>
+                        </div>
+                    </div>
                 {% elif uploadPhotoForm %}
-                    <div class="container rounded hide-overflow">
-                        {{ media_gallery(media_list) }}
+                    <div class="md-cont">
+                        <div class="md-ld col p-0 d-flex align-items-center justify-content-center mt-3">
+                            <div class="spinner-grow text-primary" role="status"></div>
+                        </div>
+                        <div class="md-st mt-2 d-flex align-items-center justify-content-center">
+                            <span class="badge badge-light"></span>
+                        </div>
+                        <div hidden=True class="md-pi" query-url="/post/subject/{{ this_pet['public_id'] }}">
+                            {{ media_gallery() }}
+                        </div>
                     </div>
                 {% elif inviteFollowerForm %}
                     {% if this_pet["visitor_auth"] == 3 %}
@@ -325,7 +343,7 @@
                                     </div>
                                 {% endif %}
                             </div>
-                        </a>
+                        </div>
                     {% endfor %}
                 {% endif %}
             {% else %}

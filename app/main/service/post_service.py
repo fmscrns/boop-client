@@ -33,40 +33,43 @@ class PostService:
         )
     
     @staticmethod
-    def get_all_by_user(token, user_pid):
-        return requests.get("{}/post/creator/{}".format(
+    def get_all_by_user(token, pagination_no):
+        return requests.get("{}/post/bytoken{}".format(
             current_app.config["API_DOMAIN"],
-            user_pid),
+            "?pagination_no={}".format(pagination_no) if pagination_no else ""),
             headers = {
                 "Authorization" : "Bearer {}".format(token)
             }
         )
     
     @staticmethod
-    def get_all_by_pet(token, pet_pid):
-        return requests.get("{}/post/subject/{}".format(
+    def get_all_by_pet(token, pet_pid, w_media_only, pagination_no):
+        return requests.get("{}/post/subject/{}{}".format(
             current_app.config["API_DOMAIN"],
-            pet_pid),
+            pet_pid,
+            "?{}".format("w_media_only={}{}".format(w_media_only, "&pagination_no={}".format(pagination_no) if pagination_no else "") if w_media_only else "pagination_no={}".format(pagination_no) if pagination_no else "")),
             headers = {
                 "Authorization" : "Bearer {}".format(token)
             }
         )
     
     @staticmethod
-    def get_all_by_business(token, business_pid):
-        return requests.get("{}/post/pinboard/{}".format(
+    def get_all_by_business(token, business_pid, w_media_only, pagination_no):
+        return requests.get("{}/post/pinboard/{}{}".format(
             current_app.config["API_DOMAIN"],
-            business_pid),
+            business_pid,
+            "?{}".format("w_media_only={}{}".format(w_media_only, "&pagination_no={}".format(pagination_no) if pagination_no else "") if w_media_only else "pagination_no={}".format(pagination_no) if pagination_no else "")),
             headers = {
                 "Authorization" : "Bearer {}".format(token)
             }
         )
     
     @staticmethod
-    def get_all_by_circle(token, circle_pid):
-        return requests.get("{}/post/confiner/{}".format(
+    def get_all_by_circle(token, circle_pid, w_media_only, pagination_no):
+        return requests.get("{}/post/confiner/{}{}".format(
             current_app.config["API_DOMAIN"],
-            circle_pid),
+            circle_pid,
+            "?{}".format("w_media_only={}{}".format(w_media_only, "&pagination_no={}".format(pagination_no) if pagination_no else "") if w_media_only else "pagination_no={}".format(pagination_no) if pagination_no else "")),
             headers = {
                 "Authorization" : "Bearer {}".format(token)
             }
@@ -101,9 +104,10 @@ class PostService:
         )
 
     @staticmethod
-    def get_all_posts():
-        return requests.get("{}/post/".format(
-            current_app.config["API_DOMAIN"]),
+    def get_all_posts(pagination_no):
+        return requests.get("{}/post/{}".format(
+            current_app.config["API_DOMAIN"],
+            "?pagination_no={}".format(pagination_no) if pagination_no else ""),
             headers = {
                 "Authorization" : "Bearer {}".format(session["booped_in"])
             }

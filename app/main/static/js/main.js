@@ -1,5 +1,307 @@
 var currentDate = new Date();
 
+function outerHTML(node){
+     return node.outerHTML || new XMLSerializer().serializeToString(node);
+}
+
+$(function () {
+     var paginationNo = 1;
+     let commentCont = $(document).find(".cd-cont")[0];
+     let commentLoading = $(commentCont).find(".cd-ld")[0];
+     let commentStatus = $(commentCont).find(".cd-st")[0];
+     let commentBaseItem = $(commentCont).find(".cd-ci")[0];
+     var doneAjax = true;
+     commentPopulate();
+     $(window).scroll(function () {
+          if(($(window).scrollTop() + $(window).height() == $(document).height()) && doneAjax) {
+               paginationNo += 1;
+               $(commentLoading).find(".spinner-grow").show();
+               commentPopulate();
+          }
+     });
+     function commentPopulate () {
+          $.ajax({
+               beforeSend: function () {
+                    doneAjax = false;
+               },
+               type: "GET",
+               url: $(commentBaseItem).attr("query-url") + "?pagination_no=" + paginationNo,
+               success: function (data) {
+                    if (data.length > 0) {
+                         for (comment of data) {
+                              let item = $(commentBaseItem).clone().removeAttr("hidden");
+                              item.find(".post-user-photo").attr("src", item.find(".post-user-photo").attr("src") + comment["creator_photo"]);
+                              item.find(".f-pi-dt-cn").html(comment["creator_name"]).attr("href", "/user/" + comment["creator_username"] + "/pets");
+                              item.find(".p-dt").html(moment(comment["registered_on"]).fromNow());
+                              if (comment["is_mine"] == 1) {
+                                   item.find(".f-pi-dt-dd").find(".dc-mb").attr("method-action", "/comment/" + comment["public_id"] + "/delete").on("click", function(e) {
+                                        $($(this).attr("data-target")).find(".modal-content").attr("action", $(this).attr("method-action"));
+                                   });
+                              } else {
+                                   item.find(".f-pi-dt-dd").remove();
+                              }
+                              item.find(".f-pi-db-un").attr("href", "/user/" + comment["creator_username"] + "/pets").html("@" + comment["creator_username"]);
+                              item.find(".post-body").html(comment["content"]);
+                              if (comment["photo"]) {
+                                   item.find(".f-pi-c-ph").find(".f-pi-c-pp").not(".f-pi-c-pp-i").remove();
+                                   item.find(".f-pi-c-ph").find("img").eq(0).attr("src", item.find(".f-pi-c-ph").find("img").eq(0).attr("src") + comment["photo"][i]["filename"]);
+                              } else {
+                                   item.find(".f-pi-c-ph").remove();
+                              }
+                              item.insertBefore(commentLoading);
+                         }
+                         $(commentLoading).find(".spinner-grow").hide();
+                         doneAjax = true;
+                    } else {
+                         $(commentLoading).find(".spinner-grow").hide();
+                         doneAjax = false;
+                         $(commentStatus).find(".badge").html((paginationNo > 1) ? "Nothing more to load." : "No comments found.")
+                    }
+                    
+               }
+          });
+     }
+});
+
+$(function () {
+     var paginationNo = 1;
+     let mediaCont = $(document).find(".md-cont")[0];
+     let mediaLoading = $(mediaCont).find(".md-ld")[0];
+     let mediaStatus = $(mediaCont).find(".md-st")[0];
+     let mediaBaseItem = $(mediaCont).find(".md-pi")[0];
+     var doneAjax = true;
+     mediaPopulate();
+     $(window).scroll(function () {
+          if(($(window).scrollTop() + $(window).height() == $(document).height()) && doneAjax) {
+               paginationNo += 1;
+               $(mediaLoading).find(".spinner-grow").show();
+               mediaPopulate();
+          }
+     });
+     function mediaPopulate () {
+          $.ajax({
+               beforeSend: function () {
+                    doneAjax = false;
+               },
+               type: "GET",
+               url: $(mediaBaseItem).attr("query-url") + "?w_media_only=1&pagination_no=" + paginationNo,
+               success: function (data) {
+                    if (data.length > 0) {
+                         let mediaItem = $(mediaBaseItem).clone().removeAttr("hidden");
+                         var photoList = new Array();
+                         for (post of data) {
+                              for (media of post["photo"]) {
+                                   let mediaObj = {
+                                        public_id: post["public_id"],
+                                        filename: media["filename"]
+                                   }
+                                   photoList.push(mediaObj);
+                              }
+                         }
+                         if (photoList.length <= 3) {
+                              mediaItem.find(".mc-ip").not(".mc-ip-" + "i".repeat(photoList.length)).remove();
+
+                         } else {
+                              mediaItem.find(".mc-ip").not(".mc-ip-iiii").remove();
+                              if (photoList.length <= 6) {
+                                   mediaItem.find(".mc-ip-iiii-m").remove();
+                              } else {
+                                   // 12 - (3 + 0) = 9/3 = 3        12 - 6 = 6 / 3 = 2
+                                   let multiplyMiddleLength = ((photoList.length - (3 + (photoList.length % 3 == 0 ? 3 : photoList.length % 3)))/3);
+                                   let baseMiddleItem = mediaItem.find(".mc-ip-iiii-m").eq(0);
+                                   for (var i = 0; i < multiplyMiddleLength; i++) {
+                                        let item = baseMiddleItem.clone();
+                                        item.insertBefore(baseMiddleItem);
+                                   }
+                                   baseMiddleItem.remove();
+                              }
+                              if (photoList.length % 3 == 1) {
+                                   mediaItem.find(".mc-ip-iiii-b").not(".mc-ip-iiii-b-i").remove();
+                              } else if (photoList.length % 3 == 2) {
+                                   mediaItem.find(".mc-ip-iiii-b").not(".mc-ip-iiii-b-ii").remove();
+                              } else if (photoList.length % 3 == 0) {
+                                   mediaItem.find(".mc-ip-iiii-b").not(".mc-ip-iiii-b-iii").remove();
+                              }
+
+                         }
+          
+                         for (let i = 0; i < photoList.length; i++) {
+                              mediaItem.find("a").eq(i).attr("href", "/post/" + photoList[i]["public_id"] + "/comments");
+                              mediaItem.find("img").eq(i).attr("src", mediaItem.find("img").eq(i).attr("src") + photoList[i]["filename"]);
+                         }
+
+                         $(mediaLoading).find(".spinner-grow").hide();
+                         doneAjax = true;
+                         mediaItem.insertBefore(mediaLoading);
+                    } else {
+                         $(mediaLoading).find(".spinner-grow").hide();
+                         doneAjax = false;
+                         $(mediaStatus).find(".badge").html((paginationNo > 1) ? "Nothing more to load." : "No media found.")
+                    }
+               }
+          });
+     };
+});
+
+$(function () {
+     var paginationNo = 1;
+     let feedCont = $(document).find(".fd-cont")[0];
+     let feedLoading = $(feedCont).find(".fd-ld")[0];
+     let feedStatus = $(feedCont).find(".fd-st")[0];
+     let feedPostItem = $(feedCont).find(".fd-pi")[0];
+     var doneAjax = true;
+     postPopulate();
+     $(window).scroll(function () {
+          if(($(window).scrollTop() + $(window).height() == $(document).height()) && doneAjax) {
+               paginationNo += 1;
+               $(feedLoading).find(".spinner-grow").show();
+               postPopulate();
+          }
+     });
+     function postPopulate () {
+          $.ajax({
+               beforeSend: function () {
+                    doneAjax = false;
+               },
+               type: "GET",
+               url: $(feedPostItem).attr("query-url") + "?pagination_no=" + paginationNo,
+               success: function (data) {
+                    if (data.length > 0) {
+                         for (post of data) {
+                              let item = $(feedPostItem).clone().removeAttr("hidden");
+                              item.find(".post-user-photo").attr("src", item.find(".post-user-photo").attr("src") + post["creator_photo"]);
+                              item.find(".f-pi-dt-cn").html(post["creator_name"]).attr("href", "/user/" + post["creator_username"] + "/pets");
+                              if (post["pinboard_id"]) {
+                                   item.find(".p-anc-c").removeAttr("hidden");
+                                   item.find(".f-pi-dt-pbcf").removeAttr("hidden").attr("href", "/business/" + post["pinboard_id"] + "/posts").html(post["pinboard_name"]);
+                              } else if (post["confiner_id"]) {
+                                   item.find(".p-anc-c").removeAttr("hidden");
+                                   item.find(".f-pi-dt-pbcf").removeAttr("hidden").attr("href", "/circle/" + post["confiner_id"] + "/posts").html(post["confiner_name"]);
+                              } else {
+                                   item.find(".p-anc-c").remove();
+                                   item.find(".f-pi-dt-pbcf").remove();
+                              }
+                              item.find(".p-dt").html(moment(post["registered_on"]).fromNow());
+                              if (post["is_mine"] == 1) {
+                                   item.find(".f-pi-dt-dd").find(".dc-mb").attr("method-action", "/post/" + post["public_id"] + "/delete").on("click", function(e) {
+                                        $($(this).attr("data-target")).find(".modal-content").attr("action", $(this).attr("method-action"));
+                                   });
+                              } else {
+                                   item.find(".f-pi-dt-dd").remove();
+                              }
+                              item.find(".f-pi-db-un").attr("href", "/user/" + post["creator_username"] + "/pets").html("@" + post["creator_username"]);
+                              item.find(".post-body").html(post["content"]);
+                              if (post["photo"]) {
+                                   let photoListLength = post["photo"].length;
+          
+                                   item.find(".f-pi-c-ph").find(".f-pi-c-pp").not(".f-pi-c-pp-" + "i".repeat(photoListLength)).remove();
+          
+                                   for (let i = 0; i < photoListLength; i++) {
+                                        item.find(".f-pi-c-ph").find("img").eq(i).attr("src", item.find(".f-pi-c-ph").find("img").eq(i).attr("src") + post["photo"][i]["filename"]);
+                                   }
+                              } else {
+                                   item.find(".f-pi-c-ph").remove();
+                              }
+                              let taggedPetsCont = item.find(".f-pi-prp");
+                              let petBaseTooltip = taggedPetsCont.find(".tooltip-cont");
+                              let taggedPetBaseItem = taggedPetsCont.find(".pt-tt-c");
+                              for (pet of post["subject"]) {
+                                   let newTaggedPetItem = taggedPetBaseItem.clone().removeAttr("hidden").attr("href", "/pet/" + pet["public_id"] + "/posts");
+                                   let petTooltip = petBaseTooltip.clone().removeAttr("hidden");
+                                   petTooltip.find("img").attr("src", petBaseTooltip.find("img").attr("src") + pet["photo"]);
+                                   petTooltip.find(".mt-1").html(pet["name"]);
+                                   petTooltip.find(".small").html(pet["group_name"] + " &middot; " + pet["subgroup_name"]);
+                                   petTooltip.find(".btn").attr("href", "/pet/" + pet["public_id"] + "/posts");
+                                   newTaggedPetItem.find("img").attr("src", newTaggedPetItem.find("img").attr("src") + pet["photo"]).attr("title", outerHTML(petTooltip[0]));
+                                   newTaggedPetItem.tooltip();
+                                   newTaggedPetItem.on("mouseenter", function() {
+                                        newTaggedPetItem.find(".rounded-circle").tooltip('show');
+                                        let tooltipCont = document.querySelector(".tooltip");
+                                        $(tooltipCont).on("mouseenter", function() {
+                                             newTaggedPetItem.find(".rounded-circle").tooltip('show');
+                                        });
+                                        $(tooltipCont).on("mouseleave", function() {
+                                             newTaggedPetItem.find(".rounded-circle").tooltip('hide');
+                                        });
+                                   });
+                                   newTaggedPetItem.on("mouseleave", function() {
+                                        newTaggedPetItem.find(".rounded-circle").tooltip('hide');
+                                   });
+                                   taggedPetsCont.append(newTaggedPetItem);
+                              } 
+                              petBaseTooltip.remove();
+                              taggedPetBaseItem.remove();
+
+                              $(item).attr("href", "/post/" + post["public_id"] + "/comments");
+                              [".f-pi-dt", ".post-body", ".f-pi-c-ph"].forEach((cont) => {
+                                   item.find(cont).on("click", function () {
+                                        window.location = $(item).attr("href");
+                                   });
+                              });
+                              let likeCont = item.find(".post-footer").find(".pst-lk").attr("post-pid", post["public_id"]);
+                              likeCont.find(".p-lc").html(post["like_count"] + "&nbsp;&nbsp;");
+                              if (post["is_liked"] == 1) {
+                                   likeCont.addClass("pst-lk-active").find("path").eq(1).removeClass("d-none");
+                              }
+                              likeCont.find("a").on("click", function () {
+                                   if (likeCont.hasClass("pst-lk-active")) {
+                                        likeCont.removeClass("pst-lk-active").find(".p-lc").html(parseInt(likeCont.find(".p-lc").html()) - 1);
+                                        likeCont.find("path").eq(1).addClass("d-none");
+                                   } else {
+                                        likeCont.addClass("pst-lk-active").find(".p-lc").html(parseInt(likeCont.find(".p-lc").html()) + 1);
+                                        likeCont.find("path").eq(1).removeClass("d-none");
+                                   }
+                                   $.ajax({
+                                        type: "POST",
+                                        url: "/post/" + likeCont.attr("post-pid") + "/like"
+                                   });
+                              });
+                              let commentCont = item.find(".post-footer").find(".pst-cmt");
+                              commentCont.find("span").html(post["comment_count"] + "&nbsp;&nbsp;");
+                              commentCont.find("a").attr("href", "/post/" + post["public_id"] + "/comments");
+                              item.insertBefore(feedLoading);
+                         }
+                         $(feedLoading).find(".spinner-grow").hide();
+                         doneAjax = true;
+                    } else {
+                         $(feedLoading).find(".spinner-grow").hide();
+                         doneAjax = false;
+                         $(feedStatus).find(".badge").html((paginationNo > 1) ? "Nothing more to load." : "No posts found.")
+                    }
+                    
+               }
+          });
+     }
+});
+
+$(function () {
+     $('[data-toggle="tooltip"]').tooltip();
+     document.querySelectorAll(".pt-tt-c").forEach((cont) => {
+          $(cont).on("mouseenter", function(e) {
+               $(cont.querySelector(".rounded-circle")).tooltip('show');
+
+               let tooltipCont = document.querySelector(".tooltip");
+               $(tooltipCont).on("mouseenter", function(e) {
+                    $(cont.querySelector(".rounded-circle")).tooltip('show');
+               })
+               $(tooltipCont).on("mouseleave", function(e) {
+                    $(cont.querySelector(".rounded-circle")).tooltip('hide');
+               })
+          })
+          $(cont).on("mouseleave", function(e) {
+               $(cont.querySelector(".rounded-circle")).tooltip('hide');
+          })
+     })
+})
+
+document.querySelectorAll(".dc-mb").forEach((button) => {
+     modal = document.querySelector(button.getAttribute("data-target"));
+     button.addEventListener("click", (e) => {
+          methodAction = button.getAttribute("method-action");
+          modal.querySelector(".modal-content").setAttribute("action", methodAction);
+     });
+});
+
 $(function () {
      let notifCont = document.querySelector(".ntf-nb");
      let notifUnreadCount = notifCont.querySelector(".position-absolute");
@@ -70,26 +372,6 @@ $(function () {
           }
      });
 });
-
-$(function () {
-     $('[data-toggle="tooltip"]').tooltip();
-     document.querySelectorAll(".pt-tt-c").forEach((cont) => {
-          $(cont).on("mouseenter", function(e) {
-               $(cont.querySelector(".rounded-circle")).tooltip('show');
-
-               let tooltipCont = document.querySelector(".tooltip");
-               $(tooltipCont).on("mouseenter", function(e) {
-                    $(cont.querySelector(".rounded-circle")).tooltip('show');
-               })
-               $(tooltipCont).on("mouseleave", function(e) {
-                    $(cont.querySelector(".rounded-circle")).tooltip('hide');
-               })
-          })
-          $(cont).on("mouseleave", function(e) {
-               $(cont.querySelector(".rounded-circle")).tooltip('hide');
-          })
-     })
-})
 
 disablePostCreator(document.querySelector(".cr-post-facade-input"));
 function disablePostCreator(input) {
@@ -209,14 +491,6 @@ function postCreatorMechanism (modal) {
           form.classList.remove("anticipate-drop-dark");
      });
 };
-
-document.querySelectorAll(".dc-mb").forEach((button) => {
-     modal = document.querySelector(button.getAttribute("data-target"));
-     button.addEventListener("click", (e) => {
-          methodAction = button.getAttribute("method-action");
-          modal.querySelector(".modal-content").setAttribute("action", methodAction);
-     });
-});
 
 document.querySelectorAll(".pst-lk").forEach((buttonCont) => {
      buttonCont.querySelector("a").addEventListener("click", (e) => {

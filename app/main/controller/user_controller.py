@@ -52,32 +52,28 @@ def pets(current_user, username):
     else:
         abort(404)
 
-@user_bp.route("/<username>", methods=["GET", "POST"])
 @user_bp.route("/<username>/posts", methods=["GET", "POST"])
 @session_required
 def posts(current_user, username):
-    get_resp = UserService.get_by_username(username)
-    if get_resp.ok:
+    if current_user["username"] == username:
         editUserForm = EditUserForm(prefix="euf")
         editUserForm.name_input.data = current_user["name"]
         editUserForm.username_input.data = current_user["username"]
         editUserForm.email_input.data = current_user["email"]
         createPostForm = CreatePostForm()
         createPostForm.subject_input.choices = [(subject["public_id"], subject["name"]) for subject in json.loads(PetService.get_all_by_user(session["booped_in"], current_user["public_id"] + "?tag_suggestions=1").text)["data"]]
-        this_user = json.loads(get_resp.text)
         return render_template("user_profile.html",
             page_title = "Profile",
             current_user = current_user,
-            this_user = this_user,
-            editUserForm = editUserForm if this_user["public_id"] == current_user["public_id"] else None,
+            this_user = current_user,
+            editUserForm = editUserForm if current_user["public_id"] == current_user["public_id"] else None,
             createPostForm = createPostForm,
             deletePostForm = DeletePostForm(prefix="dptf"),
-            post_list = json.loads(PostService.get_all_by_user(session["booped_in"], this_user["public_id"]).text)["data"]
+            # post_list = json.loads(PostService.get_all_by_user(session["booped_in"]).text)["data"]
         )
     else:
-        abort(404)
+        abort(403)
 
-@user_bp.route("/<username>", methods=["GET", "POST"])
 @user_bp.route("/<username>/businesses", methods=["GET", "POST"])
 @session_required
 def businesses(current_user, username):
@@ -103,7 +99,6 @@ def businesses(current_user, username):
     else:
         abort(403)
 
-@user_bp.route("/<username>", methods=["GET", "POST"])
 @user_bp.route("/<username>/circles", methods=["GET", "POST"])
 @session_required
 def circles(current_user, username):

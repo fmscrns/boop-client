@@ -38,7 +38,36 @@ def posts(current_user, business_pid):
             deletePostForm = DeletePostForm(prefix="dptf"),
             followBusinessForm = FollowBusinessForm(),
             unfollowBusinessForm = UnfollowBusinessForm(),
-            post_list = json.loads(PostService.get_all_by_business(session["booped_in"], this_business["public_id"]).text)["data"]
+            # post_list = json.loads(PostService.get_all_by_business(session["booped_in"], this_business["public_id"]).text)["data"]
+        )
+    else:
+        abort(404)
+
+@business_bp.route("/<business_pid>/media", methods=["GET", "POST"])
+@session_required
+def media(current_user, business_pid):
+    get_resp = BusinessService.get_by_pid(business_pid)
+    if get_resp.ok:
+        this_business = json.loads(get_resp.text)
+        editBusinessForm = EditBusinessForm(prefix="ebf")
+        editBusinessForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in json.loads(BusinessTypeService.get_all(session["booped_in"]).text)["data"]]
+        editBusinessForm.type_input.data = [_type["public_id"] for _type in this_business["_type"]]
+        createAppointmentForm = CreateAppointmentForm()
+        createAppointmentForm.pet_input.choices = [(pet["public_id"], pet["name"]) for pet in json.loads(PetService.get_all_by_user(session["booped_in"], current_user["public_id"]).text)["data"]]
+        createAppointmentForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in this_business["_type"]]
+        return render_template("business_profile.html",
+            page_title = "Business profile",
+            current_user = current_user,
+            this_business = this_business,
+            uploadPhotoForm = 1,
+            editBusinessForm = editBusinessForm,
+            deleteBusinessForm = DeleteBusinessForm(),
+            createBusinessExecutiveForm = CreateBusinessExecutiveForm(prefix="cbef"),
+            deleteBusinessExecutiveForm = DeleteBusinessExecutiveForm(prefix="dbef"),
+            createAppointmentForm = createAppointmentForm,
+            followBusinessForm = FollowBusinessForm(),
+            unfollowBusinessForm = UnfollowBusinessForm(),
+            # media_list = json.loads(PostService.get_all_by_business(session["booped_in"], this_business["public_id"] + "?w_media_only=1").text)["data"]
         )
     else:
         abort(404)

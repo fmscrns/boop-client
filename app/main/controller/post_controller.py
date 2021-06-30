@@ -22,7 +22,7 @@ def comments(current_user, post_pid):
             deletePostForm = DeletePostForm(prefix="dptf"),
             createCommentForm = CreateCommentForm(),
             deleteCommentForm = DeleteCommentForm(),
-            comment_list = json.loads(CommentService.get_all_by_post(session["booped_in"], this_post["public_id"]).text)["data"]
+            # comment_list = json.loads(CommentService.get_all_by_post(session["booped_in"], this_post["public_id"]).text)["data"]
         )        
     else:
         abort(404)
@@ -90,3 +90,48 @@ def delete(current_user, post_pid):
                 flash(message, "danger")
 
     return redirect(url_for("post.comments", post_pid=post_pid))
+
+@post_bp.route("/", methods=["GET"])
+@session_required
+def get_all(current_user):
+    return jsonify(
+        json.loads(
+            PostService.get_all_posts(request.args.get("pagination_no")).text
+        )["data"]
+    )
+
+@post_bp.route("/bytoken", methods=["GET"])
+@session_required
+def get_all_by_user(current_user):
+    return jsonify(
+        json.loads(
+            PostService.get_all_by_user(session["booped_in"], request.args.get("pagination_no")).text
+        )["data"]
+    )
+
+@post_bp.route("/subject/<subject_pid>", methods=["GET"])
+@session_required
+def get_all_by_pet(current_user, subject_pid):
+    return jsonify(
+        json.loads(
+            PostService.get_all_by_pet(session["booped_in"], subject_pid, request.args.get("w_media_only"), request.args.get("pagination_no")).text
+        )["data"]
+    )
+
+@post_bp.route("/confiner/<confiner_pid>", methods=["GET"])
+@session_required
+def get_all_by_circle(current_user, confiner_pid):
+    return jsonify(
+        json.loads(
+            PostService.get_all_by_circle(session["booped_in"], confiner_pid, request.args.get("w_media_only"), request.args.get("pagination_no")).text
+        )["data"]
+    )
+
+@post_bp.route("/pinboard/<pinboard_pid>", methods=["GET"])
+@session_required
+def get_all_by_business(current_user, pinboard_pid):
+    return jsonify(
+        json.loads(
+            PostService.get_all_by_business(session["booped_in"], pinboard_pid, request.args.get("w_media_only"), request.args.get("pagination_no")).text
+        )["data"]
+    )

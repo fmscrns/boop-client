@@ -1,6 +1,6 @@
 from app.main.service.comment_service import CommentService
 import json
-from flask import Flask, request, session, flash, redirect, url_for
+from flask import Flask, request, session, flash, redirect, url_for, jsonify
 from ... import comment_bp
 from ..util.decorator import session_required
 from ..form.comment_form import CreateCommentForm, DeleteCommentForm
@@ -47,3 +47,12 @@ def delete(current_user, comment_pid):
                 flash(message, "danger")
 
     return redirect(url_for("post.comments", post_pid=deleteCommentForm.parent_input.data))
+
+@comment_bp.route("/parent/<parent_pid>", methods=["GET"])
+@session_required
+def get_all_by_post(current_user, parent_pid):
+    return jsonify(
+        json.loads(
+            CommentService.get_all_by_post(session["booped_in"], parent_pid, request.args.get("pagination_no")).text
+        )["data"]
+    )

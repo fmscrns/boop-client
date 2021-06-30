@@ -35,7 +35,33 @@ def posts(current_user, circle_pid):
             deletePostForm = DeletePostForm(prefix="dptf"),
             joinCircleForm = JoinCircleForm(),
             leaveCircleForm = LeaveCircleForm(),
-            post_list = json.loads(PostService.get_all_by_circle(session["booped_in"], this_circle["public_id"]).text)["data"]
+            # post_list = json.loads(PostService.get_all_by_circle(session["booped_in"], this_circle["public_id"]).text)["data"] if this_circle["visitor_auth"] > 1 else []
+        )
+    else:
+        abort(404)
+
+@circle_bp.route("/<circle_pid>/media", methods=["GET", "POST"])
+@session_required
+def media(current_user, circle_pid):
+    get_resp = CircleService.get_by_pid(circle_pid)
+    if get_resp.ok:
+        this_circle = json.loads(get_resp.text)
+        editCircleForm = EditCircleForm(prefix="ebf")
+        editCircleForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in json.loads(CircleTypeService.get_all(session["booped_in"]).text)["data"]]
+        editCircleForm.type_input.data = [_type["public_id"] for _type in this_circle["_type"]]
+        return render_template("circle_profile.html",
+            page_title = "Circle profile",
+            current_user = current_user,
+            this_circle = this_circle,
+            uploadPhotoForm = 1,
+            editCircleForm = editCircleForm,
+            deleteCircleForm = DeleteCircleForm(),
+            createCircleAdminForm = CreateCircleAdminForm(prefix="ccaf"),
+            deleteCircleAdminForm = DeleteCircleAdminForm(prefix="dcaf"),
+            deletePostForm = DeletePostForm(prefix="dptf"),
+            joinCircleForm = JoinCircleForm(),
+            leaveCircleForm = LeaveCircleForm(),
+            # media_list = json.loads(PostService.get_all_by_circle(session["booped_in"], this_circle["public_id"] + "?w_media_only=1").text)["data"]
         )
     else:
         abort(404)
@@ -63,10 +89,10 @@ def confirmed_members(current_user, circle_pid):
                 inviteMemberForm = 1,
                 joinCircleForm = JoinCircleForm(),
                 leaveCircleForm = LeaveCircleForm(),
-                member_list = json.loads(CircleService.get_all_members(session["booped_in"], this_circle["public_id"], "1", None).text)["data"]
+                member_list = json.loads(CircleService.get_all_members(session["booped_in"], this_circle["public_id"], "1", None).text)["data"] if this_circle["visitor_auth"] > 1 else []
             )
         else:
-            return jsonify(json.loads(CircleService.get_all_members(session["booped_in"], this_circle["public_id"], "1", search_val).text)["data"])
+            return jsonify(json.loads(CircleService.get_all_members(session["booped_in"], this_circle["public_id"], "1", search_val).text)["data"]) if this_circle["visitor_auth"] > 1 else []
     else:
         abort(404)
 

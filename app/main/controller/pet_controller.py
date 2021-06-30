@@ -32,12 +32,11 @@ def posts(current_user, pet_pid):
             deletePetOwnerForm = DeletePetOwnerForm(prefix="dpof"),
             followPetForm = FollowPetForm(),
             unfollowPetForm = UnfollowPetForm(),
-            post_list = json.loads(PostService.get_all_by_pet(session["booped_in"], this_pet["public_id"]).text)["data"]
+            # post_list = json.loads(PostService.get_all_by_pet(session["booped_in"], this_pet["public_id"]).text)["data"] if this_pet["visitor_auth"] > 1 else []
         )
     else:
         abort(404)
 
-@pet_bp.route("/<pet_pid>", methods=["GET", "POST"])
 @pet_bp.route("/<pet_pid>/media", methods=["GET", "POST"])
 @session_required
 def media(current_user, pet_pid):
@@ -57,7 +56,7 @@ def media(current_user, pet_pid):
             deletePetOwnerForm = DeletePetOwnerForm(prefix="dpof"),
             followPetForm = FollowPetForm(),
             unfollowPetForm = UnfollowPetForm(),
-            media_list = json.loads(PostService.get_all_by_pet(session["booped_in"], this_pet["public_id"] + "?w_media_only=1").text)["data"]
+            # media_list = json.loads(PostService.get_all_by_pet(session["booped_in"], this_pet["public_id"] + "?w_media_only=1").text)["data"] if this_pet["visitor_auth"] > 1 else []
         )
     else:
         abort(404)
@@ -82,7 +81,7 @@ def confirmed_followers(current_user, pet_pid):
             deletePetOwnerForm = DeletePetOwnerForm(prefix="dpof"),
             followPetForm = FollowPetForm(),
             unfollowPetForm = UnfollowPetForm(),
-            follower_list = json.loads(PetService.get_all_confirmed_pet_followers(session["booped_in"], this_pet["public_id"]).text)["data"]
+            follower_list = json.loads(PetService.get_all_confirmed_pet_followers(session["booped_in"], this_pet["public_id"]).text)["data"] if this_pet["visitor_auth"] > 1 else []
         )
     else:
         abort(404)

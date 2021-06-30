@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% from "component/navbar.html" import loaded_navbar %}
-{% from "component/post.html" import post_creator, post_remover, post %}
+{% from "component/post.html" import post_creator, post_remover, post_bi %}
+{% from "component/gallery.html" import media_gallery %}
 
 {% block content %}
     {{ loaded_navbar(current_user) }}
@@ -184,7 +185,7 @@
                       <a class="nav-link" href="{{ url_for('business.posts', business_pid=this_business['public_id']) }}">Posts</a>
                     </li>
                     <li class="nav-item col d-flex justify-content-center">
-                      <a class="nav-link" href="#">Media</a>
+                      <a class="nav-link" href="{{ url_for('business.media', business_pid=this_business['public_id']) }}">Media</a>
                     </li>
                     <li class="nav-item col d-flex justify-content-center">
                         <a class="nav-link" href="{{ url_for('business.followers', business_pid=this_business['public_id']) }}">Followers</a>
@@ -194,31 +195,34 @@
             {% if createPostForm %}
                 {{ post_remover(deletePostForm, this_business) }}
                 <div class="container">
-                    <div class="row row-cols-1 row-cols-md-1 p-0">
+                    <div class="fd-cont row row-cols-1 row-cols-md-1 p-0">
                         <div class="col p-0">
                             <div class="pt-3">
                                 {{ post_creator(current_user, createPostForm, this_business, none) }}
                             </div>
                         </div>
-                        {% for _post in post_list %}
-                            <div class="col p-0">
-                                {{ post(current_user, _post) }}
-                            </div>
-                        {% endfor %}
+                        <div class="fd-ld col p-0 d-flex align-items-center justify-content-center mt-3">
+                            <div class="spinner-grow text-primary" role="status"></div>
+                        </div>
+                        <div class="fd-st mt-2 d-flex align-items-center justify-content-center">
+                            <span class="badge badge-light"></span>
+                        </div>
+                        <div hidden=True class="fd-pi col p-0" query-url="{{ url_for('post.get_all_by_business', pinboard_pid=this_business['public_id']) }}">
+                            {{ post_bi() }}
+                        </div>
                     </div>
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination rounded mt-3 justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">Previous</a>
-                        </li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Next</a>
-                        </li>
-                        </ul>
-                    </nav>
+                </div>
+            {% elif uploadPhotoForm %}
+                <div class="md-cont">
+                    <div class="md-ld col p-0 d-flex align-items-center justify-content-center mt-3">
+                        <div class="spinner-grow text-primary" role="status"></div>
+                    </div>
+                    <div class="md-st mt-2 d-flex align-items-center justify-content-center">
+                        <span class="badge badge-light"></span>
+                    </div>
+                    <div hidden=True class="md-pi" query-url="{{ url_for('post.get_all_by_business', pinboard_pid=this_business['public_id']) }}">
+                        {{ media_gallery() }}
+                    </div>
                 </div>
             {% elif inviteFollowerForm %}
             {% if this_business["executive"] %}

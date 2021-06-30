@@ -32,10 +32,11 @@ class CommentService:
         )
     
     @staticmethod
-    def get_all_by_post(token, post_pid):
-        return requests.get("{}/comment/parent/{}".format(
+    def get_all_by_post(token, post_pid, pagination_no):
+        return requests.get("{}/comment/parent/{}{}".format(
             current_app.config["API_DOMAIN"],
-            post_pid),
+            post_pid,
+            "?pagination_no={}".format(pagination_no) if pagination_no else ""),
             headers = {
                 "Authorization" : "Bearer {}".format(token)
             }

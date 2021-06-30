@@ -405,6 +405,14 @@
 
 .gall-i-s5 {
   height: 300px !important;
+  width: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.gall-i-s5-a {
+  height: 304.60px !important;
+  width: 100%;
   -o-object-fit: cover;
      object-fit: cover;
 }
@@ -434,6 +442,11 @@
 
 .gall-p-t {
   padding-top: 0.15rem;
+}
+
+.gall-p-tb {
+  padding-top: 0.15rem;
+  padding-bottom: 0.15rem;
 }
 
 .gall-p-b {

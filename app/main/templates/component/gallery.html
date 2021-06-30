@@ -1,4 +1,46 @@
-{% macro post_gallery(photo_list) %}
+{% macro post_gallery_bi() %}
+    <div class="row mp-0">
+        <div class="f-pi-c-pp f-pi-c-pp-i col gall-item">
+            <img class="img-fluid rounded gall-i-s1" src="{{ config.MEDIA_STORAGE }}">
+        </div>
+        
+        <div class="f-pi-c-pp f-pi-c-pp-ii col gall-item gall-p-r">
+            <img class="img-fluid rounded gall-i-s5" src="{{ config.MEDIA_STORAGE }}">
+        </div>
+        <div class="f-pi-c-pp f-pi-c-pp-ii col gall-item gall-p-l">
+            <img class="img-fluid rounded gall-i-s5" src="{{ config.MEDIA_STORAGE }}">
+        </div>
+
+        <div class="f-pi-c-pp f-pi-c-pp-iii col gall-item gall-p-r">
+            <img class="img-fluid rounded gall-i-s5-a" src="{{ config.MEDIA_STORAGE }}">
+        </div>
+        <div class="f-pi-c-pp f-pi-c-pp-iii col row mp-0">
+            <div class="col gall-item gall-p-bl">
+                <img class="img-fluid rounded gall-i-s6" src="{{ config.MEDIA_STORAGE }}">
+            </div>
+            <div class="w-100"></div>
+            <div class="col gall-item gall-p-tl">
+                <img class="img-fluid rounded gall-i-s6" src="{{ config.MEDIA_STORAGE }}">
+            </div>
+        </div>
+
+        <div class="f-pi-c-pp f-pi-c-pp-iiii col gall-item gall-p-br">
+            <img class="img-fluid rounded gall-i-s6" src="{{ config.MEDIA_STORAGE }}">
+        </div>
+        <div class="f-pi-c-pp f-pi-c-pp-iiii col gall-item gall-p-bl">
+            <img class="img-fluid rounded gall-i-s6" src="{{ config.MEDIA_STORAGE }}">
+        </div>
+        <div class="f-pi-c-pp f-pi-c-pp-iiii w-100"></div>
+        <div class="f-pi-c-pp f-pi-c-pp-iiii col gall-item gall-p-tr">
+            <img class="img-fluid rounded gall-i-s6" src="{{ config.MEDIA_STORAGE }}">
+        </div>
+        <div class="f-pi-c-pp f-pi-c-pp-iiii col gall-item gall-p-tl">
+            <img class="img-fluid rounded gall-i-s6" src="{{ config.MEDIA_STORAGE }}">
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro post_gallery_wj(photo_list) %}
     {% set length = photo_list|length %}
     <div class="row p-0 rounded hide-overflow mx-3">
         {% for n in range(length) %}
@@ -55,6 +97,131 @@
             {% endif %}
         {% endfor %}
     </div>
+{% endmacro %}
+
+{% macro media_gallery() %}
+   {# 1 #}
+   <div class="mc-ip mc-ip-i row mp-0">
+      <div class="col gall-item gall-p-tb px-0">
+         <a>
+            <img class="img-fluid rounded gall-i-s1" src="{{ config.MEDIA_STORAGE }}">
+         </a>
+      </div>
+   </div>
+
+   {# 2 #}
+   <div class="mc-ip mc-ip-ii row mp-0">
+      <div class="col gall-item gall-p-tbr pl-0">
+         <a>
+            <img class="img-fluid rounded gall-i-s2" src="{{ config.MEDIA_STORAGE }}">
+         </a>
+      </div>
+      <div class="col gall-item gall-p-tbl pr-0">
+         <a>
+            <img class="img-fluid rounded gall-i-s2" src="{{ config.MEDIA_STORAGE }}">
+         </a>
+      </div>
+   </div>
+
+
+   {# 3 #}
+   <div class="mc-ip mc-ip-iii row mp-0">
+      <div class="col gall-item gall-p-tbr">
+         <a>
+            <img class="img-fluid rounded gall-i-s3" src="{{ config.MEDIA_STORAGE }}">
+         </a>
+      </div>
+      <div class="col gall-item gall-p-tblr">
+         <a>
+            <img class="img-fluid rounded gall-i-s3" src="{{ config.MEDIA_STORAGE }}">
+         </a>
+      </div>
+      <div class="col gall-item gall-p-tbl">
+         <a>
+            <img class="img-fluid rounded gall-i-s3" src="{{ config.MEDIA_STORAGE }}">
+         </a>
+      </div>
+   </div>
+
+   {# 4 : TOP #}
+   <div class="mc-ip mc-ip-iiii mc-ip-iiii-t row mp-0">
+      <div class="col gall-item gall-p-tbr">
+         <a>
+               <img class="img-fluid rounded gall-i-s3" src="{{ config.MEDIA_STORAGE }}">
+         </a>
+      </div>
+      <div class="col gall-item gall-p-tblr">
+         <a>
+               <img class="img-fluid rounded gall-i-s3" src="{{ config.MEDIA_STORAGE }}">
+         </a>
+      </div>
+      <div class="col gall-item gall-p-tbl">
+         <a>
+            <img class="img-fluid rounded gall-i-s3" src="{{ config.MEDIA_STORAGE }}">
+         </a>
+      </div>
+   </div>
+
+   {# 4 : MIDDLE #}
+   <div class="mc-ip mc-ip-iiii mc-ip-iiii-m row mp-0">
+      <div class="col gall-item gall-p-tbr">
+            <a>
+               <img class="img-fluid rounded gall-i-s3" src="{{ config.MEDIA_STORAGE }}">
+            </a>
+      </div>
+      <div class="col gall-item gall-p-tblr">
+            <a>
+               <img class="img-fluid rounded gall-i-s3" src="{{ config.MEDIA_STORAGE }}">
+            </a>
+      </div>
+      <div class="col gall-item gall-p-tbl">
+         <a>
+            <img class="img-fluid rounded gall-i-s3 " src="{{ config.MEDIA_STORAGE }}">
+         </a>
+      </div>
+   </div>
+
+   {# 4 : BOTTOM : 1 #}
+   <div class="mc-ip mc-ip-iiii mc-ip-iiii-b mc-ip-iiii-b-i row mp-0">
+      <div class="col gall-item gall-p-tb px-0">
+         <a>
+            <img class="img-fluid rounded gall-i-s1" src="{{ config.MEDIA_STORAGE }}">
+         </a>
+      </div>
+   </div>
+
+   {# 4 : BOTTOM : 2 #}
+   <div class="mc-ip mc-ip-iiii mc-ip-iiii-b mc-ip-iiii-b-ii row mp-0">
+      <div class="col gall-item gall-p-tbr pl-0">
+         <a>
+            <img class="img-fluid rounded gall-i-s2" src="{{ config.MEDIA_STORAGE }}">
+         </a>
+      </div>
+      <div class="col gall-item gall-p-tbl pr-0">
+         <a>
+            <img class="img-fluid rounded gall-i-s2" src="{{ config.MEDIA_STORAGE }}">
+         </a>
+      </div>
+   </div>
+
+   {# 4 : BOTTOM : 3 #}
+   <div class="mc-ip mc-ip-iiii mc-ip-iiii-b mc-ip-iiii-b-iii row mp-0">
+      <div class="col gall-item gall-p-tbr">
+         <a>
+            <img class="img-fluid rounded gall-i-s3" src="{{ config.MEDIA_STORAGE }}">
+         </a>
+      </div>
+      <div class="col gall-item gall-p-tblr">
+         <a>
+            <img class="img-fluid rounded gall-i-s3" src="{{ config.MEDIA_STORAGE }}">
+         </a>
+      </div>
+      <div class="col gall-item gall-p-tbl">
+         <a>
+            <img class="img-fluid rounded gall-i-s3" src="{{ config.MEDIA_STORAGE }}">
+         </a>
+      </div>
+   </div>
 {% endmacro %}
 
 {% macro post_create_gallery() %}
@@ -238,208 +405,4 @@
          </div>
       </div>
    </div>
-{% endmacro %}
-
-{% macro media_gallery(post_list) %}
-    {% set length = namespace(value=0) %}
-    {% for post in post_list %}
-        {% set length.value = length.value + post.photo|length %}
-    {% endfor %}
-    {% set index = namespace(value=1) %}
-
-    <div class="row p-0 {% if length.value <= 3 %}rounded{% elif length.value > 3 %}rounded-top{% endif %} hide-overflow">
-        {% for post in post_list %}
-        {% for photo in post.photo %}
-            {% if length.value == 1 %}
-                {% set index.value = index.value + 1 %}
-                <div class="col mp-0">
-                    <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                        <img class="img-fluid gall-item gall-i-s1" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                    </a>
-                </div>
-            {% elif length.value == 2 %}
-                {% if index.value == 1 %}
-                    {% set index.value = index.value + 1 %}
-                    <div class="col mp-0">
-                        <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                            <img class="img-fluid gall-item gall-i-s2 gall-p-r" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                        </a>
-                    </div>
-                {% elif index.value == 2 %}
-                    {% set index.value = index.value + 1 %}
-                    <div class="col mp-0">
-                        <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                            <img class="img-fluid gall-item gall-i-s2 gall-p-l" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                        </a>
-                    </div>
-                {% endif %}
-            {% elif length.value == 3 %}
-                {% if index.value == 1 %}
-                    {% set index.value = index.value + 1 %}
-                    <div class="col mp-0">
-                        <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                            <img class="img-fluid gall-item gall-i-s3 gall-p-r" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                        </a>
-                    </div>
-                {% elif index.value == 2 %}
-                    {% set index.value = index.value + 1 %}
-                    <div class="col mp-0">
-                        <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                            <img class="img-fluid gall-item gall-i-s3 gall-p-lr" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                        </a>
-                    </div>
-                {% elif index.value == 3 %}
-                    {% set index.value = index.value + 1 %}
-                    <div class="col mp-0">
-                        <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                            <img class="img-fluid gall-item gall-i-s3 gall-p-l" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                        </a>
-                    </div>
-                {% endif %}
-            {% elif length.value > 3 %}
-                {% if index.value == 1 %}
-                    {% set index.value = index.value + 1 %}
-                    <div class="col mp-0">
-                        <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                            <img class="img-fluid gall-item gall-i-s3 gall-p-br" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                        </a>
-                    </div>
-                {% elif index.value == 2 %}
-                    {% set index.value = index.value + 1 %}
-                    <div class="col mp-0">
-                        <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                            <img class="img-fluid gall-item gall-i-s3 gall-p-blr" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                        </a>
-                    </div>
-                {% elif index.value == 3 %}
-                        {% set index.value = index.value + 1 %}
-                        <div class="col mp-0">
-                            <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                                <img class="img-fluid gall-item gall-i-s3 gall-p-bl" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                            </a>
-                        </div>
-                    </div>
-                    <div class="row rounded-bottom hide-overflow">
-                {% elif length.value % 3 == 1 %}
-                    {% if (index.value % 3 == 1) and (index.value <= length.value - 1 ) %}
-                        {% set index.value = index.value + 1 %}
-                        <div class="col mp-0">
-                            <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                                <img class="img-fluid gall-item gall-i-s3 gall-p-tbr" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                            </a>
-                        </div>
-                    {% elif (index.value % 3 == 2) and (index.value <= length.value - 1 ) %}
-                        {% set index.value = index.value + 1 %}
-                        <div class="col mp-0">
-                            <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                                <img class="img-fluid gall-item gall-i-s3 gall-p-tblr" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                            </a>
-                        </div>
-                    {% elif (index.value % 3 == 0) and (index.value <= length.value - 1 ) %}
-                            {% set index.value = index.value + 1 %}
-                            <div class="col mp-0">
-                                <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                                    <img class="img-fluid gall-item gall-i-s3 gall-p-tbl" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                                </a>
-                            </div>
-                        </div>
-                        <div class="row rounded-bottom hide-overflow">
-                    {% else %}
-                        {% set index.value = index.value + 1 %}
-                        <div class="col mp-0">
-                            <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                                <img class="img-fluid gall-item gall-i-s1 gall-p-t" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                            </a>
-                        </div>
-                    {% endif %}
-                {% elif length.value % 3 == 2 %}
-                    {% if (index.value % 3 == 1) and (index.value <= length.value - 2 ) %}
-                        {% set index.value = index.value + 1 %}
-                        <div class="col mp-0">
-                            <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                                <img class="img-fluid gall-item gall-i-s3 gall-p-tbr" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                            </a>
-                        </div>
-                    {% elif (index.value % 3 == 2) and (index.value <= length.value - 2 ) %}
-                        {% set index.value = index.value + 1 %}
-                        <div class="col mp-0">
-                            <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                                <img class="img-fluid gall-item gall-i-s3 gall-p-tblr" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                            </a>
-                        </div>
-                    {% elif (index.value % 3 == 0) and (index.value <= length.value - 2 ) %}
-                            {% set index.value = index.value + 1 %}
-                            <div class="col mp-0">
-                                <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                                    <img class="img-fluid gall-item gall-i-s3 gall-p-tbl" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                                </a>
-                            </div>
-                        </div>
-                        <div class="row rounded-bottom hide-overflow">
-                    {% elif index.value == (length.value - 1) %}
-                        {% set index.value = index.value + 1 %}
-                        <div class="col mp-0">
-                            <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                                <img class="img-fluid gall-item gall-i-s2 gall-p-tr" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                            </a>
-                        </div>
-                    {% else %}
-                        {% set index.value = index.value + 1 %}
-                        <div class="col mp-0">
-                            <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                                <img class="img-fluid gall-item gall-i-s2 gall-p-tl" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                            </a>
-                        </div>
-                    {% endif %}
-                {% elif length.value % 3 == 0 %}
-                    {% if (index.value % 3 == 1) and (index.value <= length.value - 3 ) %}
-                        {% set index.value = index.value + 1 %}
-                        <div class="col mp-0">
-                            <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                                <img class="img-fluid gall-item gall-i-s3 gall-p-tbr" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                            </a>
-                        </div>
-                    {% elif (index.value % 3 == 2) and (index.value <= length.value - 3 ) %}
-                        {% set index.value = index.value + 1 %}
-                        <div class="col mp-0">
-                            <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                                <img class="img-fluid gall-item gall-i-s3 gall-p-tblr" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                            </a>
-                        </div>
-                    {% elif (index.value % 3 == 0) and (index.value <= length.value - 3 ) %}
-                            {% set index.value = index.value + 1 %}
-                            <div class="col mp-0">
-                                <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                                    <img class="img-fluid gall-item gall-i-s3 gall-p-tbl" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                                </a>
-                            </div>
-                        </div>
-                        <div class="row rounded-bottom hide-overflow">
-                    {% elif index.value == (length.value - 2) %}
-                        {% set index.value = index.value + 1 %}
-                        <div class="col mp-0">
-                            <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                                <img class="img-fluid gall-item gall-i-s3 gall-p-tr" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                            </a>
-                        </div>
-                    {% elif index.value == (length.value - 1) %}
-                        {% set index.value = index.value + 1 %}
-                        <div class="col mp-0">
-                            <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                                <img class="img-fluid gall-item gall-i-s3 gall-p-tlr" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                            </a>
-                        </div>
-                    {% else %}
-                        {% set index.value = index.value + 1 %}
-                        <div class="col mp-0">
-                            <a href="{{ url_for('post.comments', post_pid=post['public_id']) }}">
-                                <img class="img-fluid gall-item gall-i-s3 gall-p-tl" src="{{ config.MEDIA_STORAGE + photo['filename'] }}">
-                            </a>
-                        </div>
-                    {% endif %}
-                {% endif %}
-            {% endif %}
-        {% endfor %}
-        {% endfor %}
-    </div>
 {% endmacro %}

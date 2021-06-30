@@ -21,7 +21,7 @@
             notifImageCont = document.createElement("div");
             notifImageCont.classList.add("mr-3", "ntf-nb-img-c");
             notifImage = document.createElement("img");
-            notifImage.setAttribute("src", "/static/images/" + notification["sender_photo"]);
+            notifImage.setAttribute("src", "{{ config.MEDIA_STORAGE }}" + notification["sender_photo"]);
             notifImageCont.append(notifImage);
             thisNotif.append(notifImageCont);
 
