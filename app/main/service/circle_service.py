@@ -76,14 +76,14 @@ class CircleService:
                 "Authorization" : "Bearer {}".format(token)
             },
             json = {
-                "name": data_form.get("ebf-name_input"),
-                "bio": data_form.get("ebf-bio_input"),
+                "name": data_form.get("ecf-name_input"),
+                "bio": data_form.get("ecf-bio_input"),
                 "_type": [
                     dict(
                         public_id = _type
-                    ) for _type in data_form.getlist("ebf-type_input")
+                    ) for _type in data_form.getlist("ecf-type_input")
                 ],
-                "photo": save_image(data_file.get("ebf-photo_input"), 2)
+                "photo": save_image(data_file.get("ecf-photo_input"), 4)
             }
         )
 

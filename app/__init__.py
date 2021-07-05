@@ -11,5 +11,6 @@ post_bp = Blueprint("post", __name__)
 circle_bp = Blueprint("circle", __name__)
 comment_bp = Blueprint("comment", __name__)
 notification_bp = Blueprint("notification", __name__)
+setup_bp = Blueprint("setup", __name__)
 
-from .main.controller import gateway_controller, admin_controller, home_controller, user_controller, pet_controller, business_controller, appointment_controller, post_controller, circle_controller, comment_controller, notification_controller
+from .main.controller import gateway_controller, admin_controller, home_controller, user_controller, pet_controller, business_controller, appointment_controller, post_controller, circle_controller, comment_controller, notification_controller, setup_controller

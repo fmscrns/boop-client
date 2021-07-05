@@ -2,13 +2,10 @@ from app.main.form.post_form import DeletePostForm
 import json
 from flask import render_template, request, session, flash, redirect, url_for, abort
 from ... import pet_bp
-from ..service.user_service import UserService
 from ..util.decorator import session_required
 from ..form.pet_form import AcceptPetForm, CreatePetForm, DeletePetOwnerForm, EditPetForm, DeletePetForm, FollowPetForm, UnfollowPetForm, CreatePetOwnerForm
 from ..service.pet_service import PetService
-from ..service.breed_service import BreedService
 from ..service.pet_service import PetService
-from ..service.post_service import PostService
 from dateutil import parser
 
 @pet_bp.route("/<pet_pid>", methods=["GET", "POST"])
@@ -31,8 +28,7 @@ def posts(current_user, pet_pid):
             createPetOwnerForm = CreatePetOwnerForm(prefix="cpof"),
             deletePetOwnerForm = DeletePetOwnerForm(prefix="dpof"),
             followPetForm = FollowPetForm(),
-            unfollowPetForm = UnfollowPetForm(),
-            # post_list = json.loads(PostService.get_all_by_pet(session["booped_in"], this_pet["public_id"]).text)["data"] if this_pet["visitor_auth"] > 1 else []
+            unfollowPetForm = UnfollowPetForm()
         )
     else:
         abort(404)
@@ -55,8 +51,7 @@ def media(current_user, pet_pid):
             createPetOwnerForm = CreatePetOwnerForm(prefix="cpof"),
             deletePetOwnerForm = DeletePetOwnerForm(prefix="dpof"),
             followPetForm = FollowPetForm(),
-            unfollowPetForm = UnfollowPetForm(),
-            # media_list = json.loads(PostService.get_all_by_pet(session["booped_in"], this_pet["public_id"] + "?w_media_only=1").text)["data"] if this_pet["visitor_auth"] > 1 else []
+            unfollowPetForm = UnfollowPetForm()
         )
     else:
         abort(404)
@@ -170,7 +165,10 @@ def delete_owner(current_user, pet_pid):
         if delete_pet_owner.ok:
             flash(json.loads(delete_pet_owner.text)["message"], "success")
 
-            return redirect(url_for("pet.posts", pet_pid=pet_pid))
+            if json.loads(delete_pet_owner.text)["single_owner_removed"] == 1:
+                return redirect(url_for("user.pets", username=current_user["username"]))
+            else:
+                return redirect(url_for("pet.posts", pet_pid=pet_pid))
         
         flash(json.loads(delete_pet_owner.text)["message"], "danger")
     
@@ -213,7 +211,7 @@ def delete(current_user, pet_pid):
 
         if delete_pet.ok:
             flash(json.loads(delete_pet.text)["message"], "success")
-
+            print("ok")
             return redirect(url_for("user.pets", username=current_user["username"]))
         
         flash(json.loads(delete_pet.text), "danger")

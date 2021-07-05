@@ -1,9 +1,6 @@
 import os
-import unittest
-
 from app import *
 from flask_script import Server, Manager
-
 from app.main import create_app
 
 app, sio = create_app(os.getenv('BOILERPLATE_ENV') or 'dev')
@@ -18,11 +15,10 @@ app.register_blueprint(post_bp, url_prefix="/post")
 app.register_blueprint(circle_bp, url_prefix="/circle")
 app.register_blueprint(comment_bp, url_prefix="/comment")
 app.register_blueprint(notification_bp, url_prefix="/notification")
+app.register_blueprint(setup_bp, url_prefix="/setup")
 
 app.app_context().push()
-
 manager = Manager(app)
-
 manager.add_command("run", Server(host="0.0.0.0", port=8080, threaded=True))
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "component/navbar.html" import loaded_navbar %}
-{% from "component/post.html" import post_wj %}
+{% from "component/post.html" import post_wj, post_remover %}
 {% from "component/comment.html" import comment, comment_creator, comment_remover %}
 
 {% block content %}
@@ -8,6 +8,7 @@
     {{ comment_remover(deleteCommentForm, this_post) }}
     <div class="container-fluid d-flex justify-content-center pt-5 my-3">
         <div class="c-center d-flex flex-column">
+            {{ post_remover(deletePostForm) }}
             {{ post_wj(current_user, this_post) }}
             <div class="container pl-5 mr-5">
                 <div class="cd-cont row row-cols-1 row-cols-md-1 p-0">

@@ -78,7 +78,7 @@ class BusinessService:
                         public_id = _type
                     ) for _type in data_form.getlist("ebf-type_input")
                 ],
-                "photo": save_image(data_file.get("ebf-photo_input"), 2)
+                "photo": save_image(data_file.get("ebf-photo_input"), 3)
             }
         )
 

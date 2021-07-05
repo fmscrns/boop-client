@@ -1,14 +1,11 @@
 import json
-from flask import Flask, render_template, request, session, flash, redirect, url_for, abort, jsonify
-from werkzeug.datastructures import Accept
+from flask import render_template, request, session, flash, redirect, url_for, abort, jsonify
 from ... import circle_bp
 from ..util.decorator import session_required
 from ..form.circle_form import AcceptCircleForm, CreateCircleAdminForm, CreateCircleForm, DeleteCircleAdminForm, EditCircleForm, DeleteCircleForm, JoinCircleForm, LeaveCircleForm
 from ..service.pet_service import PetService
 from ..service.circle_service import CircleService
-from ..service.breed_service import BreedService
 from ..service.circleType_service import CircleTypeService
-from ..service.post_service import PostService
 from ..form.post_form import CreatePostForm, DeletePostForm
 
 @circle_bp.route("/<circle_pid>", methods=["GET", "POST"])
@@ -20,7 +17,7 @@ def posts(current_user, circle_pid):
         this_circle = json.loads(get_resp.text)
         createPostForm = CreatePostForm()
         createPostForm.subject_input.choices = [(subject["public_id"], subject["name"]) for subject in json.loads(PetService.get_all_by_user(session["booped_in"], current_user["public_id"] + "?tag_suggestions=1").text)["data"]]
-        editCircleForm = EditCircleForm(prefix="ebf")
+        editCircleForm = EditCircleForm(prefix="ecf")
         editCircleForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in json.loads(CircleTypeService.get_all(session["booped_in"]).text)["data"]]
         editCircleForm.type_input.data = [_type["public_id"] for _type in this_circle["_type"]]
         return render_template("circle_profile.html",
@@ -34,8 +31,7 @@ def posts(current_user, circle_pid):
             createPostForm = createPostForm,
             deletePostForm = DeletePostForm(prefix="dptf"),
             joinCircleForm = JoinCircleForm(),
-            leaveCircleForm = LeaveCircleForm(),
-            # post_list = json.loads(PostService.get_all_by_circle(session["booped_in"], this_circle["public_id"]).text)["data"] if this_circle["visitor_auth"] > 1 else []
+            leaveCircleForm = LeaveCircleForm()
         )
     else:
         abort(404)
@@ -46,7 +42,7 @@ def media(current_user, circle_pid):
     get_resp = CircleService.get_by_pid(circle_pid)
     if get_resp.ok:
         this_circle = json.loads(get_resp.text)
-        editCircleForm = EditCircleForm(prefix="ebf")
+        editCircleForm = EditCircleForm(prefix="ecf")
         editCircleForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in json.loads(CircleTypeService.get_all(session["booped_in"]).text)["data"]]
         editCircleForm.type_input.data = [_type["public_id"] for _type in this_circle["_type"]]
         return render_template("circle_profile.html",
@@ -60,8 +56,7 @@ def media(current_user, circle_pid):
             deleteCircleAdminForm = DeleteCircleAdminForm(prefix="dcaf"),
             deletePostForm = DeletePostForm(prefix="dptf"),
             joinCircleForm = JoinCircleForm(),
-            leaveCircleForm = LeaveCircleForm(),
-            # media_list = json.loads(PostService.get_all_by_circle(session["booped_in"], this_circle["public_id"] + "?w_media_only=1").text)["data"]
+            leaveCircleForm = LeaveCircleForm()
         )
     else:
         abort(404)
@@ -75,7 +70,7 @@ def confirmed_members(current_user, circle_pid):
         this_circle = json.loads(get_resp.text)
         search_val = request.args.get("search")
         if not search_val:
-            editCircleForm = EditCircleForm(prefix="ebf")
+            editCircleForm = EditCircleForm(prefix="ecf")
             editCircleForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in json.loads(CircleTypeService.get_all(session["booped_in"]).text)["data"]]
             editCircleForm.type_input.data = [_type["public_id"] for _type in this_circle["_type"]]
             return render_template("circle_profile.html",
@@ -104,7 +99,7 @@ def pending_members(current_user, circle_pid):
         this_circle = json.loads(get_resp.text)
 
         if this_circle["visitor_auth"] == 3:
-            editCircleForm = EditCircleForm(prefix="ebf")
+            editCircleForm = EditCircleForm(prefix="ecf")
             editCircleForm.type_input.choices = [(_type["public_id"], _type["name"]) for _type in json.loads(CircleTypeService.get_all(session["booped_in"]).text)["data"]]
             editCircleForm.type_input.data = [_type["public_id"] for _type in this_circle["_type"]]
             return render_template("circle_profile.html",
@@ -194,8 +189,8 @@ def delete_admin(current_user, circle_pid):
 @circle_bp.route("/<circle_pid>/edit", methods=["POST"])
 @session_required
 def edit(current_user, circle_pid):
-    editCircleForm = EditCircleForm(prefix="ebf")
-    editCircleForm.type_input.choices = [(_type, "") for _type in request.form.getlist("ebf-type_input")]
+    editCircleForm = EditCircleForm(prefix="ecf")
+    editCircleForm.type_input.choices = [(_type, "") for _type in request.form.getlist("ecf-type_input")]
 
     if editCircleForm.validate_on_submit():
         edit_circle = CircleService.edit(circle_pid, session["booped_in"], request.form, request.files)

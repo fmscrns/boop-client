@@ -29,6 +29,7 @@ $(function () {
                success: function (data) {
                     if (data.length > 0) {
                          for (comment of data) {
+                              console.log(comment);
                               let item = $(commentBaseItem).clone().removeAttr("hidden");
                               item.find(".post-user-photo").attr("src", item.find(".post-user-photo").attr("src") + comment["creator_photo"]);
                               item.find(".f-pi-dt-cn").html(comment["creator_name"]).attr("href", "/user/" + comment["creator_username"] + "/pets");
@@ -294,11 +295,15 @@ $(function () {
      })
 })
 
-document.querySelectorAll(".dc-mb").forEach((button) => {
+document.querySelectorAll(".dp-mb").forEach((button) => {
      modal = document.querySelector(button.getAttribute("data-target"));
      button.addEventListener("click", (e) => {
+          console.log("clicked!");
           methodAction = button.getAttribute("method-action");
+          console.log(methodAction);
           modal.querySelector(".modal-content").setAttribute("action", methodAction);
+
+          console.log(modal);
      });
 });
 
@@ -992,4 +997,8 @@ document.querySelectorAll(".autocomplete").forEach((div) => {
 
 document.querySelectorAll(".p-dt").forEach((dateCont) => {
      dateCont.innerHTML = moment(dateCont.innerHTML).fromNow()
+});
+
+document.querySelectorAll(".pi-bd").forEach((dateCont) => {
+     dateCont.innerHTML = moment(dateCont.innerHTML).format('LL');
 });

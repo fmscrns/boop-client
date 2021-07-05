@@ -1,13 +1,11 @@
-from flask import Flask, render_template, abort
+from flask import render_template
 from ... import home_bp
 from ..util.decorator import session_required
 from ..service.pet_service import PetService
-from ..service.post_service import  PostService
 from ..service.user_service import *
 from ..form.post_form import CreatePostForm, DeletePostForm
 import json
 from dateutil import parser
-
 
 @home_bp.route("/feed", methods=["GET", "POST"])
 @session_required
@@ -18,6 +16,5 @@ def feed(current_user):
         page_title = "Feed",
         current_user = current_user,
         createPostForm = createPostForm,
-        deletePostForm = DeletePostForm(prefix="dptf"),
-        # post_list = json.loads(PostService.get_all_posts().text)["data"]
+        deletePostForm = DeletePostForm(prefix="dptf")
     )

@@ -161,7 +161,7 @@
                             <div class="d-flex flex-column ml-2 container">
                                 <a href="{{ url_for('pet.posts', pet_pid=pet.public_id) }}" class="h4">{{ pet.name }}</a>
                                 <span>Bio: {{ pet.bio }}</span>
-                                <span>Birthday: {{ pet.birthday }}</span>
+                                <span>Birthday: <span class="pi-bd">{{ pet.birthday }}</span></span>
                                 <span>Sex: {%if pet.sex == 0 %}Male{%else%}Female{%endif%}</span>
                                 <span>Specie: {{ pet.group_name }}</span>
                                 <span>Breed: {{ pet.subgroup_name }}</span>

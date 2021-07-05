@@ -1,5 +1,5 @@
 import json
-from flask import Flask, render_template, request, session, flash, redirect, url_for, abort
+from flask import render_template, request, session, flash, redirect, url_for, abort
 from ... import business_bp
 from ..util.decorator import session_required
 from ..form.business_form import CreateBusinessForm, EditBusinessForm, DeleteBusinessForm, FollowBusinessForm, UnfollowBusinessForm, CreateBusinessExecutiveForm, DeleteBusinessExecutiveForm
@@ -7,7 +7,6 @@ from ..form.appointment_form import CreateAppointmentForm
 from ..service.pet_service import PetService
 from ..service.business_service import BusinessService
 from ..service.businessType_service import BusinessTypeService
-from ..service.post_service import PostService
 from ..form.post_form import CreatePostForm, DeletePostForm
 
 @business_bp.route("/<business_pid>", methods=["GET", "POST"])
@@ -37,8 +36,7 @@ def posts(current_user, business_pid):
             createPostForm = createPostForm,
             deletePostForm = DeletePostForm(prefix="dptf"),
             followBusinessForm = FollowBusinessForm(),
-            unfollowBusinessForm = UnfollowBusinessForm(),
-            # post_list = json.loads(PostService.get_all_by_business(session["booped_in"], this_business["public_id"]).text)["data"]
+            unfollowBusinessForm = UnfollowBusinessForm()
         )
     else:
         abort(404)
@@ -66,8 +64,7 @@ def media(current_user, business_pid):
             deleteBusinessExecutiveForm = DeleteBusinessExecutiveForm(prefix="dbef"),
             createAppointmentForm = createAppointmentForm,
             followBusinessForm = FollowBusinessForm(),
-            unfollowBusinessForm = UnfollowBusinessForm(),
-            # media_list = json.loads(PostService.get_all_by_business(session["booped_in"], this_business["public_id"] + "?w_media_only=1").text)["data"]
+            unfollowBusinessForm = UnfollowBusinessForm()
         )
     else:
         abort(404)
