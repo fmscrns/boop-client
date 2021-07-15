@@ -150,6 +150,7 @@
                             <img src="{{ config.MEDIA_STORAGE + pet['photo'] }}" alt="..." class="rounded d-block w-25 border">
                             <div class="d-flex flex-column ml-2 container">
                                 <a href="{{ url_for('pet.posts', pet_pid=pet.public_id) }}" class="h4">{{ pet.name }}</a>
+                                <span>{% if pet.status == 1 %}Status: <span class="badge badge-pill badge-primary">Open for adoption</span>{% elif pet.status == 2 %}Status: <span class="badge badge-pill badge-secondary">Deceased</span>{% endif %}</span>
                                 <span>Bio: {{ pet.bio }}</span>
                                 <span>Birthday: <span class="pi-bd">{{ pet.birthday }}</span></span>
                                 <span>Sex: {%if pet.sex == 0 %}Male{%else%}Female{%endif%}</span>

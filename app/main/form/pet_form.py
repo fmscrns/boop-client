@@ -20,7 +20,7 @@ class EditPetForm(FlaskForm):
     name_input = StringField("Name", validators=[DataRequired(), Length(min=2, max=30)])
     bio_input = TextAreaField("Bio", validators=[Length(max=50)])
     birthday_input = DateField("Birthday", format="%Y-%m-%d")
-    status_input = RadioField("Status", coerce=int, choices=[(0, "Closed"), (1, "Open for adoption")], validators=[InputRequired()])
+    status_input = RadioField("Status", coerce=int, choices=[(0, "Closed"), (1, "Open for adoption"), (2, "Deceased")], validators=[InputRequired()])
     sex_input = RadioField("Sex", coerce=int, choices=[(0, "Male"), (1, "Female")], validators=[InputRequired()])
     private_input = RadioField("Private", coerce=int, choices=[(1, "Yes"), (0, "No")], validators=[InputRequired()])
     photo_input = FileField("Profile photo", validators=[FileAllowed(["jpg", "jpeg", "png"])])

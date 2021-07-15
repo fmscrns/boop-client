@@ -210,6 +210,7 @@
                 </div>
                 <br>
                 <div class="d-flex flex-column ml-2 container">
+                    <span>{% if this_pet.status == 1 %}Status: <span class="badge badge-pill badge-primary">Open for adoption</span>{% elif this_pet.status == 2 %}Status: <span class="badge badge-pill badge-secondary">Deceased</span>{% endif %}</span>
                     <span>Bio: {{ this_pet.bio }}</span>
                     <span>Birthday: {{ this_pet.birthday.strftime("%b %d, %Y") }}</span>
                     <span>Sex: {%if this_pet.sex == 0 %}Male{%else%}Female{%endif%}</span>

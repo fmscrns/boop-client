@@ -126,6 +126,11 @@ document.querySelectorAll(".sp-pc-bi").forEach((baseCard) => {
                          if (item["bio"]) {
                               let nameCont = card.find(".pc-pe-n").html(item["name"]);
                               nameCont.attr("href", nameCont.attr("href") + item["public_id"]);
+                              if (item["status"] == 1) {
+                                   card.find(".pc-pe-st").html("Status: <span class='badge badge-pill badge-primary'>Open for adoption</span>");
+                              } else if (item["status"] == 2) {
+                                   card.find(".pc-pe-st").html("Status: <span class='badge badge-pill badge-secondary'>Deceased</span>");
+                              }
                               card.find(".pc-pe-bi").html(card.find(".pc-pe-bi").html() + item["bio"]);
                               card.find(".pc-pe-bd").html(card.find(".pc-pe-bd").html() + moment(item["birthday"]).format('LL'));
                               card.find(".pc-pe-sx").html(card.find(".pc-pe-sx").html() + item["sex"]);
