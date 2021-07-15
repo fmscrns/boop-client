@@ -8,22 +8,37 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
         <title>Boop | {{ page_title }}</title>
+        <link rel="icon" href="{{ url_for('static', filename='assets/boop.ico') }}">
     </head>
     {% block welcome %}{% endblock %}
     <body>
+        
         <div class="alert-frame d-flex flex-column">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }} alert-dismissible fade show small" role="alert">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+            <div class="container">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                                <div class="toast alert-dismissible mt-2 p-0" role="alert">
+                                    {% if current_user %}
+                                        <div class="toast-header">
+                                            <div class="d-flex flex-row mr-5">
+                                                <img src="{{ config.MEDIA_STORAGE + current_user['photo'] }}" class="toast-photo mr-2">
+                                                <strong class="mr-auto">{{ current_user["name"] }}</strong>
+                                            </div>
+                                            <span class="ml-5">Just now</span>
+                                        </div>
+                                    {% endif %}
+                                    <div class="toast-body">
+                                        {{ message }}
+                                    </div>
+                                </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
         </div>
         {% block navbar %}{% endblock %}
-        <div style="padding-left:calc(100vw - 100%);">
+        <div>
             {% block content %}{% endblock %}
         </div>
         {% if current_user %}

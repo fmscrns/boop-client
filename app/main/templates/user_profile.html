@@ -6,78 +6,68 @@
     {{ loaded_navbar(current_user, profileNavbarActive="active") }}
     <div class="container-fluid d-flex justify-content-center pt-5 my-3">
         <div class="c-center d-flex flex-column">
-            <div class="jumbotron jumbotron-fluid rounded w-100 d-flex flex-column mb-3 pb-0">
-                <div class="d-flex flex-row px-4">
-                    <img src="{{ config.MEDIA_STORAGE + this_user['photo'] }}" alt="..." class="rounded mx-auto d-block w-25">
-                    <div class="container">
-                        <h1 class="display-6">{{ this_user["name"] }}</h1>
-                        <p class="lead">{{ this_user["username"] }}</p>
-                        {% if editUserForm %}
-                            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#editProfileModal">
-                                <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
-                            </button>
-                            <div class="modal" id="editProfileModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                <form class="modal-content" method="POST" action="{{ url_for('user.edit', user_pid=current_user['public_id']) }}" enctype="multipart/form-data">
+            <div class="container-fluid border mt-3 pt-5 rounded w-100 d-flex flex-column mb-3">
+                <div class="d-flex flex-row align-items-center justify-content-between mb-5">
+                    <div class="d-flex flex-row align-items-center">
+                        <img class="uccp-cont" src="{{ config.MEDIA_STORAGE + this_user['photo'] }}">
+                        <div class="d-flex flex-column ml-3">
+                            <span class="font-weight-normal h5 m-0">{{ this_user["name"] }}</span>
+                            <p class="small text-muted m-0">@{{ this_user["username"] }}</p>
+                        </div>
+                    </div>
+                    {% if editProfileForm %}
+                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editProfileModal">
+                            Update profile
+                        </button>
+                        <div class="modal" id="editProfileModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
                                     <div class="modal-header">
                                     <h5 class="modal-title" id="staticBackdropLabel">Edit profile</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                     </div>
-                                    <div class="modal-body">
-                                        {{ editUserForm.hidden_tag() }}
+                                    <form class="modal-body" method="POST" action="{{ url_for('user.edit_photo', user_pid=current_user['public_id']) }}" enctype="multipart/form-data">
+                                        {{ editPhotoForm.hidden_tag() }}
                                         <div class="form-group">
-                                            {{ editUserForm.photo_input.label }}
-                                            {{ editUserForm.photo_input(class="form-control form-control-sm") }}
+                                            {{ editPhotoForm.photo_input.label }}
+                                            {{ editPhotoForm.photo_input(class="form-control form-control-sm") }}
                                         </div>
+                                        {{ editPhotoForm.submit_input(class="btn btn-primary btn-block") }}
+                                    </form>
+                                    <form class="modal-body" method="POST" action="{{ url_for('user.edit_profile', user_pid=current_user['public_id']) }}">
+                                        {{ editProfileForm.hidden_tag() }}
                                         <div class="form-group">
-                                            {{ editUserForm.name_input.label }}
-                                            {{ editUserForm.name_input(class="form-control form-control-sm") }}
+                                            {{ editProfileForm.name_input.label }}
+                                            {{ editProfileForm.name_input(class="form-control form-control-sm") }}
                                         </div>
-                                        <div class="form-group">
-                                            {{ editUserForm.username_input.label }}
-                                            {{ editUserForm.username_input(class="form-control form-control-sm") }}
-                                        </div>
-                                        <div class="form-group">
-                                            {{ editUserForm.email_input.label }}
-                                            {{ editUserForm.email_input(class="form-control form-control-sm") }}
-                                        </div>
-                                        <div class="form-group">
-                                            {{ editUserForm.password_input.label }}
-                                            {{ editUserForm.password_input(class="form-control form-control-sm") }}
-                                        </div>
-                                        <div class="form-group">
-                                            {{ editUserForm.confirm_password_input.label }}
-                                            {{ editUserForm.confirm_password_input(class="form-control form-control-sm") }}
-                                        </div>
-                                    </div>
+                                        {{ editProfileForm.submit_input(class="btn btn-primary btn-block") }}
+                                    </form>
                                     <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    {{ editUserForm.submit_input(class="btn btn-primary") }}
                                     </div>
-                                </form>
                                 </div>
                             </div>
-                        {% endif %}
-                    </div>
-                </div>
-                <ul class="nav row m-0 border rounded mt-3">
-                    <li class="nav-item col d-flex justify-content-center">
-                      <a class="nav-link active" href="{{ url_for('user.pets', username=this_user['username']) }}">Pets</a>
-                    </li>
-                    {% if this_user["public_id"] == current_user["public_id"] %}
-                    <li class="nav-item col d-flex justify-content-center">
-                        <a class="nav-link active" href="{{ url_for('user.posts', username=this_user['username']) }}">Posts</a>
-                      </li>
-                    <li class="nav-item col d-flex justify-content-center">
-                      <a class="nav-link" href="{{ url_for('user.businesses', username=this_user['username']) }}">Businesses</a>
-                    </li>
-                    <li class="nav-item col d-flex justify-content-center">
-                        <a class="nav-link" href="{{ url_for('user.circles', username=this_user['username']) }}">Circles</a>
-                    </li>
+                        </div>
                     {% endif %}
-                </ul>
+                </div>
+                {% if this_user["public_id"] == current_user["public_id"] %}
+                    <div class="d-flex flex-row justify-content-between">
+                        <div class="nav-item d-flex justify-content-center">
+                        <a class="nav-link active" href="{{ url_for('user.pets', username=this_user['username']) }}">Pets</a>
+                        </div>
+                        <div class="nav-item d-flex justify-content-center">
+                            <a class="nav-link active" href="{{ url_for('user.posts', username=this_user['username']) }}">Posts</a>
+                        </div>
+                        <div class="nav-item d-flex justify-content-center">
+                        <a class="nav-link" href="{{ url_for('user.businesses', username=this_user['username']) }}">Businesses</a>
+                        </div>
+                        <div class="nav-item d-flex justify-content-center">
+                            <a class="nav-link" href="{{ url_for('user.circles', username=this_user['username']) }}">Circles</a>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
             {% if createPetForm %}
                 {% if this_user["public_id"] == current_user["public_id"] %}

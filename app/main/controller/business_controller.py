@@ -1,5 +1,6 @@
 import json
 from flask import render_template, request, session, flash, redirect, url_for, abort
+from flask.json import jsonify
 from ... import business_bp
 from ..util.decorator import session_required
 from ..form.business_form import CreateBusinessForm, EditBusinessForm, DeleteBusinessForm, FollowBusinessForm, UnfollowBusinessForm, CreateBusinessExecutiveForm, DeleteBusinessExecutiveForm
@@ -169,24 +170,28 @@ def delete(current_user, business_pid):
 @business_bp.route("/<business_pid>/follow", methods=["POST"])
 @session_required
 def follow(current_user, business_pid):
-    followBusinessForm = FollowBusinessForm()
-    if followBusinessForm.validate_on_submit():
-        follow_business = BusinessService.follow(business_pid)
+    is_async = request.args.get("is_async")
+    if is_async is None:
+        followBusinessForm = FollowBusinessForm()
+        if followBusinessForm.validate_on_submit():
+            follow_business = BusinessService.follow(business_pid)
 
-        if follow_business.ok:
-            resp = json.loads(follow_business.text)
-            flash(resp["message"], "success")
+            if follow_business.ok:
+                resp = json.loads(follow_business.text)
+                flash(resp["message"], "success")
 
-            return redirect(url_for("business.posts", business_pid=business_pid))
-        
-        flash(json.loads(follow_business.text)["message"], "danger")
+                return redirect(url_for("business.posts", business_pid=business_pid))
+            
+            flash(json.loads(follow_business.text)["message"], "danger")
 
-    if followBusinessForm.errors:
-        for key in followBusinessForm.errors:
-            for message in followBusinessForm.errors[key]:
-                flash("{}: {}".format(key.split("_")[0], message), "danger")
+        if followBusinessForm.errors:
+            for key in followBusinessForm.errors:
+                for message in followBusinessForm.errors[key]:
+                    flash("{}: {}".format(key.split("_")[0], message), "danger")
 
-    return redirect(url_for("business.posts", business_pid=business_pid))
+        return redirect(url_for("business.posts", business_pid=business_pid))
+
+    return jsonify(json.loads(BusinessService.follow(business_pid).text))
 
 @business_bp.route("/<business_pid>/unfollow", methods=["POST"])
 @session_required
@@ -251,3 +256,14 @@ def delete_executive(current_user, business_pid):
                 flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("business.posts", business_pid=business_pid))
+
+@business_bp.route("/preference", methods=["GET"])
+@session_required
+def get_all_by_preference(current_user):
+    list = json.loads(
+        BusinessService.get_by_preference(request.args.get("pagination_no")).text
+    )
+    if list.get("data"):
+        return jsonify(list["data"])
+    else:
+        return jsonify([])

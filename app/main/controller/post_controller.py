@@ -21,8 +21,7 @@ def comments(current_user, post_pid):
             this_post = this_post,
             deletePostForm = DeletePostForm(prefix="dptf"),
             createCommentForm = CreateCommentForm(),
-            deleteCommentForm = DeleteCommentForm(),
-            # comment_list = json.loads(CommentService.get_all_by_post(session["booped_in"], this_post["public_id"]).text)["data"]
+            deleteCommentForm = DeleteCommentForm()
         )        
     else:
         abort(404)
@@ -46,7 +45,7 @@ def create(current_user):
             else:
                 return redirect(url_for("user.posts", username=current_user["username"]))
         
-        flash(json.loads(create_post.text), "danger")
+        flash(json.loads(create_post.text)["message"], "danger")
     
     if createPostForm.errors:
         for key in createPostForm.errors:

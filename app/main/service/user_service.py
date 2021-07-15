@@ -1,6 +1,6 @@
 import requests, json
 from flask import current_app, session
-from . import save_image
+from . import concat_url_param, save_image
 
 class UserService:
     @staticmethod
@@ -16,7 +16,7 @@ class UserService:
         )
     
     @staticmethod
-    def edit(pid, token, data_form, data_file):
+    def edit_photo(pid, token, file):
         return requests.patch("{}/user/{}".format(
             current_app.config["API_DOMAIN"],
             pid),
@@ -24,11 +24,35 @@ class UserService:
                 "Authorization" : "Bearer {}".format(token)
             },
             json = {
-                "name": data_form.get("euf-name_input"),
-                "username": data_form.get("euf-username_input"),
-                "email": data_form.get("euf-email_input"),
-                "password": data_form.get("euf-password_input"),
-                "photo": save_image(data_file.get("euf-photo_input"), 0)
+                "photo": save_image(file.get("epf-photo_input"), 0)
+            }
+        )
+
+    @staticmethod
+    def edit_profile(pid, token, form):
+        return requests.patch("{}/user/{}".format(
+            current_app.config["API_DOMAIN"],
+            pid),
+            headers = {
+                "Authorization" : "Bearer {}".format(token)
+            },
+            json = {
+                "name": form.get("euf-name_input")
+            }
+        )
+
+    @staticmethod
+    def edit_account(pid, token, form):
+        return requests.post("{}/user/{}".format(
+            current_app.config["API_DOMAIN"],
+            pid),
+            headers = {
+                "Authorization" : "Bearer {}".format(token)
+            },
+            json = {
+                "username": form.get("eauf-username_input") if form.get("eauf-username_input") else "",
+                "email": form.get("eaef-email_input") if form.get("eaef-email_input") else "",
+                "password": form.get("eapf-password_input") if form.get("eapf-password_input") else ""
             }
         )
 
@@ -56,9 +80,18 @@ class UserService:
         )
     
     @staticmethod
-    def search(value):
-        return requests.get("{}/user/?search={}".format(
-            current_app.config["API_DOMAIN"], value),
+    def search(value, same_fp, same_bpref, pagination_no):
+        return requests.get("{}/user/{}".format(
+            current_app.config["API_DOMAIN"],
+            concat_url_param(
+                [
+                    ("search", value) if value else None,
+                    ("same_followed_pets", same_fp) if same_fp else None,
+                    ("same_breed_preferences", same_bpref) if same_bpref else None,
+                    ("pagination_no", pagination_no) if pagination_no else None,
+                ]
+            )
+        ),
             headers = {
                 "Authorization" : "Bearer {}".format(session["booped_in"])
             }

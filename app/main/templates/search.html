@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% from "component/navbar.html" import loaded_navbar, search_sideNavbar %}
+{% from "component/post.html" import post_creator, post_remover, post_bi %}
+
+{% block content %}
+    {{ loaded_navbar(current_user) }}
+    <div class="container-fluid px-0 position-relative d-flex justify-content-between my-5">
+        {{ search_sideNavbar(searchPetForm, searchPeopleForm, search_value, a=allActive, b=petsActive, c=peopleActive, d=postsActive, e=businessesActive, f=circlesActive) }}
+        <div class="position-relative h-100" style="width: 500px;">
+        </div>
+        <div class="container float-right w-100 p-4 mt-3 d-flex justify-content-center flex-column">
+            <div hidden=True class="sp-pc-bi container-fluid border p-4 mt-3" pets-url="{{ pets_url }}" people-url="{{ people_url }}" search-value="{{ search_value }}">
+                <div class="d-flex flex-row">
+                    <img src="{{ config.MEDIA_STORAGE }}" alt="..." class="rounded d-block w-25 border">
+                    <div class="d-flex flex-column ml-2 container">
+                        
+                        <a href="{{ url_for('pet.posts', pet_pid='') }}" class="sp-pc-bi-pe pc-pe-n h4"></a>
+                        <a href="{{ url_for('user.pets', username='') }}" class="sp-pc-bi-us pc-us-n h4"></a>
+
+                        <span class="sp-pc-bi-us pc-d d-flex flex-column">
+                            <span class="pc-us-un"></span>
+                        </span>
+                        <span class="sp-pc-bi-pe pc-d d-flex flex-column">
+                            <span class="pc-pe-bi ">Bio: </span>
+                            <span class="pc-pe-bd">Birthday: </span>
+                            <span class="pc-pe-sx">Sex: </span>
+                            <span class="pc-pe-sp">Specie: </span>
+                            <span class="pc-pe-br">Breed: </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="spinner-grow text-primary mx-auto" role="status"></div>
+            <span hidden=True class="badge badge-secondary mx-auto"></span>
+        </div>
+    </div>
+{% endblock %}

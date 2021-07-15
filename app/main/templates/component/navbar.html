@@ -1,3 +1,57 @@
+{% macro search_sideNavbar(searchPetForm, searchPeopleForm, search_value, a, b, c, d, e, f) %}
+    <div class="w-25 position-fixed h-100 py-4 px-3 bg-light border">
+        <nav class="stnv-c nav flex-column h-100 mt-3">
+            <span class="font-weight-bold h5 mb-2">Filter</span>
+            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{a}}" href="{{ url_for('search.all', value=search_value) }}">All</a>
+            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{c}}" href="{{ url_for('search.people', value=search_value) }}">People</a>
+            {% if c %}
+                <div class="sfppl-nbc my-1 pl-4">
+                    <div class="border rounded p-2 d-flex flex-row align-items-center justify-content-between mt-2 mb-3">
+                        <span class="w-50">Followers of pets you've followed</span>
+                        <div class="custom-control custom-switch">
+                            {{ searchPeopleForm.sameFollowedPets_input(class="custom-control-input", **{"param-str": "&same_followed_pets=0"}) }}
+                            {{ searchPeopleForm.sameFollowedPets_input.label(class="custom-control-label") }}
+                        </div>
+                    </div>
+                    <div class="border rounded p-2 d-flex flex-row align-items-center justify-content-between mt-2 mb-3">
+                        <span class="w-50">Same preferences as you</span>
+                        <div class="custom-control custom-switch">
+                            {{ searchPeopleForm.sameBreedPreferences_input(class="custom-control-input", **{"param-str": "&same_breed_preferences=0"}) }}
+                            {{ searchPeopleForm.sameBreedPreferences_input.label(class="custom-control-label") }}
+                        </div>  
+                    </div>           
+                </div>
+            {% endif %}
+            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{b}}" href="{{ url_for('search.pets', value=search_value) }}">Pets</a>
+            {% if b %}
+                <div class="sfpt-nbc my-1 pl-4">
+                    <div class="input-group my-2">
+                        <div class="input-group-prepend">
+                            {{ searchPetForm.group_input.label(class="input-group-text", style="width: 100px;") }}
+                        </div>
+                        {{ searchPetForm.group_input(class="custom-select") }}
+                    </div>
+                    <div class="input-group my-2">
+                        <div class="input-group-prepend">
+                        {{ searchPetForm.subgroup_input.label(class="input-group-text", style="width: 100px;") }}
+                        </div>
+                        {{ searchPetForm.subgroup_input(class="custom-select", disabled="disabled") }}
+                    </div>
+                    <div class="input-group my-2">
+                        <div class="input-group-prepend">
+                            {{ searchPetForm.status_input.label(class="input-group-text", style="width: 100px;") }}
+                        </div>
+                        {{ searchPetForm.status_input(class="custom-select") }}
+                    </div>
+                </div>
+            {% endif %}
+            {#<a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{d}}" href="#">Posts</a>
+            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{e}}" href="#">Businesses</a>
+            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{f}}" href="#">Circles</a>#}
+        </nav>
+    </div>
+{% endmacro %}
+
 {% macro welcome_navbar(getAuthTokenForm) %}
     <nav class="fixed-top navbar">
         <a class="navbar-brand pl-3 py-4" href="{{ url_for('welcome') }}">
@@ -41,15 +95,20 @@
 {% endmacro %}
 
 {% macro loaded_navbar(current_user, homeNavbarActive, profileNavbarActive) %}
-    <nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light">
-        <span class="navbar-brand">
-            Boop
-        </span>
+    <nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light border">
+        <a class="navbar-brand ml-1" href="{{ url_for('home.feed') }}">
+            <img src="{{ url_for('static', filename='assets/boop-nameplate-dark.svg') }}">
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
+        <div class="collapse navbar-collapse mr-5 pr-5" id="navbarSupportedContent">
+            <form class="form-inline my-2 my-lg-0 position-relative w-25">
+                <div href="{{ url_for('user.search') }}" media-storage="{{ config.MEDIA_STORAGE }}" search-type="searcher" item-base-url="{{ url_for('user.pets', username='') }}" class="autocomplete position-absolute w-100 p-0">
+                    <input class="form-control mr-sm-2 w-75 form-control-sm" type="search" placeholder="Search" aria-label="Search">
+                </div>
+            </form>
+            <ul class="navbar-nav ml-auto">
                 <li class="nav-item font-weight-bold {{ homeNavbarActive }}">
                     <a class="nav-link" href="{{ url_for('home.feed') }}">
                         Home
@@ -63,8 +122,8 @@
                 </li>
                 <li class="ntf-nb nav-item font-weight-bold dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Notifications 
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary text-white">
+                        Notifications
+                        <span class="d-none position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary text-white">
                             0
                         </span>
                     </a>
@@ -74,8 +133,8 @@
                 <li class="nav-item font-weight-bold dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Settings</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="{{ url_for('settings.account_email') }}">Account</a>
+                        <a class="dropdown-item" href="{{ url_for('settings.preferences_pet') }}">Preferences</a>
                         <div class="dropdown-divider"></div>
                         <form class="container-fluid" action="{{ url_for('gateway.signout') }}" method="POST">
                             <button type="submit" class="btn btn-primary btn-sm btn-block" href="#">Sign out</a>
@@ -83,14 +142,23 @@
                     </div>
                 </li>
             </ul>
-            <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-                    Search
-                </button>
-            </form>
         </div>
     </nav>
+{% endmacro %}
+
+{% macro settings_navbar(a, b, c, d, e, f) %}
+    <div class="w-25 position-fixed h-100 py-4 px-3 bg-light border">
+        <nav class="stnv-c nav flex-column h-100 mt-3">
+            <span class="font-weight-bold h5 mb-2">Account</span>
+            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{a}}" href="{{ url_for('settings.account_email') }}">Change email</a>
+            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{b}}" href="{{ url_for('settings.account_username') }}">Change username</a>
+            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{c}}" href="{{ url_for('settings.account_password') }}">Change password</a>
+            <span class="font-weight-bold h5 mt-4 mb-2">Preferences</span>
+            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{d}}" href="{{ url_for('settings.preferences_pet') }}">Configure pet preference</a>
+            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{e}}" href="{{ url_for('settings.preferences_business') }}">Configure business preference</a>
+            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{f}}" href="{{ url_for('settings.preferences_circle') }}">Configure circle preference</a>
+        </nav>
+    </div>
 {% endmacro %}
 
 {% macro admin_navbar(current_user) %}

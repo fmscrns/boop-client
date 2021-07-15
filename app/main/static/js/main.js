@@ -1,12 +1,717 @@
 var currentDate = new Date();
 
+document.querySelectorAll(".sp-pc-bi").forEach((baseCard) => {
+     let searchValue = baseCard.getAttribute("search-value");
+     let petsUrl = baseCard.getAttribute("pets-url");
+     let peopleUrl = baseCard.getAttribute("people-url");
+     let loading = $(baseCard).siblings(".spinner-grow");
+     let impasseBadge = $(baseCard).siblings(".badge");
+     var paginationNo = 1;
+     var doneAjax = true;
+     var activateScrollPagination = false;
+     var queryCont;
+     var queryUrl;
+     var queryClassRemoved;
+     var queryEndResultConfig;
+     $(window).scroll(function () {
+          if(($(window).scrollTop() + $(window).height() == $(document).height()) && doneAjax && activateScrollPagination) {
+               loading.show();
+               resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig);
+          }
+     });
+     
+     if (petsUrl && peopleUrl) {
+          $(document.querySelectorAll(".sp-pc-dc-disp")).remove();
+          resultAjax(resultContainerCreator("Pets"), petsUrl + "?search=" + searchValue, "sp-pc-bi-us", [0, "/search/pets?value=" + searchValue]);
+          resultAjax(resultContainerCreator("People"), peopleUrl + "?search=" + searchValue, "sp-pc-bi-pe", [0, "/search/people?value=" + searchValue]);
+     } else if (petsUrl) {
+          paginationNo = 1;
+          $(document.querySelectorAll(".sp-pc-dc-disp")).remove();
+          queryCont = resultContainerCreator("Pets");
+          queryUrl = petsUrl + "?search=" + searchValue;
+          queryClassRemoved = "sp-pc-bi-us";
+          queryEndResultConfig = [1];
+          resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig);
+          let petFilterSideNavbar = document.querySelector(".sfpt-nbc");
+          let specieSelectInput = petFilterSideNavbar.querySelectorAll("select")[0];
+          let breedSelectInput = petFilterSideNavbar.querySelectorAll("select")[1];
+          let statusBoolInput = petFilterSideNavbar.querySelectorAll("select")[2];
+          specieSelectInput.addEventListener("change", (e) => {
+               breedSelectInput.setAttribute("disabled", "disabled");
+               breedSelectInput.innerHTML = "";
+               if (specieSelectInput.value != 0) {
+                    specieBreedInputDynamicAjax(specieSelectInput, breedSelectInput);
+               }
+          });
+          [specieSelectInput, breedSelectInput, statusBoolInput].forEach((input) => {
+               input.addEventListener("change", (e) => {
+                    paginationNo = 1;
+                    $(document.querySelectorAll(".sp-pc-dc-disp")).remove();
+                    queryCont = resultContainerCreator("Pets");
+                    let ssiSelected = ($("option:selected", specieSelectInput).attr("param-str") ? $("option:selected", specieSelectInput).attr("param-str") : "");
+                    let bsiSelected = ($("option:selected", breedSelectInput).attr("param-str") ? $("option:selected", breedSelectInput).attr("param-str") : "");
+                    let stiSelected = ($("option:selected", statusBoolInput).attr("param-str") ? $("option:selected", statusBoolInput).attr("param-str") : "");
+                    queryUrl = petsUrl + "?search=" + searchValue + ssiSelected + bsiSelected + stiSelected;
+                    queryClassRemoved = "sp-pc-bi-us";
+                    queryEndResultConfig = [1];
+                    resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig);
+               });
+          });
+     } else if (peopleUrl) {
+          queryCont = resultContainerCreator("People");
+          queryUrl = peopleUrl + "?search=" + searchValue;
+          queryClassRemoved = "sp-pc-bi-pe";
+          queryEndResultConfig = [1];
+          resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig);
+          let peopleFilterSideNavbar = document.querySelector(".sfppl-nbc");
+          let sameFollowedPetsInput = peopleFilterSideNavbar.querySelectorAll("input")[0];
+          let sameBreedPreferencesInput = peopleFilterSideNavbar.querySelectorAll("input")[1];
+          [sameFollowedPetsInput, sameBreedPreferencesInput].forEach((input) => {
+               input.addEventListener("change", (e) => {
+                    if (e.currentTarget.checked) {
+                         e.currentTarget.setAttribute("param-str", e.currentTarget.getAttribute("param-str").slice(0, -1) + "1");
+                    } else {
+                         e.currentTarget.setAttribute("param-str", e.currentTarget.getAttribute("param-str").slice(0, -1) + "0");
+                    }
+                    paginationNo = 1;
+                    $(document.querySelectorAll(".sp-pc-dc-disp")).remove();
+                    queryCont = resultContainerCreator("People");
+                    let sfpiSelected = ($(sameFollowedPetsInput).attr("param-str") ? $(sameFollowedPetsInput).attr("param-str") : "");
+                    let sbpiSelected = ($(sameBreedPreferencesInput).attr("param-str") ? $(sameBreedPreferencesInput).attr("param-str") : "");
+                    
+                    queryUrl = peopleUrl + "?search=" + searchValue + sfpiSelected  + sbpiSelected;
+                    queryClassRemoved = "sp-pc-bi-pe";
+                    queryEndResultConfig = [1];
+                    resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig);
+               });
+          });
+     }
+
+     function resultContainerCreator (title) {
+          let cont = document.createElement("div");
+          cont.setAttribute("hidden", "true");
+          cont.classList.add("d-flex", "flex-column", "container-fluid", "py-4", "sp-pc-dc-disp");
+          let titleCont = document.createElement("span");
+          titleCont.classList.add("h5", "font-weight-bold");
+          titleCont.innerHTML = title;
+          cont.append(titleCont);
+          $(cont).insertBefore(baseCard);
+          return cont;
+     }
+
+     function resultAjax (cont, url, classRemoved, endResultConfig) {
+          console.log(url);
+          $.ajax({
+               type: "GET",
+               url: url + "&pagination_no=" + paginationNo,
+               beforeSend: function () {
+                    loading.show();
+                    doneAjax = false;
+                    impasseBadge.attr("hidden", "true");
+               },
+               success: function (response) {
+                    cont.removeAttribute("hidden");
+                    for (item of response) {
+                         let card = $(baseCard).clone().removeAttr("hidden").removeClass("sp-pc-bi");
+                         
+                         card.find("." + classRemoved).remove();
+                         card.find("img").attr("src", card.find("img").attr("src") + item["photo"]);
+
+                         if (item["username"]) {
+                              let nameCont = card.find(".pc-us-n").html(item["name"]);
+                              nameCont.attr("href", nameCont.attr("href") + item["username"]);
+                              card.find(".pc-us-un").html("@" + item["username"]);
+                         }
+
+                         if (item["bio"]) {
+                              let nameCont = card.find(".pc-pe-n").html(item["name"]);
+                              nameCont.attr("href", nameCont.attr("href") + item["public_id"]);
+                              card.find(".pc-pe-bi").html(card.find(".pc-pe-bi").html() + item["bio"]);
+                              card.find(".pc-pe-bd").html(card.find(".pc-pe-bd").html() + moment(item["birthday"]).format('LL'));
+                              card.find(".pc-pe-sx").html(card.find(".pc-pe-sx").html() + item["sex"]);
+                              card.find(".pc-pe-sp").html(card.find(".pc-pe-sp").html() + item["group_name"]);
+                              card.find(".pc-pe-br").html(card.find(".pc-pe-br").html() + item["subgroup_name"]);
+                         }
+                         cont.append(card[0]);
+                    }
+                    if (endResultConfig[0] == 0) {
+                         // all end result card
+                         let endCard = document.createElement("a");
+                         endCard.setAttribute("href", endResultConfig[1]);
+                         endCard.classList.add("btn", "mx-auto", "btn-primary", "mt-3", "btn-block");
+                         endCard.innerHTML = "See more";
+                         cont.append(endCard);
+                    } else if (endResultConfig[0] == 1) {
+                         activateScrollPagination = true;
+                    }
+                    loading.hide();
+               },
+               complete: function (xhr) {
+                    if (xhr.status == 404) {
+                         doneAjax = false;
+                         loading.hide();
+                         impasseBadge.removeAttr("hidden");
+                         if (endResultConfig[0] == 0) {
+                              $(cont).remove();
+                         }
+                         if (paginationNo == 1) {
+                              impasseBadge.html("No results found.");
+                         } else {
+                              impasseBadge.html("Nothing more to load.");
+                         }
+                    } else {
+                         doneAjax = true;
+                         paginationNo += 1;
+                    }
+               }
+          });
+     }
+
+     function specieBreedInputDynamicAjax (specieSelectInput, breedSelectInput) {
+          let specieId = specieSelectInput.value;
+          $.ajax({
+               type: "GET",
+               url: "/breed/parent/" + specieId,
+               success: function (response) {
+                    breedSelectInput.append(createOptionElem ("All", 0, null));
+                    for (let breed of response) {
+                         let opt = createOptionElem (breed["name"], breed["public_id"], [["param-str", "&subgroup_id=" + breed["public_id"]]]);
+                         breedSelectInput.append(opt);
+                    }
+               },
+               complete: function () {
+                    breedSelectInput.removeAttribute("disabled");
+               }
+          });
+     }
+
+     function createOptionElem (innerHTML, value, attribTupleList) {
+          let opt = document.createElement("option");
+          opt.innerHTML = innerHTML;
+          opt.value = value;
+          if (attribTupleList) {
+               for (attribTuple of attribTupleList) {
+                    opt.setAttribute(attribTuple[0], attribTuple[1]);
+               }
+          }
+          return opt;
+     }
+});
+
+document.querySelectorAll(".autocomplete").forEach((div) => {
+     let inp = div.querySelectorAll("input")[0];
+     let pidHolder = div.querySelectorAll("input")[1];
+     let mediaStorage = div.getAttribute("media-storage");
+     let url = div.getAttribute("href");
+     let itemBaseUrl = div.getAttribute("item-base-url");
+     let searchType = div.getAttribute("search-type");
+     let searchInputWidthBL = 209;
+     let fillerInputWidthBL = 313;
+     var currentFocus;
+     var typingTimer;
+     var doneTypingInterval = 1000;
+     inp.addEventListener("input", function(e) {
+          window.clearTimeout(typingTimer);
+          var a, b, i, val = this.value;
+          closeAllLists();
+          if (!val) { return false;}
+          currentFocus = -1;
+          a = document.createElement("DIV");
+          a.style.overflowY = "scroll"
+          a.setAttribute("id", this.id + "autocomplete-list");
+          a.setAttribute("class", "autocomplete-items");
+          this.parentNode.appendChild(a);
+          typingTimer = setTimeout(function () {
+               $.ajax({
+                    type: "GET",
+                    url: url + "?search=" + val,
+                    beforeSend: function () {
+                         let b = document.createElement("DIV");
+                         b.classList.add("d-flex", "flex-row", "justify-content-start", "align-items-center");
+                         if (searchType == "filler") {
+                              b.style.width = fillerInputWidthBL + "px";
+                         } else if (searchType == "searcher") {
+                              b.style.width = searchInputWidthBL + "px";
+                         }
+                         let spinner = document.createElement("div");
+                         spinner.classList.add("spinner-grow", "text-primary", "mx-auto");
+                         spinner.setAttribute("role", "status");
+                         b.append(spinner);
+                         a.append(b);
+                    },
+                    success: function (response) {
+                         a.innerHTML = "";
+                         if (response.length != 0) {
+                              userAutocomplete(a, val, response);
+                         } else {
+                              let b = document.createElement("DIV");
+                              b.classList.add("d-flex", "justify-content-center");
+                              if (searchType == "filler") {
+                                   b.style.width = fillerInputWidthBL + "px";
+                              } else if (searchType == "searcher") {
+                                   b.style.width = searchInputWidthBL + "px";
+                              }
+                              b.innerHTML = "No results found";
+                              a.append(b);
+                         }
+                    }
+               });
+          }, doneTypingInterval);
+     });
+
+     function userAutocomplete (a, val, response) {
+          if (searchType == "filler") {
+               for (let user of response) {
+                    let b = document.createElement("DIV");
+                    b.style.width = fillerInputWidthBL + "px";
+                    b.classList.add("d-flex", "flex-row", "justify-content-start", "align-items-center");
+                    let profPic = document.createElement("img");
+                    profPic.setAttribute("src", mediaStorage + user["photo"]);
+                    profPic.classList.add("home-content-profPic", "mr-3");
+                    b.append(profPic);
+                    let b0 = document.createElement("DIV");
+                    b0.classList.add("d-flex", "flex-column");
+                    var nameSubstringMatchPosition = user.name.toUpperCase().indexOf(val.toUpperCase());
+                    var usernameSubstringMatchPosition = user.username.toUpperCase().indexOf(val.toUpperCase());
+                    if (nameSubstringMatchPosition !== -1) {
+                         b0.innerHTML += "<span>" + [user.name.slice(0, nameSubstringMatchPosition), "<strong>", user.name.slice(nameSubstringMatchPosition, nameSubstringMatchPosition + val.length), "</strong>", user.name.slice(nameSubstringMatchPosition + val.length)].join('') + "</span>";
+                    } else {
+                         b0.innerHTML += "<span>" + user.name + "</span>";
+                    }
+                    if (usernameSubstringMatchPosition !== -1) {
+                         b0.innerHTML += "<span class='small tex-muted mt-1'>@" + [user.username.slice(0, usernameSubstringMatchPosition), "<strong>", user.username.slice(usernameSubstringMatchPosition, usernameSubstringMatchPosition + val.length), "</strong>", user.username.slice(usernameSubstringMatchPosition + val.length)].join('') + "</span>";
+                    } else {
+                         b0.innerHTML += "<span class='small tex-muted mt-1'>@" + user.username + "</span>";
+                    }
+                    b.append(b0);
+                    b.addEventListener("click", function(e) {
+                         inp.value = user.name;
+                         pidHolder.value = user.public_id;
+                         closeAllLists();
+                    });
+                    a.appendChild(b);
+               }
+          } else if (searchType == "searcher") {
+               for (let user of response) {
+                    let b = document.createElement("div");
+                    b.style.width = searchInputWidthBL + "px";
+                    let bi = document.createElement("a");
+                    bi.classList.add("d-flex", "flex-row", "justify-content-start", "align-items-center", "text-dark", "text-decoration-none");
+                    bi.setAttribute("href", itemBaseUrl + "/" + user["username"]);
+                    let profPic = document.createElement("img");
+                    profPic.setAttribute("src", mediaStorage + user["photo"]);
+                    profPic.classList.add("home-content-profPic", "mr-3");
+                    bi.append(profPic);
+                    let b0 = document.createElement("div");
+                    b0.classList.add("d-flex", "flex-column");
+                    var nameSubstringMatchPosition = user.name.toUpperCase().indexOf(val.toUpperCase());
+                    var usernameSubstringMatchPosition = user.username.toUpperCase().indexOf(val.toUpperCase());
+                    if (nameSubstringMatchPosition !== -1) {
+                         b0.innerHTML += "<span>" + [user.name.slice(0, nameSubstringMatchPosition), "<strong>", user.name.slice(nameSubstringMatchPosition, nameSubstringMatchPosition + val.length), "</strong>", user.name.slice(nameSubstringMatchPosition + val.length)].join('') + "</span>";
+                    } else {
+                         b0.innerHTML += "<span>" + user.name + "</span>";
+                    }
+                    if (usernameSubstringMatchPosition !== -1) {
+                         b0.innerHTML += "<span class='small tex-muted mt-1'>@" + [user.username.slice(0, usernameSubstringMatchPosition), "<strong>", user.username.slice(usernameSubstringMatchPosition, usernameSubstringMatchPosition + val.length), "</strong>", user.username.slice(usernameSubstringMatchPosition + val.length)].join('') + "</span>";
+                    } else {
+                         b0.innerHTML += "<span class='small tex-muted mt-1'>@" + user.username + "</span>";
+                    }
+                    bi.append(b0);
+                    b.append(bi);
+                    a.appendChild(b);
+               }
+               let b = document.createElement("DIV");
+               b.style.width = searchInputWidthBL + "px";
+               let bi = document.createElement("a");
+               bi.classList.add("d-flex", "justify-content-center", "align-items-center", "text-dark", "text-decoration-none");
+               bi.setAttribute("href", "/search/all?value=" + val);
+               bi.innerHTML = "Search more for&nbsp;<span class='font-weight-bold'>" + val + "</span>" ;
+               b.append(bi);
+               a.append(b);
+          }
+     }
+
+     inp.addEventListener("keydown", function(e) {
+         var x = document.getElementById(this.id + "autocomplete-list");
+         if (x) x = x.getElementsByTagName("div");
+         if (e.keyCode == 40) {
+           /*If the arrow DOWN key is pressed,
+           increase the currentFocus variable:*/
+           currentFocus++;
+           /*and and make the current item more visible:*/
+           addActive(x);
+         } else if (e.keyCode == 38) { //up
+           /*If the arrow UP key is pressed,
+           decrease the currentFocus variable:*/
+           currentFocus--;
+           /*and and make the current item more visible:*/
+           addActive(x);
+         } else if (e.keyCode == 13) {
+           /*If the ENTER key is pressed, prevent the form from being submitted,*/
+           e.preventDefault();
+           if (currentFocus > -1) {
+             /*and simulate a click on the "active" item:*/
+             if (x) x[currentFocus].click();
+           }
+         }
+     });
+     function addActive(x) {
+       /*a function to classify an item as "active":*/
+       if (!x) return false;
+       /*start by removing the "active" class on all items:*/
+       removeActive(x);
+       if (currentFocus >= x.length) currentFocus = 0;
+       if (currentFocus < 0) currentFocus = (x.length - 1);
+       /*add class "autocomplete-active":*/
+       x[currentFocus].classList.add("autocomplete-active");
+       x[currentFocus].scrollIntoView({ behavior: 'smooth' })
+     }
+     function removeActive(x) {
+       /*a function to remove the "active" class from all autocomplete items:*/
+       for (var i = 0; i < x.length; i++) {
+         x[i].classList.remove("autocomplete-active");
+       }
+     }
+     function closeAllLists(elmnt) {
+       /*close all autocomplete lists in the document,
+       except the one passed as an argument:*/
+       var x = document.getElementsByClassName("autocomplete-items");
+       for (var i = 0; i < x.length; i++) {
+         if (elmnt != x[i] && elmnt != inp) {
+         x[i].parentNode.removeChild(x[i]);
+       }
+     }
+   }
+});
+
+function abbreviateNumber(value) {
+    var newValue = value;
+    if (value >= 1000) {
+        var suffixes = ["", "k", "m", "b","t"];
+        var suffixNum = Math.floor( (""+value).length/3 );
+        var shortValue = '';
+        for (var precision = 2; precision >= 1; precision--) {
+            shortValue = parseFloat( (suffixNum != 0 ? (value / Math.pow(1000,suffixNum) ) : value).toPrecision(precision));
+            var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
+            if (dotLessShortValue.length <= 2) { break; }
+        }
+        if (shortValue % 1 != 0)  shortValue = shortValue.toFixed(1);
+        newValue = shortValue+suffixes[suffixNum];
+    }
+    return newValue;
+}
+
+document.querySelectorAll(".ctf-c").forEach((cont) => {
+     let loading = $(cont).find(".ctf-c-ld");
+     let baseCard = $(cont).find(".ctf-c-bi");
+
+     ajaxToFollow();
+     function ajaxToFollow() {
+          var cardsDown = 3;
+          $.ajax({
+               type: "GET",
+               url: "/circle/preference?pagination_no=1",
+               success: function (data) {
+                    for (circle of data) {
+                         let newCard = baseCard.clone().addClass("list-item-disposable").attr("hidden", false);
+                         let followBtn = newCard.find("button").attr("circle-pid", circle["public_id"]);
+                         followBtn.one("click", function (e) {
+                              $.ajax({
+                                   type: "POST",
+                                   url: "/circle/" + $(this).attr("circle-pid") + "/join?is_async=1",
+                         
+                                   success: function () {
+                                        newCard.closest(".ctf-c").find(".ctf-c-bi").addClass("border-top");
+                                        newCard.fadeTo(50, 0).slideUp(250, function (e) {
+                                             newCard.closest(".ctf-c").find(".ctf-c-bi").removeClass("border-top");
+                                             newCard.remove();
+                                        });
+                                        cardsDown -= 1;
+                                        if (cardsDown == 0) {
+                                             loading.show();
+                                             ajaxToFollow();
+                                        }
+                                   }
+                              });
+                         });
+                         newCard.find("img").attr("src", newCard.find("img").attr("src") + "/" + circle["photo"]);
+                         newCard.find(".font-weight-bold").html(circle["name"]);
+                         let typeCont = newCard.find(".ctf-c-bi-t");
+                         for (type of circle["_type"]) {
+                              typeCont.html(typeCont.html() + " " + type["name"]);
+                         }
+                         newCard.find(".ctf-c-bi-mc").html((circle["member_count"] != 0 ? abbreviateNumber(circle["member_count"]) : "No") + " member" + (circle["member_count"] != 1 ? "s" : ""));
+                         newCard.insertBefore(loading, null);
+                    }
+                    loading.hide();
+               }
+          });
+     }
+});
+
+document.querySelectorAll(".btf-c").forEach((cont) => {
+     let loading = $(cont).find(".btf-c-ld");
+     let baseCard = $(cont).find(".btf-c-bi");
+     ajaxToFollow();
+     function ajaxToFollow() {
+          var cardsDown = 3;
+          $.ajax({
+               type: "GET",
+               url: "/business/preference?pagination_no=1",
+               success: function (data) {
+                    for (business of data) {
+                         let newCard = baseCard.clone().addClass("list-item-disposable").attr("hidden", false);
+                         let followBtn = newCard.find("button").attr("business-pid", business["public_id"]);
+                         followBtn.one("click", function (e) {
+                              $.ajax({
+                                   type: "POST",
+                                   url: "/business/" + $(this).attr("business-pid") + "/follow?is_async=1",
+                                   success: function () {
+                                        newCard.closest(".btf-c").find(".btf-c-bi").addClass("border-top");
+                                        newCard.fadeTo(50, 0).slideUp(250, function (e) {
+                                             newCard.closest(".btf-c").find(".btf-c-bi").removeClass("border-top");
+                                             newCard.remove();
+                                        });
+                                        cardsDown -= 1;
+                                        if (cardsDown == 0) {
+                                             loading.show();
+                                             ajaxToFollow();
+                                        }
+                                   }
+                              });
+                         });
+                         newCard.find("img").attr("src", newCard.find("img").attr("src") + "/" + business["photo"]);
+                         newCard.find(".font-weight-bold").html(business["name"]);
+                         let typeCont = newCard.find(".btf-c-bi-t");
+                         for (type of business["_type"]) {
+                              typeCont.html(typeCont.html() + " " + type["name"]);
+                         }
+                         newCard.find(".btf-c-bi-fc").html((business["follower_count"] != 0 ? abbreviateNumber(business["follower_count"]) : "No") + " follower" + (business["follower_count"] != 1 ? "s" : ""));
+                         newCard.insertBefore(loading, null);
+                    }
+                    loading.hide();
+               }
+          });
+     }
+});
+
+document.querySelectorAll(".ptf-c").forEach((cont) => {
+     let loading = $(cont).find(".ptf-c-ld");
+     let baseCard = $(cont).find(".ptf-c-bi");
+     ajaxToFollow();
+     function ajaxToFollow() {
+          var cardsDown = 3;
+          $.ajax({
+               type: "GET",
+               url: "/pet/preference?pagination_no=1",
+               success: function (data) {
+                    for (pet of data) {
+                         let newCard = baseCard.clone().addClass("list-item-disposable").attr("hidden", false);
+                         let followBtn = newCard.find("button").attr("pet-pid", pet["public_id"]);
+                         followBtn.one("click", function (e) {
+                              $.ajax({
+                                   type: "POST",
+                                   url: "/pet/" + $(this).attr("pet-pid") + "/follow?is_async=1",
+                                   success: function () {
+                                        newCard.closest(".ptf-c").find(".ptf-c-bi").addClass("border-top");
+                                        newCard.fadeTo(50, 0).slideUp(250, function (e) {
+                                             newCard.closest(".ptf-c").find(".ptf-c-bi").removeClass("border-top");
+                                             newCard.remove();
+                                        });
+                                        cardsDown -= 1;
+                                        if (cardsDown == 0) {
+                                             loading.show();
+                                             ajaxToFollow();
+                                        }
+                                   }
+                              });
+                         });
+                         newCard.find("img").attr("src", newCard.find("img").attr("src") + "/" + pet["photo"]);
+                         newCard.find(".font-weight-bold").html(pet["name"]);
+                         newCard.find(".ptf-c-bi-s").html(pet["group_name"]);
+                         newCard.find(".ptf-c-bi-b").html(pet["subgroup_name"]);
+                         newCard.find(".ptf-c-bi-fc").html((pet["follower_count"] != 0 ? abbreviateNumber(pet["follower_count"]) : "No") + " follower" + (pet["follower_count"] != 1 ? "s" : ""));
+                         newCard.insertBefore(loading, null);
+                    }
+                    loading.hide();
+               }
+          });
+     }
+});
+
+$(function () {
+     let cont = document.querySelector(".ccprf-c");
+ 
+     let circleInput = $(cont).find("#ccpf-circle_type_input");
+     let circleItems = circleInput.find("option");
+     let circleBtnCont = $(cont).find(".ccpf-bc").eq(0);
+     let circleBaseBtn = circleBtnCont.find(".ccpf-bi-b");
+     for (item of circleItems) {
+          let newButton = $(circleBaseBtn).clone().removeClass("cppf-bi").attr("hidden", false).val($(item).val());
+          if ($(item).attr("selected")) {
+               newButton.removeClass("btn-outline-secondary").addClass("btn-secondary");
+          }
+          newButton.html($(item).html());
+ 
+          newButton.on("click", function (e) {
+               if ($(this).hasClass("btn-secondary")) {
+                    $(this).removeClass("btn-secondary").addClass("btn-outline-secondary");
+               } else if ($(this).hasClass("btn-outline-secondary")) {
+                    $(this).removeClass("btn-outline-secondary").addClass("btn-secondary");
+               }
+          });
+ 
+          newButton.insertBefore(circleBaseBtn, null);
+     }
+ 
+     $(cont).one("submit", function (e) {
+          e.preventDefault();
+ 
+          circleInput.html("");
+          activeCircles = circleBtnCont.find(".btn-secondary");
+          for (breed of activeCircles) {
+               let newOption = document.createElement("option");
+               newOption.setAttribute("selected", "selected");
+               newOption.value = $(breed).val();
+               circleInput.append(newOption)
+          }
+          $(this).submit();
+     });
+});
+
+$(function () {
+     let cont = document.querySelector(".cbprf-c");
+ 
+     let businessInput = $(cont).find("#cbpf-business_type_input");
+     let businessItems = businessInput.find("option");
+     let businessBtnCont = $(cont).find(".cbpf-bc").eq(0);
+     let businessBaseBtn = businessBtnCont.find(".cbpf-bi-b");
+     for (item of businessItems) {
+          let newButton = $(businessBaseBtn).clone().removeClass("cppf-bi").attr("hidden", false).val($(item).val());
+          if ($(item).attr("selected")) {
+               newButton.removeClass("btn-outline-secondary").addClass("btn-secondary");
+          }
+          newButton.html($(item).html());
+ 
+          newButton.on("click", function (e) {
+               if ($(this).hasClass("btn-secondary")) {
+                    $(this).removeClass("btn-secondary").addClass("btn-outline-secondary");
+               } else if ($(this).hasClass("btn-outline-secondary")) {
+                    $(this).removeClass("btn-outline-secondary").addClass("btn-secondary");
+               }
+          });
+ 
+          newButton.insertBefore(businessBaseBtn, null);
+     }
+ 
+     $(cont).one("submit", function (e) {
+          e.preventDefault();
+ 
+          businessInput.html("");
+          activeBusinesses = businessBtnCont.find(".btn-secondary");
+          for (breed of activeBusinesses) {
+               let newOption = document.createElement("option");
+               newOption.setAttribute("selected", "selected");
+               newOption.value = $(breed).val();
+               businessInput.append(newOption)
+          }
+          $(this).submit();
+     });
+});
+
+$(function () {
+     let cont = document.querySelector(".cpprf-c");
+
+     let breedInput = $(cont).find("#cppf-breed_subgroup_input");
+     let breedItems = breedInput.find("option");
+     let breedBtnCont = $(cont).find(".cppf-bbc").eq(0);
+     let breedBaseButton = breedBtnCont.find(".cppf-bi-bb");
+     for (item of breedItems) {
+          let newButton = $(breedBaseButton).clone().removeClass("cppf-bi-b").attr("hidden", false).val($(item).val());
+          if ($(item).attr("selected")) {
+               newButton.removeClass("btn-outline-secondary").addClass("btn-secondary");
+          }
+          newButton.attr("parent-pid", $(item).attr("parent-pid"));
+          newButton.html($(item).html());
+
+          newButton.on("click", function (e) {
+               if ($(this).hasClass("btn-secondary")) {
+                    $(this).removeClass("btn-secondary").addClass("btn-outline-secondary");
+               } else if ($(this).hasClass("btn-outline-secondary")) {
+                    $(this).removeClass("btn-outline-secondary").addClass("btn-secondary");
+               }
+          });
+
+          newButton.insertBefore(breedBaseButton, null);
+     }
+
+     let specieInput = $(cont).find("#cppf-specie_group_input");
+     let specieItems = specieInput.find("option");
+     let specieBtnCont = $(cont).find(".cppf-sbc");
+     let specieBaseButton = specieBtnCont.find(".cppf-bi-sb");
+     for (item of specieItems) {
+          let newButton = $(specieBaseButton).clone().removeClass("cppf-bi-b").attr("hidden", false).val($(item).val());
+          if ($(item).attr("selected")) {
+               newButton.removeClass("btn-outline-secondary").addClass("btn-secondary");
+          }
+          newButton.html($(item).html());
+
+          newButton.on("click", function (e) {
+               if ($(this).hasClass("btn-secondary")) {
+                    breedBtnCont.find("[parent-pid='" + $(this).val() + "']").remove();
+                    $(this).removeClass("btn-secondary").addClass("btn-outline-secondary");
+               } else if ($(this).hasClass("btn-outline-secondary")) {
+                    $.ajax({
+                         type: "GET",
+                         url: "/breed/parent/" + $(this).val(),
+               
+                         success: function (data) {
+                              for (breed of data) {
+                                   let newButton = $(breedBaseButton).clone().removeClass("cppf-bi-b").attr("hidden", false).val(breed["public_id"]);
+                                   newButton.attr("parent-pid", breed["parent_id"]);
+                                   newButton.html(breed["name"]);
+
+                                   newButton.on("click", function (e) {
+                                        if ($(this).hasClass("btn-secondary")) {
+                                             $(this).removeClass("btn-secondary").addClass("btn-outline-secondary");
+                                        } else if ($(this).hasClass("btn-outline-secondary")) {
+                                             $(this).removeClass("btn-outline-secondary").addClass("btn-secondary");
+                                        }
+                                   });
+
+                                   newButton.insertBefore(breedBaseButton, null);
+                              }
+                         }
+                    });
+
+                    $(this).removeClass("btn-outline-secondary").addClass("btn-secondary");
+               }
+          });
+
+          newButton.insertBefore(specieBaseButton, null);
+     }
+
+     $(cont).one("submit", function (e) {
+          e.preventDefault();
+
+          breedInput.html("");
+          activeBreeds = breedBtnCont.find(".btn-secondary");
+          for (breed of activeBreeds) {
+               let newOption = document.createElement("option");
+               newOption.setAttribute("selected", "selected");
+               newOption.value = $(breed).val();
+               breedInput.append(newOption)
+          }
+          $(this).submit();
+     });
+});
+
 function outerHTML(node){
      return node.outerHTML || new XMLSerializer().serializeToString(node);
 }
 
-$(function () {
+document.querySelectorAll(".cd-cont").forEach((commentCont) => {
      var paginationNo = 1;
-     let commentCont = $(document).find(".cd-cont")[0];
      let commentLoading = $(commentCont).find(".cd-ld")[0];
      let commentStatus = $(commentCont).find(".cd-st")[0];
      let commentBaseItem = $(commentCont).find(".cd-ci")[0];
@@ -29,7 +734,6 @@ $(function () {
                success: function (data) {
                     if (data.length > 0) {
                          for (comment of data) {
-                              console.log(comment);
                               let item = $(commentBaseItem).clone().removeAttr("hidden");
                               item.find(".post-user-photo").attr("src", item.find(".post-user-photo").attr("src") + comment["creator_photo"]);
                               item.find(".f-pi-dt-cn").html(comment["creator_name"]).attr("href", "/user/" + comment["creator_username"] + "/pets");
@@ -49,7 +753,7 @@ $(function () {
                               } else {
                                    item.find(".f-pi-c-ph").remove();
                               }
-                              item.insertBefore(commentLoading);
+                              item.insertBefore(commentLoading, null);
                          }
                          $(commentLoading).find(".spinner-grow").hide();
                          doneAjax = true;
@@ -64,9 +768,8 @@ $(function () {
      }
 });
 
-$(function () {
+document.querySelectorAll(".md-cont").forEach((mediaCont) => {
      var paginationNo = 1;
-     let mediaCont = $(document).find(".md-cont")[0];
      let mediaLoading = $(mediaCont).find(".md-ld")[0];
      let mediaStatus = $(mediaCont).find(".md-st")[0];
      let mediaBaseItem = $(mediaCont).find(".md-pi")[0];
@@ -112,7 +815,7 @@ $(function () {
                                    let baseMiddleItem = mediaItem.find(".mc-ip-iiii-m").eq(0);
                                    for (var i = 0; i < multiplyMiddleLength; i++) {
                                         let item = baseMiddleItem.clone();
-                                        item.insertBefore(baseMiddleItem);
+                                        item.insertBefore(baseMiddleItem, null);
                                    }
                                    baseMiddleItem.remove();
                               }
@@ -133,7 +836,7 @@ $(function () {
 
                          $(mediaLoading).find(".spinner-grow").hide();
                          doneAjax = true;
-                         mediaItem.insertBefore(mediaLoading);
+                         mediaItem.insertBefore(mediaLoading, null);
                     } else {
                          $(mediaLoading).find(".spinner-grow").hide();
                          doneAjax = false;
@@ -144,9 +847,8 @@ $(function () {
      };
 });
 
-$(function () {
+document.querySelectorAll(".fd-cont").forEach((feedCont) => {
      var paginationNo = 1;
-     let feedCont = $(document).find(".fd-cont")[0];
      let feedLoading = $(feedCont).find(".fd-ld")[0];
      let feedStatus = $(feedCont).find(".fd-st")[0];
      let feedPostItem = $(feedCont).find(".fd-pi")[0];
@@ -260,7 +962,7 @@ $(function () {
                               let commentCont = item.find(".post-footer").find(".pst-cmt");
                               commentCont.find("span").html(post["comment_count"] + "&nbsp;&nbsp;");
                               commentCont.find("a").attr("href", "/post/" + post["public_id"] + "/comments");
-                              item.insertBefore(feedLoading);
+                              item.insertBefore(feedLoading, null);
                          }
                          $(feedLoading).find(".spinner-grow").hide();
                          doneAjax = true;
@@ -298,17 +1000,12 @@ $(function () {
 document.querySelectorAll(".dp-mb").forEach((button) => {
      modal = document.querySelector(button.getAttribute("data-target"));
      button.addEventListener("click", (e) => {
-          console.log("clicked!");
           methodAction = button.getAttribute("method-action");
-          console.log(methodAction);
           modal.querySelector(".modal-content").setAttribute("action", methodAction);
-
-          console.log(modal);
      });
 });
 
-$(function () {
-     let notifCont = document.querySelector(".ntf-nb");
+document.querySelectorAll(".ntf-nb").forEach((notifCont) => {
      let notifUnreadCount = notifCont.querySelector(".position-absolute");
      let notifBtn = notifCont.querySelector(".nav-link");
      let notifMenu = notifCont.querySelector(".dropdown-menu");
@@ -325,6 +1022,7 @@ $(function () {
                          thisNotif.classList.add("dropdown-item", "p-3", "d-flex", "flex-row", "align-items-center", "justify-content-between");
      
                          if (notification["is_read"] == false) {
+                              notifUnreadCount.classList.remove("d-none");
                               notifUnreadCount.innerHTML = parseInt(notifUnreadCount.innerHTML) + 1;
                               thisNotif.classList.add("ntf-nb-unr");
                          }
@@ -840,7 +1538,7 @@ document.querySelectorAll(".cbf-ot-cont").forEach((container) => {
 });
 
 $(".alert-dismissible").fadeTo(5000, 500).slideUp(500, function (e) {
-    $(e).alert("close");
+    $(this).remove();
 });
 
 document.querySelectorAll("#createPetModal").forEach((creator) => {
@@ -885,115 +1583,6 @@ for (i = 0; i < parentInput.length; i++) {
         }
     }
 }
-
-document.querySelectorAll(".autocomplete").forEach((div) => {
-     inp = div.querySelectorAll("input")[0];
-     pidHolder = div.querySelectorAll("input")[1];
-     url = div.getAttribute("href");
-     
-     var currentFocus;
-     var typingTimer;
-     var doneTypingInterval = 2000;
-     inp.addEventListener("input", function(e) {
-          window.clearTimeout(typingTimer);
-          var a, b, i, val = this.value;
-          closeAllLists();
-          if (!val) { return false;}
-          currentFocus = -1;
-          a = document.createElement("DIV");
-          a.setAttribute("id", this.id + "autocomplete-list");
-          a.setAttribute("class", "autocomplete-items");
-          /*append the DIV element as a child of the autocomplete container:*/
-          this.parentNode.appendChild(a);
-
-          typingTimer = setTimeout(function () {
-               $.ajax({
-                    type: "GET",
-                    url: url + "?search=" + val,
-     
-                    success: function (response) {
-                         for (let user of response) {
-                              /*create a DIV element for each matching element:*/
-                              b = document.createElement("DIV");
-                              b.classList.add("d-flex", "d-column");
-     
-                              var nameSubstringMatchPosition = user.name.toUpperCase().indexOf(val.toUpperCase());
-                              var usernameSubstringMatchPosition = user.username.toUpperCase().indexOf(val.toUpperCase());
-                              if (nameSubstringMatchPosition !== -1) {
-                                   b.innerHTML += "<span>" + [user.name.slice(0, nameSubstringMatchPosition), "<strong>", user.name.slice(nameSubstringMatchPosition, nameSubstringMatchPosition + val.length), "</strong>", user.name.slice(nameSubstringMatchPosition + val.length)].join('') + "</span>";
-                              } else {
-                                   b.innerHTML += "<span>" + user.name + "</span>";
-                              }
-                              if (usernameSubstringMatchPosition !== -1) {
-                                   b.innerHTML += "<span class='small tex-muted mt-1'>@" + [user.username.slice(0, usernameSubstringMatchPosition), "<strong>", user.username.slice(usernameSubstringMatchPosition, usernameSubstringMatchPosition + val.length), "</strong>", user.username.slice(usernameSubstringMatchPosition + val.length)].join('') + "</span>";
-                              } else {
-                                   b.innerHTML += "<span class='small tex-muted mt-1'>@" + user.username + "</span>";
-                              }
-                              /*execute a function when someone clicks on the item value (DIV element):*/
-                              b.addEventListener("click", function(e) {
-                                   inp.value = user.name;
-                                   pidHolder.value = user.public_id;
-                                   closeAllLists();
-                              });
-                              a.appendChild(b);
-                         }
-                    }
-               });
-          }, doneTypingInterval);
-     });
-
-     inp.addEventListener("keydown", function(e) {
-         var x = document.getElementById(this.id + "autocomplete-list");
-         if (x) x = x.getElementsByTagName("div");
-         if (e.keyCode == 40) {
-           /*If the arrow DOWN key is pressed,
-           increase the currentFocus variable:*/
-           currentFocus++;
-           /*and and make the current item more visible:*/
-           addActive(x);
-         } else if (e.keyCode == 38) { //up
-           /*If the arrow UP key is pressed,
-           decrease the currentFocus variable:*/
-           currentFocus--;
-           /*and and make the current item more visible:*/
-           addActive(x);
-         } else if (e.keyCode == 13) {
-           /*If the ENTER key is pressed, prevent the form from being submitted,*/
-           e.preventDefault();
-           if (currentFocus > -1) {
-             /*and simulate a click on the "active" item:*/
-             if (x) x[currentFocus].click();
-           }
-         }
-     });
-     function addActive(x) {
-       /*a function to classify an item as "active":*/
-       if (!x) return false;
-       /*start by removing the "active" class on all items:*/
-       removeActive(x);
-       if (currentFocus >= x.length) currentFocus = 0;
-       if (currentFocus < 0) currentFocus = (x.length - 1);
-       /*add class "autocomplete-active":*/
-       x[currentFocus].classList.add("autocomplete-active");
-       x[currentFocus].scrollIntoView({ behavior: 'smooth' })
-     }
-     function removeActive(x) {
-       /*a function to remove the "active" class from all autocomplete items:*/
-       for (var i = 0; i < x.length; i++) {
-         x[i].classList.remove("autocomplete-active");
-       }
-     }
-     function closeAllLists(elmnt) {
-       /*close all autocomplete lists in the document,
-       except the one passed as an argument:*/
-       var x = document.getElementsByClassName("autocomplete-items");
-       for (var i = 0; i < x.length; i++) {
-         if (elmnt != x[i] && elmnt != inp) {
-         x[i].parentNode.removeChild(x[i]);
-       }
-     }
-   }
-});
 
 document.querySelectorAll(".p-dt").forEach((dateCont) => {
      dateCont.innerHTML = moment(dateCont.innerHTML).fromNow()

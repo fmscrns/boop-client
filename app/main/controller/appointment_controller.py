@@ -8,7 +8,6 @@ from ..form.appointment_form import CreateAppointmentForm, EditAppointmentForm, 
 def create(current_user):
     createAppointmentForm = CreateAppointmentForm()
     asd = request.args.get("business_pid")
-    print("pid = {}".format(asd))
     # createAppointmentForm.type_input.choices = [(request.form.get("type_input"), "")]
     # createAppointmentForm.pet_input.choices = [(request.form.get("pet_input"), "")]
 

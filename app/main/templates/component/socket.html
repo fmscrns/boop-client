@@ -13,6 +13,7 @@
                 notifIsEmpty.remove();
             }
 
+            notifUnreadCount.classList.remove("d-none");
             notifUnreadCount.innerHTML = parseInt(notifUnreadCount.innerHTML) + 1;
             
             thisNotif = document.createElement("a");
@@ -57,8 +58,9 @@
             notifMenu.prepend(dividerCont);
             notifMenu.prepend(thisNotif);
             
-            let alertCont = document.querySelector(".alert-frame");
-            let alert = document.createElement("a");
+            let asd = document.querySelector(".alert-frame");
+            let alertCont = asd.querySelector(".container");
+            let alert = document.createElement("div");
 
             var href;
 
@@ -87,10 +89,32 @@
             }
 
             alert.setAttribute("href", href);
-            alert.classList.add("alert", "alert-primary", "alert-dismissible", "fade", "show", "small");
-            alert.innerHTML = notification["content"];
+            alert.classList.add("toast", "alert-dismissible", "mt-2", "p-0");
+            let toastHeader = document.createElement("div");
+            toastHeader.classList.add("toast-header");
+            let senderDetailsCont = document.createElement("div");
+            senderDetailsCont.classList.add("d-flex", "flex-row", "mr-5");
+            let senderPhoto = document.createElement("img");
+            senderPhoto.setAttribute("src", "{{ config.MEDIA_STORAGE }}" + notification["sender_photo"]);
+            senderPhoto.classList.add("toast-photo", "mr-2");
+            senderDetailsCont.append(senderPhoto);
+            let senderName = document.createElement("strong");
+            senderName.classList.add("mr-auto");
+            senderName.innerHTML = notification["sender_name"];
+            senderDetailsCont.append(senderName);
+            toastHeader.append(senderDetailsCont);
+            let timeSentCont = document.createElement("span");
+            timeSentCont.classList.add("ml-5");
+            timeSentCont.innerHTML = "Just now";
+            toastHeader.append(timeSentCont);
+            alert.append(toastHeader);
+            let toastBody = document.createElement("div");
+            toastBody.classList.add("toast-body");
+            toastBody.innerHTML = notification["content"];
+            alert.append(toastBody);
+
             $(alert).fadeTo(5000, 500).slideUp(500, function (e) {
-                $(alert).remove();
+                $(this).remove();
             });
             alertCont.append(alert);
         });

@@ -4,9 +4,10 @@ from flask import current_app, session
 
 class BreedService:
     @staticmethod
-    def get_all(token):
-        return requests.get("{}/breed/".format(
-            current_app.config["API_DOMAIN"]),
+    def get_all(token, preferred_only=False):
+        return requests.get("{}/breed/{}".format(
+            current_app.config["API_DOMAIN"],
+            "?preferred_only=1" if preferred_only is True else ""),
             headers = {
                 "Authorization" : "Bearer {}".format(token)
             }

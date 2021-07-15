@@ -26,7 +26,7 @@
                                 <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
                             </button>
                             <div class="modal" id="editPetModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                <div class="modal-dialog">
+                                <div class="modal-dialog modal-dialog-scrollable">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                         <h5 class="modal-title" id="staticBackdropLabel">Pet Settings</h5>
@@ -34,126 +34,128 @@
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                         </div>
-                                        <form class="modal-body" method="POST" action="{{ url_for('pet.edit', pet_pid=this_pet.public_id) }}" enctype="multipart/form-data">
-                                            <h5 class="mb-3">Update pet</h5>
-                                            {{ editPetForm.hidden_tag() }}
-                                            <div class="form-group">
-                                                {{ editPetForm.photo_input.label }}
-                                                {{ editPetForm.photo_input(class="form-control form-control-sm") }}
-                                            </div>
-                                            <div class="form-group">
-                                                {{ editPetForm.name_input.label }}
-                                                {{ editPetForm.name_input(class="form-control form-control-sm", value=this_pet["name"]) }}
-                                            </div>
-                                            <div class="form-group">
-                                                {% set f = editPetForm.bio_input.process_data(this_pet["bio"]) %}
-                                                {{ editPetForm.bio_input.label }}
-                                                {{ editPetForm.bio_input(class="form-control form-control-sm") }}
-                                            </div>
-                                            <div class="form-group">
-                                                {{ editPetForm.birthday_input.label }}
-                                                {{ editPetForm.birthday_input(class="form-control form-control-sm", value=this_pet["birthday"].strftime('%Y-%m-%d')) }}
-                                            </div>
-                                            <div class="form-group">
-                                                {{ editPetForm.status_input.label }}
-                                                {% for subfield in editPetForm.status_input %}
-                                                <div class="row container-fluid is-invalid">
-                                                    <div class="col-1">
-                                                    {% if this_pet["status"] == 0 and loop.index == 1 %}{{ subfield(checked=True) }}{% elif this_pet["status"] == 1 and loop.index == 2 %}{{ subfield(checked=True) }}{% else %}{{ subfield }}{% endif %}
-                                                    </div>
-                                                    <div class="col-8">
-                                                    {{ subfield.label(class="small") }}
-                                                    </div>
+                                        <div class="modal-body d-flex flex-column">
+                                            <form class="mb-3" method="POST" action="{{ url_for('pet.edit', pet_pid=this_pet.public_id) }}" enctype="multipart/form-data">
+                                                <h5 class="mb-3">Update pet</h5>
+                                                {{ editPetForm.hidden_tag() }}
+                                                <div class="form-group">
+                                                    {{ editPetForm.photo_input.label }}
+                                                    {{ editPetForm.photo_input(class="form-control form-control-sm") }}
                                                 </div>
-                                                {% endfor %}
-                                            </div>
-                                            <div class="form-group">
-                                                {{ editPetForm.sex_input.label }}
-                                                {% for subfield in editPetForm.sex_input %}
-                                                <div class="row container-fluid is-invalid">
-                                                    <div class="col-1">
-                                                    {% if this_pet["sex"] == 0 and loop.index == 1 %}{{ subfield(checked=True) }}{% elif this_pet["sex"] == 1 and loop.index == 2 %}{{ subfield(checked=True) }}{% else %}{{ subfield }}{% endif %}
-                                                    </div>
-                                                    <div class="col-8">
-                                                    {{ subfield.label(class="small") }}
-                                                    </div>
+                                                <div class="form-group">
+                                                    {{ editPetForm.name_input.label }}
+                                                    {{ editPetForm.name_input(class="form-control form-control-sm", value=this_pet["name"]) }}
                                                 </div>
-                                                {% endfor %}
-                                            </div>
-                                            <div class="form-group">
-                                                {{ editPetForm.private_input.label }}
-                                                {% for subfield in editPetForm.private_input %}
-                                                <div class="row container-fluid is-invalid">
-                                                    <div class="col-1">
-                                                    {% if this_pet["is_private"] == True and loop.index == 1 %}{{ subfield(checked=True) }}{% elif this_pet["is_private"] == False and loop.index == 2 %}{{ subfield(checked=True) }}{% else %}{{ subfield }}{% endif %}
-                                                    </div>
-                                                    <div class="col-8">
-                                                    {{ subfield.label(class="small") }}
-                                                    </div>
+                                                <div class="form-group">
+                                                    {% set f = editPetForm.bio_input.process_data(this_pet["bio"]) %}
+                                                    {{ editPetForm.bio_input.label }}
+                                                    {{ editPetForm.bio_input(class="form-control form-control-sm") }}
                                                 </div>
-                                                {% endfor %}
-                                            </div>
-                                            {{ editPetForm.submit_input(class="btn btn-primary float-right btn-block") }}
-                                        </form>
-                                        <form class="border-top modal-body" method="POST" action="{{ url_for('pet.create_owner', pet_pid=this_pet.public_id) }}">
-                                            <h5 class="mb-3">Add new owner</h5>
-                                            {{ createPetOwnerForm.hidden_tag() }}
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div href="/user/" class="autocomplete container-fluid p-0">
-                                                    {{ createPetOwnerForm.name_input(class="form-control form-control-sm", placeholder="Name or username") }}
-                                                    {{ createPetOwnerForm.owner_input(hidden=True) }}
+                                                <div class="form-group">
+                                                    {{ editPetForm.birthday_input.label }}
+                                                    {{ editPetForm.birthday_input(class="form-control form-control-sm", value=this_pet["birthday"].strftime('%Y-%m-%d')) }}
                                                 </div>
-                                                {{ createPetOwnerForm.submit_input(class="btn btn-primary ml-2 btn-sm") }}
-                                            </div>
-                                        </form>
-                                        <div class="container border-top pt-3">
-                                            <h5>Owners</h5>
-                                            {% for owner in this_pet["owner"] %}
-                                                <div class="d-flex justify-content-between p-2">
-                                                    <span>{% if owner.public_id == current_user.public_id %}You{% else %}{{ owner["name"] }}{% endif %}</span>
-                                                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deletePetOwnerModal">
-                                                        Remove
-                                                    </button>
-                                                    <div class="modal" id="deletePetOwnerModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                                        <div class="modal-dialog">
-                                                            <form class="modal-content" method="POST" action="{{ url_for('pet.delete_owner', pet_pid=this_pet.public_id) }}">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="staticBackdropLabel">Remove owner</h5>
-                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                        <span aria-hidden="true">&times;</span>
-                                                                    </button>
-                                                                </div>
-                                                                <div class="border-top modal-body">
-                                                                    {{ deletePetOwnerForm.hidden_tag() }}
-                                                                    {{ deletePetOwnerForm.owner_input(hidden=True, value=owner["public_id"]) }}
-                                                                    {{ deletePetOwnerForm.confirm_name_input(hidden=True, value=this_pet.name) }}
-                                                                    {% if this_pet["owner"]|length == 1 %}
-                                                                        <p>This will also delete the pet profile.</p>
-                                                                        <span class="text-muted small">Confirm by typing the pet's name</span>
-                                                                        {{ deletePetOwnerForm.name_input(class="form-control form-control-sm", placeholder=this_pet.name, minlength=2) }}
-                                                                    {% else %}
-                                                                        Are you sure you want to remove {% if owner.public_id == current_user.public_id %}yourself as{% else %}this{% endif %} owner of this pet?
-                                                                        {{ deletePetOwnerForm.name_input(hidden=True, value=this_pet.name) }}
-                                                                    {% endif %}
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                                    {{ deletePetOwnerForm.submit_input(class="btn btn-danger") }}
-                                                                </div>
-                                                            </form>
+                                                <div class="form-group">
+                                                    {{ editPetForm.status_input.label }}
+                                                    {% for subfield in editPetForm.status_input %}
+                                                    <div class="row container-fluid is-invalid">
+                                                        <div class="col-1">
+                                                        {% if this_pet["status"] == 0 and loop.index == 1 %}{{ subfield(checked=True) }}{% elif this_pet["status"] == 1 and loop.index == 2 %}{{ subfield(checked=True) }}{% else %}{{ subfield }}{% endif %}
+                                                        </div>
+                                                        <div class="col-8">
+                                                        {{ subfield.label(class="small") }}
                                                         </div>
                                                     </div>
+                                                    {% endfor %}
                                                 </div>
-                                            {% endfor %}
+                                                <div class="form-group">
+                                                    {{ editPetForm.sex_input.label }}
+                                                    {% for subfield in editPetForm.sex_input %}
+                                                    <div class="row container-fluid is-invalid">
+                                                        <div class="col-1">
+                                                        {% if this_pet["sex"] == 0 and loop.index == 1 %}{{ subfield(checked=True) }}{% elif this_pet["sex"] == 1 and loop.index == 2 %}{{ subfield(checked=True) }}{% else %}{{ subfield }}{% endif %}
+                                                        </div>
+                                                        <div class="col-8">
+                                                        {{ subfield.label(class="small") }}
+                                                        </div>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="form-group">
+                                                    {{ editPetForm.private_input.label }}
+                                                    {% for subfield in editPetForm.private_input %}
+                                                    <div class="row container-fluid is-invalid">
+                                                        <div class="col-1">
+                                                        {% if this_pet["is_private"] == True and loop.index == 1 %}{{ subfield(checked=True) }}{% elif this_pet["is_private"] == False and loop.index == 2 %}{{ subfield(checked=True) }}{% else %}{{ subfield }}{% endif %}
+                                                        </div>
+                                                        <div class="col-8">
+                                                        {{ subfield.label(class="small") }}
+                                                        </div>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                                {{ editPetForm.submit_input(class="btn btn-primary float-right btn-block") }}
+                                            </form>
+                                            <form class="my-3" method="POST" action="{{ url_for('pet.create_owner', pet_pid=this_pet.public_id) }}">
+                                                <h5 class="mb-3">Add new owner</h5>
+                                                {{ createPetOwnerForm.hidden_tag() }}
+                                                <div class="position-relative">
+                                                    <div href="{{ url_for('user.search') }}" media-storage="{{ config.MEDIA_STORAGE }}" search-type="filler" class="autocomplete position-absolute container-fluid p-0 w-75 pr-2">
+                                                        {{ createPetOwnerForm.name_input(class="form-control form-control-sm", placeholder="Search user by name or username") }}
+                                                        {{ createPetOwnerForm.owner_input(hidden=True) }}
+                                                    </div>
+                                                    {{ createPetOwnerForm.submit_input(class="position-relative btn btn-primary ml-2 btn-sm w-25 float-right") }}
+                                                </div>
+                                            </form>
+                                            <div class="my-3">
+                                                <h5 class="mb-3">Owners</h5>
+                                                {% for owner in this_pet["owner"] %}
+                                                    <div class="d-flex justify-content-between {%if loop.index > 1%}mt-3{%endif%}">
+                                                        <span class="w-75 pr-2">{% if owner.public_id == current_user.public_id %}You{% else %}{{ owner["name"] }}{% endif %}</span>
+                                                        <button type="button" class="btn btn-outline-danger btn-sm w-25" data-toggle="modal" data-target="#deletePetOwnerModal">
+                                                            Remove
+                                                        </button>
+                                                        <div class="modal" id="deletePetOwnerModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <form class="modal-content" method="POST" action="{{ url_for('pet.delete_owner', pet_pid=this_pet.public_id) }}">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="staticBackdropLabel">Remove owner</h5>
+                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="border-top modal-body">
+                                                                        {{ deletePetOwnerForm.hidden_tag() }}
+                                                                        {{ deletePetOwnerForm.owner_input(hidden=True, value=owner["public_id"]) }}
+                                                                        {{ deletePetOwnerForm.confirm_name_input(hidden=True, value=this_pet.name) }}
+                                                                        {% if this_pet["owner"]|length == 1 %}
+                                                                            <p>This will also delete the pet profile.</p>
+                                                                            <span class="text-muted small">Confirm by typing the pet's name</span>
+                                                                            {{ deletePetOwnerForm.name_input(class="form-control form-control-sm", placeholder=this_pet.name, minlength=2) }}
+                                                                        {% else %}
+                                                                            Are you sure you want to remove {% if owner.public_id == current_user.public_id %}yourself as{% else %}this{% endif %} owner of this pet?
+                                                                            {{ deletePetOwnerForm.name_input(hidden=True, value=this_pet.name) }}
+                                                                        {% endif %}
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                        {{ deletePetOwnerForm.submit_input(class="btn btn-danger") }}
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                            <form class="my-3" method="POST" action="{{ url_for('pet.delete', pet_pid=this_pet.public_id) }}">
+                                                <h5 class="mb-3">Delete pet</h5>
+                                                {{ deletePetForm.hidden_tag() }}
+                                                <span class="text-muted small">Confirm by typing the pet's name</span>
+                                                {{ deletePetForm.confirm_name_input(hidden=True, value=this_pet.name) }}
+                                                {{ deletePetForm.name_input(class="form-control form-control-sm", placeholder=this_pet.name, minlength=2) }}
+                                                {{ deletePetForm.submit_input(class="btn btn-danger float-right btn-block mt-3") }}
+                                            </form>
                                         </div>
-                                        <form class="border-top modal-body" method="POST" action="{{ url_for('pet.delete', pet_pid=this_pet.public_id) }}">
-                                            <h5 class="mb-3">Delete pet</h5>
-                                            {{ deletePetForm.hidden_tag() }}
-                                            <span class="text-muted small">Confirm by typing the pet's name</span>
-                                            {{ deletePetForm.confirm_name_input(hidden=True, value=this_pet.name) }}
-                                            {{ deletePetForm.name_input(class="form-control form-control-sm", placeholder=this_pet.name, minlength=2) }}
-                                            {{ deletePetForm.submit_input(class="btn btn-danger float-right btn-block mt-3") }}
-                                        </form>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                         </div>

@@ -4,6 +4,15 @@ from PIL import Image
 from app.main import myCloudinary
 from io import BytesIO
 
+def concat_url_param(param_list):
+    url = "?"
+    new_list = [x for x in param_list if x is not None]
+    for count, param in enumerate(new_list):
+        url += param[0] + "=" + param[1]
+        if count+1 < len(new_list):
+            url += "&"
+    return url
+
 def save_image(form_image, _type):
     if form_image:
         filename = str(uuid.uuid4())

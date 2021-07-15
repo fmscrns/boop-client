@@ -1,6 +1,6 @@
-import requests, json
+import requests
 from flask import current_app, session
-from . import save_image, save_base64image
+from . import concat_url_param, save_base64image
 
 class PostService:
     @staticmethod
@@ -47,18 +47,30 @@ class PostService:
         return requests.get("{}/post/subject/{}{}".format(
             current_app.config["API_DOMAIN"],
             pet_pid,
-            "?{}".format("w_media_only={}{}".format(w_media_only, "&pagination_no={}".format(pagination_no) if pagination_no else "") if w_media_only else "pagination_no={}".format(pagination_no) if pagination_no else "")),
+            concat_url_param(
+                [
+                    ("w_media_only", w_media_only) if w_media_only else None,
+                    ("pagination_no", pagination_no) if pagination_no else None
+                ]
+            )
+        ),
             headers = {
                 "Authorization" : "Bearer {}".format(token)
             }
         )
-    
+        
     @staticmethod
     def get_all_by_business(token, business_pid, w_media_only, pagination_no):
         return requests.get("{}/post/pinboard/{}{}".format(
             current_app.config["API_DOMAIN"],
             business_pid,
-            "?{}".format("w_media_only={}{}".format(w_media_only, "&pagination_no={}".format(pagination_no) if pagination_no else "") if w_media_only else "pagination_no={}".format(pagination_no) if pagination_no else "")),
+            concat_url_param(
+                [
+                    ("w_media_only", w_media_only) if w_media_only else None,
+                    ("pagination_no", pagination_no) if pagination_no else None
+                ]
+            )
+        ),
             headers = {
                 "Authorization" : "Bearer {}".format(token)
             }
@@ -69,7 +81,13 @@ class PostService:
         return requests.get("{}/post/confiner/{}{}".format(
             current_app.config["API_DOMAIN"],
             circle_pid,
-            "?{}".format("w_media_only={}{}".format(w_media_only, "&pagination_no={}".format(pagination_no) if pagination_no else "") if w_media_only else "pagination_no={}".format(pagination_no) if pagination_no else "")),
+            concat_url_param(
+                [
+                    ("w_media_only", w_media_only) if w_media_only else None,
+                    ("pagination_no", pagination_no) if pagination_no else None
+                ]
+            )    
+        ),
             headers = {
                 "Authorization" : "Bearer {}".format(token)
             }

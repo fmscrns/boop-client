@@ -1,6 +1,6 @@
 import requests, json
 from flask import current_app, session
-from . import save_image
+from . import concat_url_param, save_image
 
 class CircleService:
     @staticmethod
@@ -68,6 +68,16 @@ class CircleService:
         )
 
     @staticmethod
+    def get_by_preference(pagination_no):
+        return requests.get("{}/circle/preference{}".format(
+            current_app.config["API_DOMAIN"],
+            "?pagination_no={}".format(pagination_no) if pagination_no else ""),
+            headers = {
+                "Authorization" : "Bearer {}".format(session["booped_in"])
+            }
+        )
+
+    @staticmethod
     def edit(pid, token, data_form, data_file):
         return requests.patch("{}/circle/{}".format(
             current_app.config["API_DOMAIN"],
@@ -123,10 +133,17 @@ class CircleService:
         )
     
     @staticmethod
-    def get_all_members(token, pid, type, search_value):
-        return requests.get("{}/circle/{}/member/?type={}&{}".format(
+    def get_all_members(token, pid, _type=None, search_value=None):
+        return requests.get("{}/circle/{}/member/{}".format(
             current_app.config["API_DOMAIN"],
-            pid, type, "search={}".format(search_value) if search_value else ""),
+            pid,
+            concat_url_param(
+                [
+                    ("type", _type) if _type else None,
+                    ("search", search_value) if search_value else None
+                ]
+            )
+        ),
             headers = {
                 "Authorization" : "Bearer {}".format(token)
             }

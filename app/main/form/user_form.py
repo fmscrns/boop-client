@@ -25,12 +25,28 @@ class CreateUserTwoForm(FlaskForm):
 
     submit_input = SubmitField("Sign up")
 
-class EditUserForm(FlaskForm):
-    photo_input = FileField("Photo", validators=[FileAllowed(["jpg", "jpeg", "png"])])
+class EditProfileForm(FlaskForm):
     name_input = StringField("Name", validators=[DataRequired(), Length(min=2)])
-    username_input = StringField("Username", validators=[DataRequired()])
+    submit_input = SubmitField("Update profile")
+
+class EditPhotoForm(FlaskForm):
+    photo_input = FileField("Photo", validators=[FileAllowed(["jpg", "jpeg", "png"])])
+    submit_input = SubmitField("Update profile picture")
+
+class EditAccountEmailForm(FlaskForm):
     email_input = StringField("Email", validators=[DataRequired(), Email("Invalid email.")])
+
+    submit_input = SubmitField("Update email")
+
+class EditAccountUsernameForm(FlaskForm):
+    username_input = StringField("Username", validators=[DataRequired()])
+
+    submit_input = SubmitField("Update username")
+
+class EditAccountPasswordForm(FlaskForm):
     password_input = PasswordField("Password", validators=[DataRequired(), Length(min=6)])
     confirm_password_input = PasswordField("Confirm password", validators=[DataRequired(), Length(min=6), EqualTo("password_input")])
 
-    submit_input = SubmitField("Update profile")
+    submit_input = SubmitField("Update password")
+
+

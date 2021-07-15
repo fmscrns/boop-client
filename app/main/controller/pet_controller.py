@@ -1,3 +1,4 @@
+from flask.json import jsonify
 from app.main.form.post_form import DeletePostForm
 import json
 from flask import render_template, request, session, flash, redirect, url_for, abort
@@ -8,8 +9,8 @@ from ..service.pet_service import PetService
 from ..service.pet_service import PetService
 from dateutil import parser
 
-@pet_bp.route("/<pet_pid>", methods=["GET", "POST"])
 @pet_bp.route("/<pet_pid>/posts", methods=["GET", "POST"])
+@pet_bp.route("/<pet_pid>", methods=["GET", "POST"])
 @session_required
 def posts(current_user, pet_pid):
     get_resp = PetService.get_by_pid(pet_pid)
@@ -211,7 +212,6 @@ def delete(current_user, pet_pid):
 
         if delete_pet.ok:
             flash(json.loads(delete_pet.text)["message"], "success")
-            print("ok")
             return redirect(url_for("user.pets", username=current_user["username"]))
         
         flash(json.loads(delete_pet.text), "danger")
@@ -226,24 +226,26 @@ def delete(current_user, pet_pid):
 @pet_bp.route("/<pet_pid>/follow", methods=["POST"])
 @session_required
 def follow(current_user, pet_pid):
-    followPetForm = FollowPetForm()
-    if followPetForm.validate_on_submit():
-        follow_pet = PetService.follow(pet_pid)
+    is_async = request.args.get("is_async")
+    if is_async is None:
+        followPetForm = FollowPetForm()
+        if followPetForm.validate_on_submit():
+            follow_pet = PetService.follow(pet_pid)
 
-        if follow_pet.ok:
-            resp = json.loads(follow_pet.text)
-            flash(resp["message"], "success")
+            if follow_pet.ok:
+                resp = json.loads(follow_pet.text)
+                flash(resp["message"], "success")
+                return redirect(url_for("pet.posts", pet_pid=pet_pid))
+            
+            flash(json.loads(follow_pet.text)["message"], "danger")
 
-            return redirect(url_for("pet.posts", pet_pid=pet_pid))
-        
-        flash(json.loads(follow_pet.text)["message"], "danger")
+        if followPetForm.errors:
+            for key in followPetForm.errors:
+                for message in followPetForm.errors[key]:
+                    flash("{}: {}".format(key.split("_")[0], message), "danger")
+        return redirect(url_for("pet.posts", pet_pid=pet_pid))
 
-    if followPetForm.errors:
-        for key in followPetForm.errors:
-            for message in followPetForm.errors[key]:
-                flash("{}: {}".format(key.split("_")[0], message), "danger")
-
-    return redirect(url_for("pet.posts", pet_pid=pet_pid))
+    return jsonify(json.loads(PetService.follow(pet_pid).text))
 
 @pet_bp.route("/<pet_pid>/unfollow", methods=["POST"])
 @session_required
@@ -288,3 +290,31 @@ def accept(current_user, pet_pid):
                 flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("pet.pending_followers", pet_pid=pet_pid))
+
+@pet_bp.route("/preference", methods=["GET"])
+@session_required
+def get_all_by_preference(current_user):
+    list = json.loads(
+        PetService.get_by_preference(request.args.get("pagination_no")).text
+    )
+    if list.get("data"):
+        return jsonify(list["data"])
+    else:
+        return jsonify([])
+
+@pet_bp.route("/", methods=["GET"])
+@session_required
+def search(current_user):
+    list = json.loads(
+        PetService.search(
+            request.args.get("search"),
+            request.args.get("group_id"),
+            request.args.get("subgroup_id"),
+            request.args.get("status"),
+            request.args.get("pagination_no")
+        ).text
+    )
+    if list.get("data"):
+        return jsonify(list["data"])
+    else:
+        abort(404)

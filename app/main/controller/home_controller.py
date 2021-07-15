@@ -1,3 +1,6 @@
+from app.main.form.pet_form import FollowPetForm
+from app.main.service.circle_service import CircleService
+from app.main.service.business_service import BusinessService
 from flask import render_template
 from ... import home_bp
 from ..util.decorator import session_required
@@ -16,5 +19,9 @@ def feed(current_user):
         page_title = "Feed",
         current_user = current_user,
         createPostForm = createPostForm,
-        deletePostForm = DeletePostForm(prefix="dptf")
+        deletePostForm = DeletePostForm(prefix="dptf"),
+        followPetForm = FollowPetForm()
+        # pet_suggestion_list = json.loads(PetService.get_by_preference(1).text)["data"],
+        # business_sugestion_list = json.loads(BusinessService.get_by_preference(1).text)["data"],
+        # circle_sugestion_list = json.loads(CircleService.get_by_preference(1).text)["data"]
     )

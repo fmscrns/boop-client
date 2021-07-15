@@ -1,3 +1,15 @@
+body {
+    overflow-y: scroll;
+}
+
+[hidden]{
+    display: none !important;
+}
+
+.stnv-c > .nav-link:hover {
+    background-color: white;
+}
+
 .alert-frame {
     z-index: 2;
     position: fixed;
@@ -174,6 +186,14 @@
     background-color: yellow !important;
 }
 
+.orange {
+    background-color: orange !important;
+}
+
+.teal {
+    background-color: teal !important;
+}
+
 .cbf-ot-t {
     pointer-events: none;
     display: none;
@@ -190,6 +210,7 @@
     max-height:170px;
     overflow: auto;
 }
+
 .autocomplete-items > div {
     padding: 10px;
     cursor: pointer;
@@ -221,6 +242,7 @@
     display: block;
     border: 1px solid #d3d3d3;
 }
+
 .pp-opp {
     border-radius:50%;
     width:30px;
@@ -599,4 +621,39 @@
     width: 45px;
     height: 45px;
     object-fit: cover;
+}
+
+.home-sidebar-profPic {
+    border-radius:50%;
+    width:40px;
+    height:40px;
+    object-fit:cover;
+    background:white;
+    display: block;
+    border: 1px solid #d3d3d3;
+}
+
+.toast-photo {
+    border-radius:50%;
+    width:20px;
+    height:20px;
+    object-fit:cover;
+    background:white;
+    display: block;
+    border: 1px solid #d3d3d3;
+}
+
+.ss-cr {
+    width: 300px;
+    margin-left: 60px;
+}
+
+.uccp-cont {
+    border-radius:50%;
+    width:150px;
+    height:150px;
+    object-fit:cover;
+    background:white;
+    display: block;
+    border: 1px solid #d3d3d3;
 }

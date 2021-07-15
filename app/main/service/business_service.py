@@ -63,6 +63,16 @@ class BusinessService:
         )
 
     @staticmethod
+    def get_by_preference(pagination_no):
+        return requests.get("{}/business/preference{}".format(
+            current_app.config["API_DOMAIN"],
+            "?pagination_no={}".format(pagination_no) if pagination_no else ""),
+            headers = {
+                "Authorization" : "Bearer {}".format(session["booped_in"])
+            }
+        )
+
+    @staticmethod
     def edit(pid, token, data_form, data_file):
         return requests.patch("{}/business/{}".format(
             current_app.config["API_DOMAIN"],

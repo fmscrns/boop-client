@@ -5,7 +5,7 @@
 {% block content %}
     {{ loaded_navbar(current_user, homeNavbarActive="active") }}
     {{ post_remover(deletePostForm) }}
-    <div class="container-fluid d-flex justify-content-center pt-5 my-3">
+    <div class="container-fluid d-flex flex-row justify-content-center pt-5 my-3">
         <div class="c-center d-flex flex-column">           
             <div class="fd-cont row row-cols-1 row-cols-md-1 p-0">
                 <div class="col p-0">
@@ -24,130 +24,69 @@
                 </div>
             </div>
         </div>
-        <div class="list-group" style="margin-left:50px; margin-top:-7px; width: 18rem;">
-            <div class="list-group" style="margin-left:50px; margin-top:15px">
-                <div class="row">
-                    <div class="d-flex flex-row justify-content-between font-weight-bold hci-bb-l" >
-                        Businesses to follow
-                    </div>
-                    <div class="d-flex flex-row justify-content-between">
-                        <a class="d-flex flex-row" style="margin-top:3px" href="#" >
-                            <img class="home-content-profPic" style="margin-top:3px" src="{{ config.MEDIA_STORAGE + current_user['photo'] }}" alt="..." class="rounded d-block w-25 border">
-                            <div class="d-flex flex-column ml-2 container">
-                                <span class="font-weight-bold hci-bb-l">{{ current_user.name }}&nbsp;&nbsp;<span class="badge bg-primary text-light"></span></span> <span style="font-size:15px;">type:</span>
-                            </div>
-                        </a>
-                        <div class="float-right" style="margin-top:12px">
-                            <button type="button" class="btn btn-outline-success">
-                                Follow
-                            </button>
+        <div class="ss-cr d-flex flex-column">
+            <div class="ptf-c list-group pt-3">
+                <span class="list-group-item font-weight-bold p-3">
+                    Pets to follow
+                </span>
+                <div hidden=True class="ptf-c-bi list-group-item d-flex flex-row justify-content-between p-3">
+                    <div class="d-flex flex-row align-items-center">
+                        <img class="home-sidebar-profPic" src="{{ config.MEDIA_STORAGE }}" alt="..." class="rounded d-block w-25 border">
+                        <div class="d-flex flex-column ml-2">
+                            <span class="font-weight-bold"></span>
+                            <span class="small text-muted"><span class="ptf-c-bi-s"></span> &middot; <span class="ptf-c-bi-b"></span></span>
+                            <span class="small text-muted ptf-c-bi-fc mt-1"></span>
                         </div>
                     </div>
-                    <div class="w-100"></div>
-                    <a class="d-flex flex-row" style="margin-top:3px" href="#" >
-                        <img class="home-content-profPic" style="margin-top:3px" src="{{ config.MEDIA_STORAGE + current_user['photo'] }}" alt="..." class="rounded d-block w-25 border">
-                        <div class="d-flex flex-column ml-2 container">
-                            <span class="font-weight-bold hci-bb-l">{{ current_user.name }}&nbsp;&nbsp;<span class="badge bg-primary text-light"></span></span> <span style="font-size:15px;">type:</span>
-                        </div>
-                    </a>
-                    <div class="float-right" style="margin-top:12px">
-                        <button type="button" class="btn btn-outline-success">
-                            Follow
-                        </button>
-                    </div>
-                    <div class="w-100"></div>
-                    <a class="d-flex flex-row" style="margin-top:3px" href="#" >
-                        <img class="home-content-profPic" style="margin-top:3px" src="{{ config.MEDIA_STORAGE + current_user['photo'] }}" alt="..." class="rounded d-block w-25 border">
-                        <div class="d-flex flex-column ml-2 container">
-                            <span class="font-weight-bold hci-bb-l">{{ current_user.name }}&nbsp;&nbsp;<span class="badge bg-primary text-light"></span></span> <span style="font-size:15px;">type:</span>
-                        </div>
-                    </a>
-                    <div class="float-right" style="margin-top:12px">
-                        <button type="button" class="btn btn-outline-success">
-                            Follow
-                        </button>
-                    </div>
-                    <div class="d-flex flex-row justify-content-between font-weight-bold hci-bb-l" style="margin-top:6px;">
-                        Circles to follow
-                    </div>
-                    <div class="d-flex flex-row justify-content-between">
-                        <a class="d-flex flex-row" style="margin-top:3px" href="#" >
-                            <img class="home-content-profPic" style="margin-top:3px" src="{{ config.MEDIA_STORAGE + current_user['photo'] }}" alt="..." class="rounded d-block w-25 border">
-                            <div class="d-flex flex-column ml-2 container">
-                                <span class="font-weight-bold hci-bb-l">{{ current_user.name }}&nbsp;&nbsp;<span class="badge bg-primary text-light"></span></span> <span style="font-size:15px;">type:</span>
-                            </div>
-                        </a>
-                        <div class="float-right" style="margin-top:12px">
-                            <button type="button" class="btn btn-outline-success">
-                                Follow
-                            </button>
-                        </div>
-                    </div>
-                    <div class="w-100"></div>
-                    <a class="d-flex flex-row" style="margin-top:3px" href="#" >
-                        <img class="home-content-profPic" style="margin-top:3px" src="{{ config.MEDIA_STORAGE + current_user['photo'] }}" alt="..." class="rounded d-block w-25 border">
-                        <div class="d-flex flex-column ml-2 container">
-                            <span class="font-weight-bold hci-bb-l">{{ current_user.name }}&nbsp;&nbsp;<span class="badge bg-primary text-light"></span></span> <span style="font-size:15px;">type:</span>
-                        </div>
-                    </a>
-                    <div class="float-right" style="margin-top:12px">
-                        <button type="button" class="btn btn-outline-success">
-                            Follow
-                        </button>
-                    </div>
-                    <div class="w-100"></div>
-                    <a class="d-flex flex-row" style="margin-top:3px" href="#" >
-                        <img class="home-content-profPic" style="margin-top:3px" src="{{ config.MEDIA_STORAGE + current_user['photo'] }}" alt="..." class="rounded d-block w-25 border">
-                        <div class="d-flex flex-column ml-2 container">
-                            <span class="font-weight-bold hci-bb-l">{{ current_user.name }}&nbsp;&nbsp;<span class="badge bg-primary text-light"></span></span> <span style="font-size:15px;">type:</span>
-                        </div>
-                    </a>
-                    <div class="float-right" style="margin-top:12px">
-                        <button type="button" class="btn btn-outline-success">
-                            Follow
-                        </button>
-                    </div>
-                    <div class="d-flex flex-row justify-content-between font-weight-bold hci-bb-l" style="margin-top:6px;">
-                        Pets to follow
-                    </div>
-                    <div class="d-flex flex-row justify-content-between">
-                        <a class="d-flex flex-row" style="margin-top:3px" href="#" >
-                            <img class="home-content-profPic" style="margin-top:3px" src="{{ config.MEDIA_STORAGE + current_user['photo'] }}" alt="..." class="rounded d-block w-25 border">
-                            <div class="d-flex flex-column ml-2 container">
-                                <span class="font-weight-bold hci-bb-l">{{ current_user.name }}&nbsp;&nbsp;<span class="badge bg-primary text-light"></span></span> <span style="font-size:15px;">specie:</span><span style="font-size:15px;">breed:</span>
-                            </div>
-                        </a>
-                        <div class="float-right" style="margin-top:12px">
-                            <button type="button" class="btn btn-outline-success">
-                                Follow
-                            </button>
-                        </div>
-                    </div>
-                    <div class="w-100"></div>
-                    <a class="d-flex flex-row" style="margin-top:3px" href="#" >
-                        <img class="home-content-profPic" style="margin-top:3px" src="{{ config.MEDIA_STORAGE + current_user['photo'] }}" alt="..." class="rounded d-block w-25 border">
-                        <div class="d-flex flex-column ml-2 container">
-                            <span class="font-weight-bold hci-bb-l">{{ current_user.name }}&nbsp;&nbsp;<span class="badge bg-primary text-light"></span></span> <span style="font-size:15px;">specie:</span><span style="font-size:15px;">breed:</span>
-                        </div>
-                    </a>
-                    <div class="float-right" style="margin-top:12px">
-                        <button type="button" class="btn btn-outline-success">
-                            Follow
-                        </button>
-                    </div>
-                    <div class="w-100"></div>
-                    <a class="d-flex flex-row" style="margin-top:3px" href="#" >
-                        <img class="home-content-profPic" style="margin-top:3px" src="{{ config.MEDIA_STORAGE + current_user['photo'] }}" alt="..." class="rounded d-block w-25 border">
-                        <div class="d-flex flex-column ml-2 container">
-                            <span class="font-weight-bold hci-bb-l">{{ current_user.name }}&nbsp;&nbsp;<span class="badge bg-primary text-light"></span></span> <span style="font-size:15px;">specie:</span><span style="font-size:15px;">breed:</span>
-                        </div>
-                    </a>
-                    <div class="float-right" style="margin-top:12px">
-                        <button type="button" class="btn btn-outline-success">
+                    <div class="d-flex align-items-center ml-5">
+                        <button type="button" class="btn btn-outline-success btn-sm">
                             Follow
                         </button>
                     </div>
                 </div>
+                <div class="ptf-c-ld spinner-grow text-primary mx-auto mt-2" style="width:20px;height:20px;" role="status"></div>
+            </div>
+            <div class="btf-c list-group pt-3">
+                <span class="list-group-item font-weight-bold p-3">
+                    Businesses to follow
+                </span>
+                <div hidden=True class="btf-c-bi list-group-item d-flex flex-row justify-content-between p-3">
+                    <div class="d-flex flex-row align-items-center">
+                        <img class="home-sidebar-profPic" src="{{ config.MEDIA_STORAGE }}" alt="..." class="rounded d-block w-25 border">
+                        <div class="d-flex flex-column ml-2">
+                            <span class="font-weight-bold"></span>
+                            <span class="small text-muted btf-c-bi-t"></span>
+                            <span class="small text-muted btf-c-bi-fc mt-1"></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center ml-5">
+                        <button type="button" class="btn btn-outline-success btn-sm">
+                            Follow
+                        </button>
+                    </div>
+                </div>
+                <div class="btf-c-ld spinner-grow text-primary mx-auto mt-2" style="width:20px;height:20px;" role="status"></div>
+            </div>
+            <div class="ctf-c list-group pt-3">
+                <span class="list-group-item font-weight-bold p-3">
+                    Circles to join
+                </span>
+                <div hidden=True class="ctf-c-bi list-group-item d-flex flex-row justify-content-between p-3">
+                    <div class="d-flex flex-row align-items-center">
+                        <img class="home-sidebar-profPic" src="{{ config.MEDIA_STORAGE }}" alt="..." class="rounded d-block w-25 border">
+                        <div class="d-flex flex-column ml-2">
+                            <span class="font-weight-bold"></span>
+                            <span class="small text-muted ctf-c-bi-t"></span>
+                            <span class="small text-muted ctf-c-bi-mc mt-1"></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center ml-5">
+                        <button type="button" class="btn btn-outline-success btn-sm">
+                            Join
+                        </button>
+                    </div>
+                </div>
+                <div class="ctf-c-ld spinner-grow text-primary mx-auto mt-2" style="width:20px;height:20px;" role="status"></div>
             </div>
         </div>
     </div>

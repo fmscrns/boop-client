@@ -1,6 +1,6 @@
 import requests, json
 from flask import current_app, session
-from . import save_image
+from . import concat_url_param, save_image
 
 class PetService:
     @staticmethod
@@ -63,6 +63,16 @@ class PetService:
     def get_by_pid(pid):
         return requests.get("{}/pet/{}".format(
             current_app.config["API_DOMAIN"], pid),
+            headers = {
+                "Authorization" : "Bearer {}".format(session["booped_in"])
+            }
+        )
+
+    @staticmethod
+    def get_by_preference(pagination_no):
+        return requests.get("{}/pet/preference{}".format(
+            current_app.config["API_DOMAIN"],
+            "?pagination_no={}".format(pagination_no) if pagination_no else ""),
             headers = {
                 "Authorization" : "Bearer {}".format(session["booped_in"])
             }
@@ -157,6 +167,23 @@ class PetService:
             current_app.config["API_DOMAIN"],
             pid,
             data.get("follower_input")),
+            headers = {
+                "Authorization" : "Bearer {}".format(session["booped_in"])
+            }
+        )
+
+    @staticmethod
+    def search(value, group_id, subgroup_id, status, pagination_no):
+        return requests.get("{}/pet/{}".format(
+            current_app.config["API_DOMAIN"],
+            concat_url_param([
+                ("search", value) if value else None,
+                ("group_id", group_id) if group_id else None,
+                ("subgroup_id", subgroup_id) if subgroup_id else None,
+                ("status", status) if status else None,
+                ("pagination_no", pagination_no) if pagination_no else None,
+            ])
+        ),
             headers = {
                 "Authorization" : "Bearer {}".format(session["booped_in"])
             }

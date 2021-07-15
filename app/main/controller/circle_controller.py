@@ -234,24 +234,28 @@ def delete(current_user, circle_pid):
 @circle_bp.route("/<circle_pid>/join", methods=["POST"])
 @session_required
 def join(current_user, circle_pid):
-    joinCircleForm = JoinCircleForm()
-    if joinCircleForm.validate_on_submit():
-        join_circle = CircleService.join(circle_pid)
+    is_async = request.args.get("is_async")
+    if is_async is None:
+        joinCircleForm = JoinCircleForm()
+        if joinCircleForm.validate_on_submit():
+            join_circle = CircleService.join(circle_pid)
 
-        if join_circle.ok:
-            resp = json.loads(join_circle.text)
-            flash(resp["message"], "success")
+            if join_circle.ok:
+                resp = json.loads(join_circle.text)
+                flash(resp["message"], "success")
 
-            return redirect(url_for("circle.posts", circle_pid=circle_pid))
-        
-        flash(json.loads(join_circle.text)["message"], "danger")
+                return redirect(url_for("circle.posts", circle_pid=circle_pid))
+            
+            flash(json.loads(join_circle.text)["message"], "danger")
 
-    if joinCircleForm.errors:
-        for key in joinCircleForm.errors:
-            for message in joinCircleForm.errors[key]:
-                flash("{}: {}".format(key.split("_")[0], message), "danger")
+        if joinCircleForm.errors:
+            for key in joinCircleForm.errors:
+                for message in joinCircleForm.errors[key]:
+                    flash("{}: {}".format(key.split("_")[0], message), "danger")
 
-    return redirect(url_for("circle.posts", circle_pid=circle_pid))
+        return redirect(url_for("circle.posts", circle_pid=circle_pid))
+
+    return jsonify(json.loads(CircleService.join(circle_pid).text))
 
 @circle_bp.route("/<circle_pid>/leave", methods=["POST"])
 @session_required
@@ -296,3 +300,14 @@ def accept(current_user, circle_pid):
                 flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("circle.pending_members", circle_pid=circle_pid))
+
+@circle_bp.route("/preference", methods=["GET"])
+@session_required
+def get_all_by_preference(current_user):
+    list = json.loads(
+        CircleService.get_by_preference(request.args.get("pagination_no")).text
+    )
+    if list.get("data"):
+        return jsonify(list["data"])
+    else:
+        return jsonify([])

@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+{% from "component/navbar.html" import loaded_navbar, settings_navbar %}
+{% from "component/post.html" import post_creator, post_remover, post_bi %}
+
+{% block content %}
+    {{ loaded_navbar(current_user) }}
+    <div class="container-fluid px-0 position-relative d-flex justify-content-between my-5">
+        {{ settings_navbar(a=emailActive, b=usernameActive, c=passwordActive, d=petPrefActive, e=businessPrefActive, f=circlePrefActive) }}
+        <div class="position-relative h-100" style="width: 500px;">
+        </div>
+        <div class="container float-right w-100 p-4 mt-3">
+            <div class="container-fluid">
+                <h3 class="mb-4 pb-2 border-bottom">{{ settings_title }}</h3>
+                {% if editAccountEmailForm %}
+                    <form class="w-50 mb-4" method="POST" action="{{ url_for('user.edit_account_email', user_pid=current_user['public_id']) }}">
+                        {{ editAccountEmailForm.hidden_tag() }}
+                        <div class="form-group">
+                            {{ editAccountEmailForm.email_input.label }}
+                            {{ editAccountEmailForm.email_input(class="form-control form-control-sm") }}
+                        </div>
+                        {{ editAccountEmailForm.submit_input(class="btn btn-primary btn-sm") }}
+                    </form>
+                {% elif editAccountUsernameForm %}
+
+                    <form class="w-50 mb-4" method="POST" action="{{ url_for('user.edit_account_username', user_pid=current_user['public_id']) }}">
+                        {{ editAccountUsernameForm.hidden_tag() }}
+                        <div class="form-group">
+                            {{ editAccountUsernameForm.username_input.label }}
+                            {{ editAccountUsernameForm.username_input(class="form-control form-control-sm") }}
+                        </div>
+                        {{ editAccountUsernameForm.submit_input(class="btn btn-primary btn-sm") }}
+                    </form>
+                {% elif editAccountPasswordForm %}
+                    <form class="w-50 mb-4" method="POST" action="{{ url_for('user.edit_account_password', user_pid=current_user['public_id']) }}">
+                        {{ editAccountPasswordForm.hidden_tag() }}
+                        <div class="form-group">
+                            {{ editAccountPasswordForm.password_input.label }}
+                            {{ editAccountPasswordForm.password_input(class="form-control form-control-sm") }}
+                        </div>
+                        <div class="form-group">
+                            {{ editAccountPasswordForm.confirm_password_input.label }}
+                            {{ editAccountPasswordForm.confirm_password_input(class="form-control form-control-sm") }}
+                        </div>
+                        {{ editAccountPasswordForm.submit_input(class="btn btn-primary btn-sm") }}
+                    </form>
+                {% elif createPetPreferenceForm %}
+                    <form class="cpprf-c d-flex flex-column mb-4" method="POST" action="{{ url_for('preference.create_pet') }}">
+                        {{ createPetPreferenceForm.hidden_tag() }}
+                        {{ createPetPreferenceForm.specie_group_input(hidden=True, class="form-control form-control-sm") }}
+                        <span class="h5 font-weight-normal">Preferred pet groups</span>
+                        <div class="cppf-sbc form-group mt-3">
+                            <button hidden=True type="button" class="cppf-bi-s cppf-bi-sb btn mr-1 mt-1 btn-outline-secondary btn-sm"></button>
+                        </div>
+                        {{ createPetPreferenceForm.breed_subgroup_input(hidden=True, class="form-control form-control-sm") }}
+                        <span class="h5 font-weight-normal mt-4">Preferred pet subgroups</span>
+                        <div class="cppf-bbc form-group mt-3">
+                            <button hidden=True type="button" class="cppf-bi-b cppf-bi-bb btn mr-1 mt-1 btn-outline-secondary btn-sm"></button>
+                        </div>
+                        <div class="form-group">
+                            {{ createPetPreferenceForm.submit_input(class="mt-3 btn btn-primary btn-sm") }}
+                        </div>
+                    </form>
+                {% elif createBusinessPreferenceForm %}
+                    <form class="cbprf-c d-flex flex-column mb-4" method="POST" action="{{ url_for('preference.create_business') }}">
+                        {{ createBusinessPreferenceForm.hidden_tag() }}
+                        {{ createBusinessPreferenceForm.business_type_input(hidden=True, class="form-control form-control-sm") }}
+                        <span class="h5 font-weight-normal">Preferred businesses</span>
+                        <div class="cbpf-bc form-group mt-3">
+                            <button hidden=True type="button" class="cbpf-bi cbpf-bi-b btn mr-1 mt-1 btn-outline-secondary btn-sm"></button>
+                        </div>
+                        <div class="form-group">
+                            {{ createBusinessPreferenceForm.submit_input(class="mt-3 btn btn-primary btn-sm") }}
+                        </div>
+                    </form>
+                {% elif createCirclePreferenceForm %}
+                    <form class="ccprf-c d-flex flex-column mb-4" method="POST" action="{{ url_for('preference.create_circle') }}">
+                        {{ createCirclePreferenceForm.hidden_tag() }}
+                        {{ createCirclePreferenceForm.circle_type_input(hidden=True, class="form-control form-control-sm") }}
+                        <span class="h5 font-weight-normal">Preferred circle</span>
+                        <div class="ccpf-bc form-group mt-3">
+                            <button hidden=True type="button" class="ccpf-bi ccpf-bi-b btn mr-1 mt-1 btn-outline-secondary btn-sm"></button>
+                        </div>
+                        <div class="form-group">
+                            {{ createCirclePreferenceForm.submit_input(class="mt-3 btn btn-primary btn-sm") }}
+                        </div>
+                    </form>
+                {% endif %}    
+            </div>
+        </div>
+    </div>
+{% endblock %}
