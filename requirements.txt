@@ -6,13 +6,13 @@ cloudinary==1.24.0
 decorator==4.4.2
 dnspython==1.16.0
 email-validator==1.1.2
-eventlet==0.31.0
+eventlet==0.31.1
 Flask==1.1.2
 Flask-Script==2.0.6
 Flask-SocketIO==5.1.0
 Flask-WTF==0.14.3
-gunicorn==20.1.0
 greenlet==1.1.0
+gunicorn==20.1.0
 idna==2.10
 infinity==1.5
 intervals==0.9.1
