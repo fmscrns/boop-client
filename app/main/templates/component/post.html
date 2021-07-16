@@ -5,9 +5,9 @@
     <div class="col p-0">
         <div class="post pt-3 d-flex flex-row">
             <img class="post-user-photo position-absolute rounded-circle border" src="{{ config.MEDIA_STORAGE }}" alt="default">
-            <div class="pcp-1 position-absolute"></div>
-            <div class="pcp-2 position-absolute"></div>
-            <div class="post-content container-fluid ml-5 p-0 border rounded">
+            <div class="pcp-1 aff-new position-absolute"></div>
+            <div class="pcp-2 aff-new position-absolute"></div>
+            <div class="post-content aff-new container-fluid ml-5 p-0 border rounded">
                 <div class="post-details d-flex flex-column mx-3 mt-2">
                     <span class="w-100 d-flex flex-row">
                         <div class="f-pi-dt w-100" style="cursor: pointer;">
@@ -36,7 +36,7 @@
                         <a class="f-pi-db-un text-muted"></a>
                     </span>
                 </div>
-                <div class="post-body border-top pt-3 px-3" style="cursor: pointer;"></div>
+                <div class="post-body border-top aff-new pt-3 px-3" style="cursor: pointer;"></div>
                 <div class="f-pi-c-ph mt-3" style="cursor: pointer;">
                     {{ post_gallery_bi() }}
                 </div>
@@ -57,7 +57,7 @@
                         {#{{ list_modal() }}#}
                     </span>
                 </div>
-                <ul class="post-footer container-fluid nav m-0 mt-3 pl-0 pr-5 py-0 justify-content-around d-flex flex-row border-top">
+                <ul class="post-footer container-fluid nav m-0 mt-3 pl-0 pr-5 py-0 justify-content-around d-flex flex-row border-top aff-new">
                     <li class="pst-lk nav-item mx-2 d-flex align-items-center">
                         <span class="small text-muted p-lc" style="width:15px;"></span>
                         <a class="nav-link" style="width:15px;">
@@ -249,10 +249,13 @@
             {% if current_user.pet_count > 0 %}
                 <div class="modal" id="createPostModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-scrollable">
-                        <form class="modal-content" method="POST" action="{{ url_for('post.create') }}" enctype="multipart/form-data">
+                        <form class="pst-crt modal-content" method="" method-action="{{ url_for('post.create') }}">
+                            <div hidden=True class="ldg-dbg w-100 h-100 position-absolute d-flex justify-content-center align-items-center" style="z-index: 10;">
+                                <div class="spinner-grow text-primary mx-auto my-auto" role="status"></div>
+                            </div>
                             <div class="modal-header">
                                 <h5 class="modal-title" id="staticBackdropLabel">Create post</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Cloe">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>

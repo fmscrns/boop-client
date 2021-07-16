@@ -100,7 +100,6 @@ document.querySelectorAll(".sp-pc-bi").forEach((baseCard) => {
      }
 
      function resultAjax (cont, url, classRemoved, endResultConfig) {
-          console.log(url);
           $.ajax({
                type: "GET",
                url: url + "&pagination_no=" + paginationNo,
@@ -852,12 +851,80 @@ document.querySelectorAll(".md-cont").forEach((mediaCont) => {
      };
 });
 
+function alertElemCreator (message, key="") {
+     let asd = document.querySelector(".alert-frame");
+     let alertCont = asd.querySelector(".container");
+     let alert = document.createElement("div");
+     alert.classList.add("toast", "alert-dismissible", "mt-2", "p-0");
+
+     // HEADER
+     let toastHeader = document.createElement("div");
+     toastHeader.classList.add("toast-header", "d-flex", "justify-content-between");
+     let senderDetailsCont = document.createElement("div");
+     senderDetailsCont.classList.add("d-flex", "flex-row", "mr-5");
+     let senderPhoto = document.createElement("img");
+     senderPhoto.setAttribute("src", asd.getAttribute("cu-pu"));
+     senderPhoto.classList.add("toast-photo", "mr-2");
+     senderDetailsCont.append(senderPhoto);
+     let senderName = document.createElement("strong");
+     senderName.classList.add("mr-auto");
+     senderName.innerHTML = asd.getAttribute("cu-n");
+     senderDetailsCont.append(senderName);
+     toastHeader.append(senderDetailsCont);
+     let timeSentCont = document.createElement("span");
+     timeSentCont.classList.add("ml-5");
+     timeSentCont.innerHTML = "Just now";
+     toastHeader.append(timeSentCont);
+     alert.append(toastHeader);
+
+     // BODY
+     let toastBody = document.createElement("div");
+     toastBody.classList.add("toast-body");
+     toastBody.innerHTML = (key == "" ? key : key + ": ") + message;
+     alert.append(toastBody);
+
+     $(alert).fadeTo(5000, 500).slideUp(500, function (e) {
+          $(this).remove();
+     });
+     alertCont.append(alert);
+}
+
 document.querySelectorAll(".fd-cont").forEach((feedCont) => {
      var paginationNo = 1;
+     let postCreatorCont = $(feedCont).find(".cr-pst-c")[0];
      let feedLoading = $(feedCont).find(".fd-ld")[0];
      let feedStatus = $(feedCont).find(".fd-st")[0];
      let feedPostItem = $(feedCont).find(".fd-pi")[0];
      var doneAjax = true;
+
+     let postCreator = $(postCreatorCont).find(".pst-crt")[0];
+
+     $(postCreator).on("submit", function (e) {
+          e.preventDefault();
+          $.ajax({
+               type: "POST",
+               url: $(this).attr("method-action"),
+               data: $(this).serialize(),
+               beforeSend: function () {
+                    $(postCreator).find(".ldg-dbg").removeAttr("hidden");
+                    $(postCreator).find(':input[type="submit"]').prop('disabled', true);
+               },
+               success: function (data) {
+                    $(postCreator).find(".ldg-dbg").attr("hidden", "True");
+                    $(postCreator).find(':input[type="submit"]').prop('disabled', false);
+                    $(postCreator).trigger("reset");
+                    $(postCreator).closest(".modal").modal("hide");
+                    if (data["status"] == 200) {
+                         postElemCreator(feedPostItem, data["payload"], true).insertAfter(postCreatorCont, null);
+                    } else {
+                         for (error of data["payload"]) {
+                              alertElemCreator(error["message"], error["key"]);
+                         }
+                    }
+               }
+          });
+     });
+
      postPopulate();
      $(window).scroll(function () {
           if(($(window).scrollTop() + $(window).height() == $(document).height()) && doneAjax) {
@@ -876,98 +943,7 @@ document.querySelectorAll(".fd-cont").forEach((feedCont) => {
                success: function (data) {
                     if (data.length > 0) {
                          for (post of data) {
-                              let item = $(feedPostItem).clone().removeAttr("hidden");
-                              item.find(".post-user-photo").attr("src", item.find(".post-user-photo").attr("src") + post["creator_photo"]);
-                              item.find(".f-pi-dt-cn").html(post["creator_name"]).attr("href", "/user/" + post["creator_username"] + "/pets");
-                              if (post["pinboard_id"]) {
-                                   item.find(".p-anc-c").removeAttr("hidden");
-                                   item.find(".f-pi-dt-pbcf").removeAttr("hidden").attr("href", "/business/" + post["pinboard_id"] + "/posts").html(post["pinboard_name"]);
-                              } else if (post["confiner_id"]) {
-                                   item.find(".p-anc-c").removeAttr("hidden");
-                                   item.find(".f-pi-dt-pbcf").removeAttr("hidden").attr("href", "/circle/" + post["confiner_id"] + "/posts").html(post["confiner_name"]);
-                              } else {
-                                   item.find(".p-anc-c").remove();
-                                   item.find(".f-pi-dt-pbcf").remove();
-                              }
-                              item.find(".p-dt").html(moment(post["registered_on"]).fromNow());
-                              if (post["is_mine"] == 1) {
-                                   item.find(".f-pi-dt-dd").find(".dc-mb").attr("method-action", "/post/" + post["public_id"] + "/delete").on("click", function(e) {
-                                        $($(this).attr("data-target")).find(".modal-content").attr("action", $(this).attr("method-action"));
-                                   });
-                              } else {
-                                   item.find(".f-pi-dt-dd").remove();
-                              }
-                              item.find(".f-pi-db-un").attr("href", "/user/" + post["creator_username"] + "/pets").html("@" + post["creator_username"]);
-                              item.find(".post-body").html(post["content"]);
-                              if (post["photo"]) {
-                                   let photoListLength = post["photo"].length;
-          
-                                   item.find(".f-pi-c-ph").find(".f-pi-c-pp").not(".f-pi-c-pp-" + "i".repeat(photoListLength)).remove();
-          
-                                   for (let i = 0; i < photoListLength; i++) {
-                                        item.find(".f-pi-c-ph").find("img").eq(i).attr("src", item.find(".f-pi-c-ph").find("img").eq(i).attr("src") + post["photo"][i]["filename"]);
-                                   }
-                              } else {
-                                   item.find(".f-pi-c-ph").remove();
-                              }
-                              let taggedPetsCont = item.find(".f-pi-prp");
-                              let petBaseTooltip = taggedPetsCont.find(".tooltip-cont");
-                              let taggedPetBaseItem = taggedPetsCont.find(".pt-tt-c");
-                              for (pet of post["subject"]) {
-                                   let newTaggedPetItem = taggedPetBaseItem.clone().removeAttr("hidden").attr("href", "/pet/" + pet["public_id"] + "/posts");
-                                   let petTooltip = petBaseTooltip.clone().removeAttr("hidden");
-                                   petTooltip.find("img").attr("src", petBaseTooltip.find("img").attr("src") + pet["photo"]);
-                                   petTooltip.find(".mt-1").html(pet["name"]);
-                                   petTooltip.find(".small").html(pet["group_name"] + " &middot; " + pet["subgroup_name"]);
-                                   petTooltip.find(".btn").attr("href", "/pet/" + pet["public_id"] + "/posts");
-                                   newTaggedPetItem.find("img").attr("src", newTaggedPetItem.find("img").attr("src") + pet["photo"]).attr("title", outerHTML(petTooltip[0]));
-                                   newTaggedPetItem.tooltip();
-                                   newTaggedPetItem.on("mouseenter", function() {
-                                        newTaggedPetItem.find(".rounded-circle").tooltip('show');
-                                        let tooltipCont = document.querySelector(".tooltip");
-                                        $(tooltipCont).on("mouseenter", function() {
-                                             newTaggedPetItem.find(".rounded-circle").tooltip('show');
-                                        });
-                                        $(tooltipCont).on("mouseleave", function() {
-                                             newTaggedPetItem.find(".rounded-circle").tooltip('hide');
-                                        });
-                                   });
-                                   newTaggedPetItem.on("mouseleave", function() {
-                                        newTaggedPetItem.find(".rounded-circle").tooltip('hide');
-                                   });
-                                   taggedPetsCont.append(newTaggedPetItem);
-                              } 
-                              petBaseTooltip.remove();
-                              taggedPetBaseItem.remove();
-
-                              $(item).attr("href", "/post/" + post["public_id"] + "/comments");
-                              [".f-pi-dt", ".post-body", ".f-pi-c-ph"].forEach((cont) => {
-                                   item.find(cont).on("click", function () {
-                                        window.location = $(item).attr("href");
-                                   });
-                              });
-                              let likeCont = item.find(".post-footer").find(".pst-lk").attr("post-pid", post["public_id"]);
-                              likeCont.find(".p-lc").html(post["like_count"] + "&nbsp;&nbsp;");
-                              if (post["is_liked"] == 1) {
-                                   likeCont.addClass("pst-lk-active").find("path").eq(1).removeClass("d-none");
-                              }
-                              likeCont.find("a").on("click", function () {
-                                   if (likeCont.hasClass("pst-lk-active")) {
-                                        likeCont.removeClass("pst-lk-active").find(".p-lc").html(parseInt(likeCont.find(".p-lc").html()) - 1);
-                                        likeCont.find("path").eq(1).addClass("d-none");
-                                   } else {
-                                        likeCont.addClass("pst-lk-active").find(".p-lc").html(parseInt(likeCont.find(".p-lc").html()) + 1);
-                                        likeCont.find("path").eq(1).removeClass("d-none");
-                                   }
-                                   $.ajax({
-                                        type: "POST",
-                                        url: "/post/" + likeCont.attr("post-pid") + "/like"
-                                   });
-                              });
-                              let commentCont = item.find(".post-footer").find(".pst-cmt");
-                              commentCont.find("span").html(post["comment_count"] + "&nbsp;&nbsp;");
-                              commentCont.find("a").attr("href", "/post/" + post["public_id"] + "/comments");
-                              item.insertBefore(feedLoading, null);
+                              postElemCreator(feedPostItem, post).insertBefore(feedLoading, null);
                          }
                          $(feedLoading).find(".spinner-grow").hide();
                          doneAjax = true;
@@ -981,6 +957,104 @@ document.querySelectorAll(".fd-cont").forEach((feedCont) => {
           });
      }
 });
+
+function postElemCreator (feedPostItem, post, isNew=false) {
+     let item = $(feedPostItem).clone().removeAttr("hidden");
+     if (isNew == true) {
+          item.find(".aff-new").addClass("border-primary");
+     }
+     item.find(".post-user-photo").attr("src", item.find(".post-user-photo").attr("src") + post["creator_photo"]);
+     item.find(".f-pi-dt-cn").html(post["creator_name"]).attr("href", "/user/" + post["creator_username"] + "/pets");
+     if (post["pinboard_id"]) {
+          item.find(".p-anc-c").removeAttr("hidden");
+          item.find(".f-pi-dt-pbcf").removeAttr("hidden").attr("href", "/business/" + post["pinboard_id"] + "/posts").html(post["pinboard_name"]);
+     } else if (post["confiner_id"]) {
+          item.find(".p-anc-c").removeAttr("hidden");
+          item.find(".f-pi-dt-pbcf").removeAttr("hidden").attr("href", "/circle/" + post["confiner_id"] + "/posts").html(post["confiner_name"]);
+     } else {
+          item.find(".p-anc-c").remove();
+          item.find(".f-pi-dt-pbcf").remove();
+     }
+     item.find(".p-dt").html(moment(post["registered_on"]).fromNow());
+     if (post["is_mine"] == 1) {
+          item.find(".f-pi-dt-dd").find(".dc-mb").attr("method-action", "/post/" + post["public_id"] + "/delete").on("click", function(e) {
+               $($(this).attr("data-target")).find(".modal-content").attr("action", $(this).attr("method-action"));
+          });
+     } else {
+          item.find(".f-pi-dt-dd").remove();
+     }
+     item.find(".f-pi-db-un").attr("href", "/user/" + post["creator_username"] + "/pets").html("@" + post["creator_username"]);
+     item.find(".post-body").html(post["content"]);
+     if (post["photo"]) {
+          let photoListLength = post["photo"].length;
+
+          item.find(".f-pi-c-ph").find(".f-pi-c-pp").not(".f-pi-c-pp-" + "i".repeat(photoListLength)).remove();
+
+          for (let i = 0; i < photoListLength; i++) {
+               item.find(".f-pi-c-ph").find("img").eq(i).attr("src", item.find(".f-pi-c-ph").find("img").eq(i).attr("src") + post["photo"][i]["filename"]);
+          }
+     } else {
+          item.find(".f-pi-c-ph").remove();
+     }
+     let taggedPetsCont = item.find(".f-pi-prp");
+     let petBaseTooltip = taggedPetsCont.find(".tooltip-cont");
+     let taggedPetBaseItem = taggedPetsCont.find(".pt-tt-c");
+     for (pet of post["subject"]) {
+          let newTaggedPetItem = taggedPetBaseItem.clone().removeAttr("hidden").attr("href", "/pet/" + pet["public_id"] + "/posts");
+          let petTooltip = petBaseTooltip.clone().removeAttr("hidden");
+          petTooltip.find("img").attr("src", petBaseTooltip.find("img").attr("src") + pet["photo"]);
+          petTooltip.find(".mt-1").html(pet["name"]);
+          petTooltip.find(".small").html(pet["group_name"] + " &middot; " + pet["subgroup_name"]);
+          petTooltip.find(".btn").attr("href", "/pet/" + pet["public_id"] + "/posts");
+          newTaggedPetItem.find("img").attr("src", newTaggedPetItem.find("img").attr("src") + pet["photo"]).attr("title", outerHTML(petTooltip[0]));
+          newTaggedPetItem.tooltip();
+          newTaggedPetItem.on("mouseenter", function() {
+               newTaggedPetItem.find(".rounded-circle").tooltip('show');
+               let tooltipCont = document.querySelector(".tooltip");
+               $(tooltipCont).on("mouseenter", function() {
+                    newTaggedPetItem.find(".rounded-circle").tooltip('show');
+               });
+               $(tooltipCont).on("mouseleave", function() {
+                    newTaggedPetItem.find(".rounded-circle").tooltip('hide');
+               });
+          });
+          newTaggedPetItem.on("mouseleave", function() {
+               newTaggedPetItem.find(".rounded-circle").tooltip('hide');
+          });
+          taggedPetsCont.append(newTaggedPetItem);
+     } 
+     petBaseTooltip.remove();
+     taggedPetBaseItem.remove();
+
+     $(item).attr("href", "/post/" + post["public_id"] + "/comments");
+     [".f-pi-dt", ".post-body", ".f-pi-c-ph"].forEach((cont) => {
+          item.find(cont).on("click", function () {
+               window.location = $(item).attr("href");
+          });
+     });
+     let likeCont = item.find(".post-footer").find(".pst-lk").attr("post-pid", post["public_id"]);
+     likeCont.find(".p-lc").html(post["like_count"] + "&nbsp;&nbsp;");
+     if (post["is_liked"] == 1) {
+          likeCont.addClass("pst-lk-active").find("path").eq(1).removeClass("d-none");
+     }
+     likeCont.find("a").on("click", function () {
+          if (likeCont.hasClass("pst-lk-active")) {
+               likeCont.removeClass("pst-lk-active").find(".p-lc").html(parseInt(likeCont.find(".p-lc").html()) - 1);
+               likeCont.find("path").eq(1).addClass("d-none");
+          } else {
+               likeCont.addClass("pst-lk-active").find(".p-lc").html(parseInt(likeCont.find(".p-lc").html()) + 1);
+               likeCont.find("path").eq(1).removeClass("d-none");
+          }
+          $.ajax({
+               type: "POST",
+               url: "/post/" + likeCont.attr("post-pid") + "/like"
+          });
+     });
+     let commentCont = item.find(".post-footer").find(".pst-cmt");
+     commentCont.find("span").html(post["comment_count"] + "&nbsp;&nbsp;");
+     commentCont.find("a").attr("href", "/post/" + post["public_id"] + "/comments");
+     return item;
+}
 
 $(function () {
      $('[data-toggle="tooltip"]').tooltip();
@@ -1080,20 +1154,13 @@ document.querySelectorAll(".ntf-nb").forEach((notifCont) => {
           }
      });
 });
-
+// #
 disablePostCreator(document.querySelector(".cr-post-facade-input"));
 function disablePostCreator(input) {
      $(input).one("click", function(e) {
           petCount = parseInt(input.getAttribute("user-pet-count"));
           if (petCount === 0) {
-               let alertCont = document.querySelector(".alert-frame");
-               let alert = document.createElement("div");
-               alert.classList.add("alert", "alert-warning", "alert-dismissible", "fade", "show", "small");
-               alert.innerHTML = "Create pet profile first."
-               $(alert).fadeTo(5000, 500).slideUp(500, function (e) {
-                    $(e).alert("close");
-               });
-               alertCont.appendChild(alert);
+               alertElemCreator("Create pet profile first.");
           } else {
                postCreatorMechanism(document.getElementById("createPostModal"));
           }
@@ -1123,16 +1190,9 @@ function postCreatorMechanism (modal) {
                }
                displayLoadedPostPhotos();
           } else {
-               let alertCont = document.querySelector(".alert-frame");
-               let alert = document.createElement("div");
-               alert.classList.add("alert", "alert-warning", "alert-dismissible", "fade", "show", "small");
-               alert.innerHTML = "You can choose up to 4 photos only."
-               $(alert).fadeTo(5000, 500).slideUp(500, function (e) {
-                    $(e).alert("close");
-               });
+               alertElemCreator("You can choose up to 4 photos only.");
                actualUploadInput.value = ""
                $(modal).modal("hide");
-               alertCont.appendChild(alert);
           }
      });
      function readyGallDisp () {

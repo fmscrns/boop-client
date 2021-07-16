@@ -2,6 +2,10 @@ body {
     overflow-y: scroll;
 }
 
+.ldg-dbg {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
 [hidden]{
     display: none !important;
 }

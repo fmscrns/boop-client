@@ -25,7 +25,7 @@ def create_pet(current_user):
     if createPetPreferenceForm.errors:
         for key in createPetPreferenceForm.errors:
             for message in createPetPreferenceForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("settings.preferences_pet"))
 
@@ -47,7 +47,7 @@ def create_business(current_user):
     if createBusinessPreferenceForm.errors:
         for key in createBusinessPreferenceForm.errors:
             for message in createBusinessPreferenceForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("settings.preferences_business"))
 
@@ -69,6 +69,6 @@ def create_circle(current_user):
     if createCirclePreferenceForm.errors:
         for key in createCirclePreferenceForm.errors:
             for message in createCirclePreferenceForm.errors[key]:
-                flash(message, "danger")
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
 
     return redirect(url_for("settings.preferences_circle"))

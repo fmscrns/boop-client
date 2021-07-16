@@ -35,29 +35,29 @@ def create(current_user):
         create_post = PostService.create(request.form, request.files)
 
         if create_post.ok:
-            resp = json.loads(create_post.text)
-            flash(resp["message"], "success")
-
-            if createPostForm.pinboard_input.data:
-                return redirect(url_for("business.posts", business_pid=createPostForm.pinboard_input.data))
-            elif createPostForm.confiner_input.data:
-                return redirect(url_for("circle.posts", circle_pid=createPostForm.confiner_input.data))
-            else:
-                return redirect(url_for("user.posts", username=current_user["username"]))
+            return jsonify(dict(
+                status = create_post.status_code,
+                payload = json.loads(create_post.text)
+            ))
         
-        flash(json.loads(create_post.text)["message"], "danger")
+        return jsonify(dict(
+            status = create_post.status_code
+        ))
     
     if createPostForm.errors:
+        resp_obj = dict(
+            status = 403,
+            payload = []
+        )
         for key in createPostForm.errors:
+            key_dict = dict(
+                key = key,
+                message = []
+            )
             for message in createPostForm.errors[key]:
-                flash(message, "danger")
-
-    if createPostForm.pinboard_input.data:
-        return redirect(url_for("business.posts", business_pid=createPostForm.pinboard_input.data))
-    elif createPostForm.confiner_input.data:
-        return redirect(url_for("circle.posts", circle_pid=createPostForm.confiner_input.data))
-    else:
-        return redirect(url_for("user.posts", username=current_user["username"]))
+                key_dict["message"] += [message]
+            resp_obj["payload"] += [key_dict]
+        return jsonify(resp_obj)
 
 @post_bp.route("/<post_pid>/like", methods=["POST"])
 @session_required
