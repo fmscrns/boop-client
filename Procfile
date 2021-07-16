@@ -1,1 +1,1 @@
-web: gunicorn manage:app worker:5
+web: gunicorn --worker-class eventlet -w 1 manage:app worker:5
