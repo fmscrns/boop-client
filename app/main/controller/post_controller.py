@@ -8,8 +8,8 @@ from ..service.pet_service import PetService
 from ..form.post_form import CreatePostForm, DeletePostForm, LikePostForm
 from ..form.comment_form import CreateCommentForm, DeleteCommentForm
 
-@post_bp.route("/<post_pid>", methods=["GET", "POST"])
 @post_bp.route("/<post_pid>/comments", methods=["GET", "POST"])
+@post_bp.route("/<post_pid>", methods=["GET", "POST"])
 @session_required
 def comments(current_user, post_pid):
     get_resp = PostService.get_by_pid(post_pid)

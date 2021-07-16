@@ -60,13 +60,12 @@
             
             let asd = document.querySelector(".alert-frame");
             let alertCont = asd.querySelector(".container");
-            let alert = document.createElement("div");
+            let alert = document.createElement("a");
 
-            var href;
+            var href = "";
 
             if (notification["post_subject_id"]) {
-                {% set list1 = url_for('post.comments', post_pid='').split('/') %}
-                href = "/{{ list1[1] }}/" + notification["post_subject_id"] + "/{{ list1[3] }}";
+                href = "{{ url_for('post.comments', post_pid='') }}" + notification["post_subject_id"];
             } else if (notification["circle_subject_id"]) {
                 if (notification["_type"] == 1) {
                     {% set list1 = url_for('circle.pending_members', circle_pid='').split('/') %}
@@ -89,9 +88,9 @@
             }
 
             alert.setAttribute("href", href);
-            alert.classList.add("toast", "alert-dismissible", "mt-2", "p-0");
+            alert.classList.add("toast", "d-flex", "flex-column", "text-body", "text-decoration-none", "toast-notif", "alert-dismissible", "mt-2", "p-0");
             let toastHeader = document.createElement("div");
-            toastHeader.classList.add("toast-header", "d-flex", "justify-content-between");
+            toastHeader.classList.add("toast-header");
             let senderDetailsCont = document.createElement("div");
             senderDetailsCont.classList.add("d-flex", "flex-row", "mr-5");
             let senderPhoto = document.createElement("img");

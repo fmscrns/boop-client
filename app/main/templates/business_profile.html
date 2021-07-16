@@ -26,7 +26,7 @@
                                 <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
                             </button>
                             <div class="modal" id="editBusinessModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                <div class="modal-dialog">
+                                <div class="modal-dialog modal-dialog-scrollable">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                     <h5 class="modal-title" id="staticBackdropLabel">Business Settings</h5>
@@ -34,83 +34,85 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                     </div>
-                                    <form class="modal-body" method="POST" action="{{ url_for('business.edit', business_pid=this_business.public_id) }}" enctype="multipart/form-data">
-                                        <h5 class="mb-3">Update business</h5>
-                                        {{ editBusinessForm.hidden_tag() }}
-                                        <div class="form-group">
-                                            {{ editBusinessForm.photo_input.label }}
-                                            {{ editBusinessForm.photo_input(class="form-control form-control-sm") }}
-                                        </div>
-                                        <div class="form-group">
-                                            {{ editBusinessForm.name_input.label }}
-                                            {{ editBusinessForm.name_input(class="form-control form-control-sm", value=this_business["name"]) }}
-                                        </div>
-                                        <div class="form-group">
-                                            {% set f = editBusinessForm.bio_input.process_data(this_business["bio"]) %}
-                                            {{ editBusinessForm.bio_input.label }}
-                                            {{ editBusinessForm.bio_input(class="form-control form-control-sm", value=this_business["bio"]) }}
-                                        </div>
-                                        <div class="form-group">
-                                            {{ editBusinessForm.type_input.label }}
-                                            {{ editBusinessForm.type_input(class="form-control form-control-sm") }}
-                                        </div>
-                                        {{ editBusinessForm.submit_input(class="btn btn-primary float-right btn-block") }}
-                                    </form>
-                                    <form class="border-top modal-body" method="POST" action="{{ url_for('business.create_executive', business_pid=this_business.public_id) }}">
-                                        <h5 class="mb-3">Add new executive</h5>
-                                        {{ createBusinessExecutiveForm.hidden_tag() }}
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div href="/user/" class="autocomplete container-fluid p-0">
-                                                {{ createBusinessExecutiveForm.name_input(class="form-control form-control-sm", placeholder="Name or username") }}
-                                                {{ createBusinessExecutiveForm.executive_input(hidden=True) }}
+                                    <div class="modal-body d-flex flex-column">
+                                        <form class="mb-3" method="POST" action="{{ url_for('business.edit', business_pid=this_business.public_id) }}" enctype="multipart/form-data">
+                                            <h5 class="mb-3">Update business</h5>
+                                            {{ editBusinessForm.hidden_tag() }}
+                                            <div class="form-group">
+                                                {{ editBusinessForm.photo_input.label }}
+                                                {{ editBusinessForm.photo_input(class="form-control form-control-sm") }}
                                             </div>
-                                            {{ createBusinessExecutiveForm.submit_input(class="btn btn-primary ml-2 btn-sm") }}
-                                        </div>
-                                    </form>
-                                    <div class="container border-top pt-3">
-                                        <h5>Executives</h5>
-                                        {% for executive in this_business["executive"] %}
-                                            <div class="d-flex justify-content-between p-2">
-                                                <span>{% if executive.public_id == current_user.public_id %}You{% else %}{{ executive["name"] }}{% endif %}</span>
-                                                {% if this_business["executive"]|length > 1 %}
-                                                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#removeBusinessExecutiveModal{{ loop.index }}">
-                                                        Remove
-                                                    </button>
-                                                    <div class="modal" id="removeBusinessExecutiveModal{{ loop.index }}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                                        <div class="modal-dialog">
-                                                            <form class="modal-content" method="POST" action="{{ url_for('business.delete_executive', business_pid=this_business.public_id) }}">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="staticBackdropLabel">Remove executive</h5>
-                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                        <span aria-hidden="true">&times;</span>
-                                                                    </button>
-                                                                </div>
-                                                                <div class="border-top modal-body">
-                                                                    {{ deleteBusinessExecutiveForm.hidden_tag() }}
-                                                                    {{ deleteBusinessExecutiveForm.executive_input(hidden=True, value=executive["public_id"]) }}
-                                                                    {{ deleteBusinessExecutiveForm.confirm_name_input(hidden=True, value=this_business.name) }}
-                                                                        Are you sure you want to remove {% if executive.public_id == current_user.public_id %}yourself as{% else %}this{% endif %} executive of this business?
-                                                                        {{ deleteBusinessExecutiveForm.name_input(hidden=True, value=this_business.name) }}
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                                    {{ deleteBusinessExecutiveForm.submit_input(class="btn btn-danger") }}
-                                                                </div>
-                                                            </form>
+                                            <div class="form-group">
+                                                {{ editBusinessForm.name_input.label }}
+                                                {{ editBusinessForm.name_input(class="form-control form-control-sm", value=this_business["name"]) }}
+                                            </div>
+                                            <div class="form-group">
+                                                {% set f = editBusinessForm.bio_input.process_data(this_business["bio"]) %}
+                                                {{ editBusinessForm.bio_input.label }}
+                                                {{ editBusinessForm.bio_input(class="form-control form-control-sm", value=this_business["bio"]) }}
+                                            </div>
+                                            <div class="form-group">
+                                                {{ editBusinessForm.type_input.label }}
+                                                {{ editBusinessForm.type_input(class="form-control form-control-sm") }}
+                                            </div>
+                                            {{ editBusinessForm.submit_input(class="btn btn-primary float-right btn-block") }}
+                                        </form>
+                                        <form class="my-3" method="POST" action="{{ url_for('business.create_executive', business_pid=this_business.public_id) }}">
+                                            <h5 class="mb-3">Add new executive</h5>
+                                            {{ createBusinessExecutiveForm.hidden_tag() }}
+                                            <div class="position-relative">
+                                                <div href="{{ url_for('user.search') }}" media-storage="{{ config.MEDIA_STORAGE }}" search-type="filler" class="autocomplete position-absolute container-fluid p-0 w-75 pr-2">
+                                                    {{ createBusinessExecutiveForm.name_input(class="form-control form-control-sm", placeholder="Name or username") }}
+                                                    {{ createBusinessExecutiveForm.executive_input(hidden=True) }}
+                                                </div>
+                                                {{ createBusinessExecutiveForm.submit_input(class="position-relative btn btn-primary ml-2 btn-sm w-25 float-right") }}
+                                            </div>
+                                        </form>
+                                        <div class="my-3">
+                                            <h5>Executives</h5>
+                                            {% for executive in this_business["executive"] %}
+                                                <div class="d-flex justify-content-between p-2">
+                                                    <span>{% if executive.public_id == current_user.public_id %}You{% else %}{{ executive["name"] }}{% endif %}</span>
+                                                    {% if this_business["executive"]|length > 1 %}
+                                                        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#removeBusinessExecutiveModal{{ loop.index }}">
+                                                            Remove
+                                                        </button>
+                                                        <div class="modal" id="removeBusinessExecutiveModal{{ loop.index }}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <form class="modal-content" method="POST" action="{{ url_for('business.delete_executive', business_pid=this_business.public_id) }}">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="staticBackdropLabel">Remove executive</h5>
+                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="border-top modal-body">
+                                                                        {{ deleteBusinessExecutiveForm.hidden_tag() }}
+                                                                        {{ deleteBusinessExecutiveForm.executive_input(hidden=True, value=executive["public_id"]) }}
+                                                                        {{ deleteBusinessExecutiveForm.confirm_name_input(hidden=True, value=this_business.name) }}
+                                                                            Are you sure you want to remove {% if executive.public_id == current_user.public_id %}yourself as{% else %}this{% endif %} executive of this business?
+                                                                            {{ deleteBusinessExecutiveForm.name_input(hidden=True, value=this_business.name) }}
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                        {{ deleteBusinessExecutiveForm.submit_input(class="btn btn-danger") }}
+                                                                    </div>
+                                                                </form>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                        {% endfor %}
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                        <form class="my-3" method="POST" action="{{ url_for('business.delete', business_pid=this_business.public_id) }}">
+                                            <h5 class="mb-3">Delete business</h5>
+                                            {{ deleteBusinessForm.hidden_tag() }}
+                                            <span class="text-muted small">Confirm by typing the business's name</span>
+                                            {{ deleteBusinessForm.confirm_name_input(class="d-none", value=this_business.name) }}
+                                            {{ deleteBusinessForm.name_input(class="form-control form-control-sm", placeholder=this_business.name, minlength=2) }}
+                                            {{ deleteBusinessForm.submit_input(class="btn btn-danger float-right btn-block mt-3") }}
+                                        </form>
                                     </div>
-                                    <form class="border-top modal-body" method="POST" action="{{ url_for('business.delete', business_pid=this_business.public_id) }}">
-                                        <h5 class="mb-3">Delete business</h5>
-                                        {{ deleteBusinessForm.hidden_tag() }}
-                                        <span class="text-muted small">Confirm by typing the business's name</span>
-                                        {{ deleteBusinessForm.confirm_name_input(class="d-none", value=this_business.name) }}
-                                        {{ deleteBusinessForm.name_input(class="form-control form-control-sm", placeholder=this_business.name, minlength=2) }}
-                                        {{ deleteBusinessForm.submit_input(class="btn btn-danger float-right btn-block mt-3") }}
-                                    </form>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                     </div>
@@ -196,7 +198,7 @@
                 {{ post_remover(deletePostForm, this_business) }}
                 <div class="container">
                     <div class="fd-cont row row-cols-1 row-cols-md-1 p-0">
-                        <div class="col p-0">
+                        <div class="cr-pst-c col p-0">
                             <div class="pt-3">
                                 {{ post_creator(current_user, createPostForm, this_business, none) }}
                             </div>

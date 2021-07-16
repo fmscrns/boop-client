@@ -26,7 +26,7 @@
                                 <img src="{{ url_for('static', filename='assets/settings.svg') }}" style="width:20px;">
                             </button>
                             <div class="modal" id="editCircleModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                <div class="modal-dialog">
+                                <div class="modal-dialog modal-dialog-scrollable">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                     <h5 class="modal-title" id="staticBackdropLabel">Circle Settings</h5>
@@ -34,83 +34,85 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                     </div>
-                                    <form class="modal-body" method="POST" action="{{ url_for('circle.edit', circle_pid=this_circle.public_id) }}" enctype="multipart/form-data">
-                                        <h5 class="mb-3">Update circle</h5>
-                                        {{ editCircleForm.hidden_tag() }}
-                                        <div class="form-group">
-                                            {{ editCircleForm.photo_input.label }}
-                                            {{ editCircleForm.photo_input(class="form-control form-control-sm") }}
-                                        </div>
-                                        <div class="form-group">
-                                            {{ editCircleForm.name_input.label }}
-                                            {{ editCircleForm.name_input(class="form-control form-control-sm", value=this_circle["name"]) }}
-                                        </div>
-                                        <div class="form-group">
-                                            {% set f = editCircleForm.bio_input.process_data(this_circle["bio"]) %}
-                                            {{ editCircleForm.bio_input.label }}
-                                            {{ editCircleForm.bio_input(class="form-control form-control-sm", value=this_circle["bio"]) }}
-                                        </div>
-                                        <div class="form-group">
-                                            {{ editCircleForm.type_input.label }}
-                                            {{ editCircleForm.type_input(class="form-control form-control-sm") }}
-                                        </div>
-                                        {{ editCircleForm.submit_input(class="btn btn-primary float-right btn-block") }}
-                                    </form>
-                                    <form class="border-top modal-body" method="POST" action="{{ url_for('circle.create_admin', circle_pid=this_circle.public_id) }}">
-                                        <h5 class="mb-3">Add new admin</h5>
-                                        {{ createCircleAdminForm.hidden_tag() }}
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div href="/circle/{{this_circle['public_id']}}/members" class="autocomplete container-fluid p-0">
-                                                {{ createCircleAdminForm.name_input(class="form-control form-control-sm", placeholder="Member name or username") }}
-                                                {{ createCircleAdminForm.admin_input(hidden=True) }}
+                                    <div class="modal-body d-flex flex-column">
+                                        <form class="mb-3" method="POST" action="{{ url_for('circle.edit', circle_pid=this_circle.public_id) }}" enctype="multipart/form-data">
+                                            <h5 class="mb-3">Update circle</h5>
+                                            {{ editCircleForm.hidden_tag() }}
+                                            <div class="form-group">
+                                                {{ editCircleForm.photo_input.label }}
+                                                {{ editCircleForm.photo_input(class="form-control form-control-sm") }}
                                             </div>
-                                            {{ createCircleAdminForm.submit_input(class="btn btn-primary ml-2 btn-sm") }}
-                                        </div>
-                                    </form>
-                                    <div class="container border-top pt-3">
-                                        <h5>Admins</h5>
-                                        {% for admin in this_circle["admin"] %}
-                                            <div class="d-flex justify-content-between p-2">
-                                                <span>{% if admin.public_id == current_user.public_id %}You{% else %}{{ admin["name"] }}{% endif %}</span>
-                                                {% if this_circle["admin"]|length > 1 %}
-                                                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteCircleAdminModal{{ loop.index }}">
-                                                        Remove
-                                                    </button>
-                                                    <div class="modal" id="deleteCircleAdminModal{{ loop.index }}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                                        <div class="modal-dialog">
-                                                            <form class="modal-content" method="POST" action="{{ url_for('circle.delete_admin', circle_pid=this_circle.public_id) }}">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="staticBackdropLabel">Remove admin</h5>
-                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                        <span aria-hidden="true">&times;</span>
-                                                                    </button>
-                                                                </div>
-                                                                <div class="border-top modal-body">
-                                                                    {{ deleteCircleAdminForm.hidden_tag() }}
-                                                                    {{ deleteCircleAdminForm.admin_input(hidden=True, value=admin["public_id"]) }}
-                                                                    {{ deleteCircleAdminForm.confirm_name_input(hidden=True, value=this_circle.name) }}
-                                                                    Are you sure you want to remove {% if admin.public_id == current_user.public_id %}yourself as{% else %}this{% endif %} admin of this circle?
-                                                                    {{ deleteCircleAdminForm.name_input(hidden=True, value=this_circle.name) }}
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                                    {{ deleteCircleAdminForm.submit_input(class="btn btn-danger") }}
-                                                                </div>
-                                                            </form>
+                                            <div class="form-group">
+                                                {{ editCircleForm.name_input.label }}
+                                                {{ editCircleForm.name_input(class="form-control form-control-sm", value=this_circle["name"]) }}
+                                            </div>
+                                            <div class="form-group">
+                                                {% set f = editCircleForm.bio_input.process_data(this_circle["bio"]) %}
+                                                {{ editCircleForm.bio_input.label }}
+                                                {{ editCircleForm.bio_input(class="form-control form-control-sm", value=this_circle["bio"]) }}
+                                            </div>
+                                            <div class="form-group">
+                                                {{ editCircleForm.type_input.label }}
+                                                {{ editCircleForm.type_input(class="form-control form-control-sm") }}
+                                            </div>
+                                            {{ editCircleForm.submit_input(class="btn btn-primary float-right btn-block") }}
+                                        </form>
+                                        <form class="my-3" method="POST" action="{{ url_for('circle.create_admin', circle_pid=this_circle.public_id) }}">
+                                            <h5 class="mb-3">Add new admin</h5>
+                                            {{ createCircleAdminForm.hidden_tag() }}
+                                            <div class="position-relative">
+                                                <div href="{{ url_for('circle.confirmed_members', circle_pid=this_circle['public_id']) }}" media-storage="{{ config.MEDIA_STORAGE }}" search-type="filler" class="autocomplete position-absolute container-fluid p-0 w-75 pr-2">
+                                                    {{ createCircleAdminForm.name_input(class="form-control form-control-sm", placeholder="Member name or username") }}
+                                                    {{ createCircleAdminForm.admin_input(hidden=True) }}
+                                                </div>
+                                                {{ createCircleAdminForm.submit_input(class="position-relative btn btn-primary ml-2 btn-sm w-25 float-right") }}
+                                            </div>
+                                        </form>
+                                        <div class="my-3">
+                                            <h5>Admins</h5>
+                                            {% for admin in this_circle["admin"] %}
+                                                <div class="d-flex justify-content-between p-2">
+                                                    <span>{% if admin.public_id == current_user.public_id %}You{% else %}{{ admin["name"] }}{% endif %}</span>
+                                                    {% if this_circle["admin"]|length > 1 %}
+                                                        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteCircleAdminModal{{ loop.index }}">
+                                                            Remove
+                                                        </button>
+                                                        <div class="modal" id="deleteCircleAdminModal{{ loop.index }}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <form class="modal-content" method="POST" action="{{ url_for('circle.delete_admin', circle_pid=this_circle.public_id) }}">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="staticBackdropLabel">Remove admin</h5>
+                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="border-top modal-body">
+                                                                        {{ deleteCircleAdminForm.hidden_tag() }}
+                                                                        {{ deleteCircleAdminForm.admin_input(hidden=True, value=admin["public_id"]) }}
+                                                                        {{ deleteCircleAdminForm.confirm_name_input(hidden=True, value=this_circle.name) }}
+                                                                        Are you sure you want to remove {% if admin.public_id == current_user.public_id %}yourself as{% else %}this{% endif %} admin of this circle?
+                                                                        {{ deleteCircleAdminForm.name_input(hidden=True, value=this_circle.name) }}
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                        {{ deleteCircleAdminForm.submit_input(class="btn btn-danger") }}
+                                                                    </div>
+                                                                </form>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                        {% endfor %}
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                        <form class="my-3" method="POST" action="{{ url_for('circle.delete', circle_pid=this_circle.public_id) }}">
+                                            <h5 class="mb-3">Delete circle</h5>
+                                            {{ deleteCircleForm.hidden_tag() }}
+                                            <span class="text-muted small">Confirm by typing the circle's name</span>
+                                            {{ deleteCircleForm.confirm_name_input(hidden=True, value=this_circle.name) }}
+                                            {{ deleteCircleForm.name_input(class="form-control form-control-sm", placeholder=this_circle.name, minlength=2) }}
+                                            {{ deleteCircleForm.submit_input(class="btn btn-danger float-right btn-block mt-3") }}
+                                        </form>
                                     </div>
-                                    <form class="border-top modal-body" method="POST" action="{{ url_for('circle.delete', circle_pid=this_circle.public_id) }}">
-                                        <h5 class="mb-3">Delete circle</h5>
-                                        {{ deleteCircleForm.hidden_tag() }}
-                                        <span class="text-muted small">Confirm by typing the circle's name</span>
-                                        {{ deleteCircleForm.confirm_name_input(hidden=True, value=this_circle.name) }}
-                                        {{ deleteCircleForm.name_input(class="form-control form-control-sm", placeholder=this_circle.name, minlength=2) }}
-                                        {{ deleteCircleForm.submit_input(class="btn btn-danger float-right btn-block mt-3") }}
-                                    </form>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                     </div>
@@ -185,7 +187,7 @@
                     {{ post_remover(deletePostForm, none, this_circle) }}
                     <div class="container">
                         <div class="fd-cont row row-cols-1 row-cols-md-1 p-0">
-                            <div class="col p-0">
+                            <div class="cr-pst-c col p-0">
                                 <div class="pt-3">
                                     {{ post_creator(current_user, createPostForm, none, this_circle) }}
                                 </div>

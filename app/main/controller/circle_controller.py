@@ -61,8 +61,8 @@ def media(current_user, circle_pid):
     else:
         abort(404)
 
-@circle_bp.route("/<circle_pid>/members", methods=["GET", "POST"])
 @circle_bp.route("/<circle_pid>/members/confirmed", methods=["GET", "POST"])
+@circle_bp.route("/<circle_pid>/members", methods=["GET", "POST"])
 @session_required
 def confirmed_members(current_user, circle_pid):
     get_resp = CircleService.get_by_pid(circle_pid)
@@ -87,7 +87,18 @@ def confirmed_members(current_user, circle_pid):
                 member_list = json.loads(CircleService.get_all_members(session["booped_in"], this_circle["public_id"], "1", None).text)["data"] if this_circle["visitor_auth"] > 1 else []
             )
         else:
-            return jsonify(json.loads(CircleService.get_all_members(session["booped_in"], this_circle["public_id"], "1", search_val).text)["data"]) if this_circle["visitor_auth"] > 1 else []
+            list = json.loads(
+                CircleService.get_all_members(
+                    session["booped_in"],
+                    this_circle["public_id"],
+                    "1",
+                    search_val
+                ).text
+            )
+            if list.get("data"):
+                return jsonify(list["data"])
+            else:
+                abort(404)
     else:
         abort(404)
 

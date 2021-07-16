@@ -245,9 +245,11 @@ document.querySelectorAll(".autocomplete").forEach((div) => {
                     },
                     success: function (response) {
                          a.innerHTML = "";
-                         if (response.length != 0) {
-                              userAutocomplete(a, val, response);
-                         } else {
+                         userAutocomplete(a, val, response);
+                    },
+                    complete: function (xhr) {
+                         if (xhr.status == 404) {
+                              a.innerHTML = "";
                               let b = document.createElement("DIV");
                               b.classList.add("d-flex", "justify-content-center");
                               if (searchType == "filler") {
@@ -855,7 +857,7 @@ function alertElemCreator (message, key="") {
      let asd = document.querySelector(".alert-frame");
      let alertCont = asd.querySelector(".container");
      let alert = document.createElement("div");
-     alert.classList.add("toast", "alert-dismissible", "mt-2", "p-0");
+     alert.classList.add("toast", "alert-dismissible", "mt-2", "p-0", (key == "" ? "alert-primary" : "alert-danger"));
 
      // HEADER
      let toastHeader = document.createElement("div");
@@ -912,10 +914,12 @@ document.querySelectorAll(".fd-cont").forEach((feedCont) => {
                success: function (data) {
                     $(postCreator).find(".ldg-dbg").attr("hidden", "True");
                     $(postCreator).find(':input[type="submit"]').prop('disabled', false);
-                    $(postCreator).trigger("reset");
                     $(postCreator).closest(".modal").modal("hide");
+                    $(postCreator).trigger("reset");
+                    $(postCreator.querySelector(".crp-gallc-disposable")).remove();
                     if (data["status"] == 200) {
                          postElemCreator(feedPostItem, data["payload"], true).insertAfter(postCreatorCont, null);
+                         alertElemCreator("Post created successfully.");
                     } else {
                          for (error of data["payload"]) {
                               alertElemCreator(error["message"], error["key"]);
@@ -1154,7 +1158,7 @@ document.querySelectorAll(".ntf-nb").forEach((notifCont) => {
           }
      });
 });
-// #
+
 disablePostCreator(document.querySelector(".cr-post-facade-input"));
 function disablePostCreator(input) {
      $(input).one("click", function(e) {

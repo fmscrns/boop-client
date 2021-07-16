@@ -21,9 +21,8 @@ body {
     bottom: 40px;
 }
 
-.alert-frame > .alert {
-    width: 250px;
-    white-space: initial;
+.alert-frame > .container > .toast-notif:hover {
+    box-shadow: 2px 2px 10px -1.5px black;
 }
 
 .ntf-nb > .dropdown-menu {

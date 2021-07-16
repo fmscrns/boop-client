@@ -1,11 +1,7 @@
 import os
 
-
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'my_precious_secret_key')
-    NAME_CLOUDINARY = "fmscrns"
-    KEY_API_CLOUDINARY = os.getenv('CLOUD_KEY')
-    SECRET_API_CLOUDINARY = os.getenv("CLOUD_SECRET")
     DEBUG = False
 
 class DevelopmentConfig(Config):
@@ -16,6 +12,9 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     DEBUG = False
     API_DOMAIN = "https://boop-proj-server.herokuapp.com"
+    NAME_CLOUDINARY = "fmscrns"
+    KEY_API_CLOUDINARY = os.getenv('CLOUD_KEY')
+    SECRET_API_CLOUDINARY = os.getenv("CLOUD_SECRET")
     MEDIA_STORAGE = "https://res.cloudinary.com/fmscrns/image/upload/v1598443648/Boop/"
 
 config_by_name = dict(
