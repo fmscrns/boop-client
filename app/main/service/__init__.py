@@ -17,6 +17,8 @@ def save_image(form_image, _type):
     if form_image:
         filename = str(uuid.uuid4())
         _, f_ext = os.path.splitext(form_image.filename)
+        if f_ext == ".jpeg":
+            f_ext = ".jpg"
         picture_fn = filename + f_ext
         if current_app.config["DEBUG"] == False:
             myCloudinary.uploader.upload_image(form_image, folder="Boop/", public_id=filename)
@@ -44,11 +46,13 @@ def save_base64image(form_text):
     _split = form_text.split(",")
     encoded_image = _split[1]
     f_ext = ".{}".format(_split[0].split("/")[1].split(";")[0])
+    if f_ext == ".jpeg":
+        f_ext = ".jpg"
     filename = str(uuid.uuid4())
     picture_fn = filename + f_ext
     image = base64.b64decode(encoded_image)
     if current_app.config["DEBUG"] == False:
-        myCloudinary.uploader.upload_image(image, folder="Boop/", public_id=picture_fn)
+        myCloudinary.uploader.upload_image(image, folder="Boop/", public_id=filename)
     else:
         image_bytes = BytesIO(image)
         _i = Image.open(image_bytes)
