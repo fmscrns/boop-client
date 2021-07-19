@@ -16,7 +16,7 @@
                         <div class="container-fluid d-flex flex-row p-0 mt-1">
                             {% for owner in this_pet["owner"] %}
                                 <a href="{{ url_for('user.pets', username=owner['username']) }}">
-                                    <img class="pp-opp {%if loop.index > 1%}ml-1{%endif%}" src="{{ url_for('static', filename='images/{}'.format(owner.photo)) }}" alt="..." class="rounded d-block w-25 border">
+                                    <img class="pp-opp {%if loop.index > 1%}ml-1{%endif%}" src="{{ config.MEDIA_STORAGE + owner['photo'] }}" alt="..." class="rounded d-block w-25 border">
                                 </a>
                             {% endfor %}
                         </div>
