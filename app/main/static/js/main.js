@@ -22,13 +22,13 @@ document.querySelectorAll(".sp-pc-bi").forEach((baseCard) => {
      
      if (petsUrl && peopleUrl) {
           $(document.querySelectorAll(".sp-pc-dc-disp")).remove();
-          resultAjax(resultContainerCreator("Pets"), petsUrl + "?search=" + searchValue, "sp-pc-bi-us", [0, "/search/pets?value=" + searchValue]);
+          resultAjax(resultContainerCreator("Pets"), petsUrl + "?value=" + searchValue, "sp-pc-bi-us", [0, "/search/pets?value=" + searchValue]);
           resultAjax(resultContainerCreator("People"), peopleUrl + "?search=" + searchValue, "sp-pc-bi-pe", [0, "/search/people?value=" + searchValue]);
      } else if (petsUrl) {
           paginationNo = 1;
           $(document.querySelectorAll(".sp-pc-dc-disp")).remove();
           queryCont = resultContainerCreator("Pets");
-          queryUrl = petsUrl + "?search=" + searchValue;
+          queryUrl = petsUrl + "?value=" + searchValue;
           queryClassRemoved = "sp-pc-bi-us";
           queryEndResultConfig = [1];
           resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig);
@@ -51,7 +51,7 @@ document.querySelectorAll(".sp-pc-bi").forEach((baseCard) => {
                     let ssiSelected = ($("option:selected", specieSelectInput).attr("param-str") ? $("option:selected", specieSelectInput).attr("param-str") : "");
                     let bsiSelected = ($("option:selected", breedSelectInput).attr("param-str") ? $("option:selected", breedSelectInput).attr("param-str") : "");
                     let stiSelected = ($("option:selected", statusBoolInput).attr("param-str") ? $("option:selected", statusBoolInput).attr("param-str") : "");
-                    queryUrl = petsUrl + "?search=" + searchValue + ssiSelected + bsiSelected + stiSelected;
+                    queryUrl = petsUrl + "?value=" + searchValue + ssiSelected + bsiSelected + stiSelected;
                     queryClassRemoved = "sp-pc-bi-us";
                     queryEndResultConfig = [1];
                     resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig);
@@ -124,7 +124,7 @@ document.querySelectorAll(".sp-pc-bi").forEach((baseCard) => {
 
                          if (item["bio"]) {
                               let nameCont = card.find(".pc-pe-n").html(item["name"]);
-                              nameCont.attr("href", nameCont.attr("href") + item["public_id"]);
+                              nameCont.attr("href", nameCont.attr("href").replace("//", "/" + item["public_id"] + "/"));
                               if (item["status"] == 1) {
                                    card.find(".pc-pe-st").html("Status: <span class='badge badge-pill badge-primary'>Open for adoption</span>");
                               } else if (item["status"] == 2) {
@@ -419,7 +419,7 @@ document.querySelectorAll(".ctf-c").forEach((cont) => {
                url: "/circle/preference?pagination_no=1",
                success: function (data) {
                     for (circle of data) {
-                         let newCard = baseCard.clone().addClass("list-item-disposable").attr("hidden", false);
+                         let newCard = baseCard.clone().addClass("list-item-disposable").attr("hidden", false); 
                          let followBtn = newCard.find("button").attr("circle-pid", circle["public_id"]);
                          followBtn.one("click", function (e) {
                               $.ajax({
@@ -441,7 +441,8 @@ document.querySelectorAll(".ctf-c").forEach((cont) => {
                               });
                          });
                          newCard.find("img").attr("src", newCard.find("img").attr("src") + "/" + circle["photo"]);
-                         newCard.find(".font-weight-bold").html(circle["name"]);
+                         let nameCont = newCard.find(".font-weight-bold");
+                         nameCont.html(circle["name"]).attr("href", nameCont.attr("base-url").replace("//", "/" + circle["public_id"] + "/")).removeAttr("base-url");
                          let typeCont = newCard.find(".ctf-c-bi-t");
                          for (type of circle["_type"]) {
                               typeCont.html(typeCont.html() + " " + type["name"]);
@@ -487,7 +488,8 @@ document.querySelectorAll(".btf-c").forEach((cont) => {
                               });
                          });
                          newCard.find("img").attr("src", newCard.find("img").attr("src") + "/" + business["photo"]);
-                         newCard.find(".font-weight-bold").html(business["name"]);
+                         let nameCont = newCard.find(".font-weight-bold");
+                         nameCont.html(business["name"]).attr("href", nameCont.attr("base-url").replace("//", "/" + business["public_id"] + "/")).removeAttr("base-url");
                          let typeCont = newCard.find(".btf-c-bi-t");
                          for (type of business["_type"]) {
                               typeCont.html(typeCont.html() + " " + type["name"]);
@@ -533,7 +535,8 @@ document.querySelectorAll(".ptf-c").forEach((cont) => {
                               });
                          });
                          newCard.find("img").attr("src", newCard.find("img").attr("src") + "/" + pet["photo"]);
-                         newCard.find(".font-weight-bold").html(pet["name"]);
+                         let nameCont = newCard.find(".font-weight-bold");
+                         nameCont.html(pet["name"]).attr("href", nameCont.attr("base-url").replace("//", "/" + pet["public_id"] + "/")).removeAttr("base-url");
                          newCard.find(".ptf-c-bi-s").html(pet["group_name"]);
                          newCard.find(".ptf-c-bi-b").html(pet["subgroup_name"]);
                          newCard.find(".ptf-c-bi-fc").html((pet["follower_count"] != 0 ? abbreviateNumber(pet["follower_count"]) : "No") + " follower" + (pet["follower_count"] != 1 ? "s" : ""));
@@ -1090,8 +1093,14 @@ document.querySelectorAll(".dp-mb").forEach((button) => {
 
 document.querySelectorAll(".ntf-nb").forEach((notifCont) => {
      let notifUnreadCount = notifCont.querySelector(".position-absolute");
-     let notifBtn = notifCont.querySelector(".nav-link");
      let notifMenu = notifCont.querySelector(".dropdown-menu");
+
+     let postBaseUrl = notifCont.getAttribute("post-base-url");
+     let petBaseUrl = notifCont.getAttribute("pet-base-url");
+     let petPendFollBaseUrl = notifCont.getAttribute("pet-pf-base-url");
+     let businessBaseUrl = notifCont.getAttribute("business-base-url");
+     let circleBaseUrl = notifCont.getAttribute("circle-base-url");
+     let circlePendFollBaseUrl = notifCont.getAttribute("circle-pf-base-url");
 
      $.ajax({
           type: "GET",
@@ -1127,21 +1136,21 @@ document.querySelectorAll(".ntf-nb").forEach((notifCont) => {
                          thisNotif.append(notifDatetime);
 
                          if (notification["post_subject_id"]) {
-                              thisNotif.setAttribute("href", "/post/" + notification["post_subject_id"] + "/comments");
+                              thisNotif.setAttribute("href", postBaseUrl.replace("//", "/" + notification["post_subject_id"] + "/"));
                          } else if (notification["circle_subject_id"]) {
                               if (notification["_type"] == 1) {
-                                   thisNotif.setAttribute("href", "/circle/" + notification["circle_subject_id"] + "/members/pending");
+                                   thisNotif.setAttribute("href", circlePendFollBaseUrl.replace("//", "/" + notification["circle_subject_id"] + "/"));
                               } else {
-                                   thisNotif.setAttribute("href", "/circle/" + notification["circle_subject_id"] + "/posts");
+                                   thisNotif.setAttribute("href", circleBaseUrl.replace("//", "/" + notification["circle_subject_id"] + "/"));
                               }
                          } else if (notification["pet_subject_id"]) {
                               if (notification["_type"] == 1) {
-                                   thisNotif.setAttribute("href", "/pet/" + notification["pet_subject_id"] + "/followers/pending");
+                                   thisNotif.setAttribute("href", petPendFollBaseUrl.replace("//", "/" + notification["pet_subject_id"] + "/"));
                               } else {
-                                   thisNotif.setAttribute("href", "/pet/" + notification["pet_subject_id"] + "/posts");
+                                   thisNotif.setAttribute("href", petBaseUrl.replace("//", "/" + notification["pet_subject_id"] + "/"));
                               }
                          } else if (notification["business_subject_id"]) {
-                              thisNotif.setAttribute("href", "/business/" + notification["business_subject_id"] + "/posts");
+                              thisNotif.setAttribute("href", businessBaseUrl.replace("//", "/" + notification["business_subject_id"] + "/"));
                          }
 
                          notifMenu.append(thisNotif);

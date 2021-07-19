@@ -13,6 +13,7 @@ from dateutil import parser
 @home_bp.route("/feed", methods=["GET", "POST"])
 @session_required
 def feed(current_user):
+    print(current_app.url_map)
     createPostForm = CreatePostForm()
     createPostForm.subject_input.choices = [(subject["public_id"], subject["name"]) for subject in json.loads(PetService.get_all_by_user(session["booped_in"], current_user["public_id"] + "?tag_suggestions=1").text)["data"]]
     return render_template("feed.html",

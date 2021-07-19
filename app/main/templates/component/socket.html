@@ -5,8 +5,14 @@
         socket.on("notif-for-{{ current_user['username'] }}", function (notification) {
             let notifCont = document.querySelector(".ntf-nb");
             let notifUnreadCount = notifCont.querySelector(".position-absolute");
-            let notifBtn = notifCont.querySelector(".nav-link");
             let notifMenu = notifCont.querySelector(".dropdown-menu");
+
+            let postBaseUrl = notifCont.getAttribute("post-base-url");
+            let petBaseUrl = notifCont.getAttribute("pet-base-url");
+            let petPendFollBaseUrl = notifCont.getAttribute("pet-pf-base-url");
+            let businessBaseUrl = notifCont.getAttribute("business-base-url");
+            let circleBaseUrl = notifCont.getAttribute("circle-base-url");
+            let circlePendFollBaseUrl = notifCont.getAttribute("circle-pf-base-url");
 
             let notifIsEmpty = notifCont.querySelector(".ntf-e");
             if (notifIsEmpty) {
@@ -37,21 +43,21 @@
             thisNotif.append(notifDatetime);
 
             if (notification["post_subject_id"]) {
-                thisNotif.setAttribute("href", "/post/" + notification["post_subject_id"] + "/comments");
+                thisNotif.setAttribute("href", postBaseUrl.replace("//", "/" + notification["post_subject_id"] + "/"));
             } else if (notification["circle_subject_id"]) {
                 if (notification["_type"] == 1) {
-                    thisNotif.setAttribute("href", "/circle/" + notification["circle_subject_id"] + "/members/pending");
+                    thisNotif.setAttribute("href", circlePendFollBaseUrl.replace("//", "/" + notification["circle_subject_id"] + "/"));
                 } else {
-                    thisNotif.setAttribute("href", "/circle/" + notification["circle_subject_id"] + "/posts");
+                    thisNotif.setAttribute("href", circleBaseUrl.replace("//", "/" + notification["circle_subject_id"] + "/"));
                 }
             } else if (notification["pet_subject_id"]) {
                 if (notification["_type"] == 1) {
-                    thisNotif.setAttribute("href", "/pet/" + notification["pet_subject_id"] + "/followers/pending");
+                    thisNotif.setAttribute("href", petPendFollBaseUrl.replace("//", "/" + notification["pet_subject_id"] + "/"));
                 } else {
-                    thisNotif.setAttribute("href", "/pet/" + notification["pet_subject_id"] + "/posts");
+                    thisNotif.setAttribute("href", petBaseUrl.replace("//", "/" + notification["pet_subject_id"] + "/"));
                 }
             } else if (notification["business_subject_id"]) {
-                thisNotif.setAttribute("href", "/business/" + notification["business_subject_id"] + "/posts");
+                thisNotif.setAttribute("href", businessBaseUrl.replace("//", "/" + notification["business_subject_id"] + "/"));
             }
 
             dividerCont = document.createElement("li");
@@ -65,26 +71,21 @@
             var href = "";
 
             if (notification["post_subject_id"]) {
-                href = "{{ url_for('post.comments', post_pid='') }}" + notification["post_subject_id"];
+                href = postBaseUrl.replace("//", "/" + notification["post_subject_id"] + "/");
+            } else if (notification["business_subject_id"]) {
+                href = businessBaseUrl.replace("//", "/" + notification["business_subject_id"] + "/");
             } else if (notification["circle_subject_id"]) {
                 if (notification["_type"] == 1) {
-                    {% set list1 = url_for('circle.pending_members', circle_pid='').split('/') %}
-                    href = "/{{ list1[1] }}/" + notification["circle_subject_id"] + "/{{ list1[3] }}/{{ list1[4] }}";
+                    href = circlePendFollBaseUrl.replace("//", "/" + notification["circle_subject_id"] + "/");
                 } else {
-                    {% set list1 = url_for('circle.posts', circle_pid='').split('/') %}
-                    href = "/{{ list1[1] }}/" + notification["circle_subject_id"] + "/{{ list1[3] }}";
+                    href = circleBaseUrl.replace("//", "/" + notification["circle_subject_id"] + "/")
                 }
             } else if (notification["pet_subject_id"]) {
                 if (notification["_type"] == 1) {
-                    {% set list1 = url_for('pet.pending_followers', pet_pid='').split('/') %}
-                    href = "/{{ list1[1] }}/" + notification["pet_subject_id"] + "/{{ list1[3] }}/{{ list1[4] }}";
+                    href = petPendFollBaseUrl.replace("//", "/" + notification["pet_subject_id"] + "/");
                 } else {
-                    {% set list1 = url_for('pet.posts', pet_pid='').split('/') %}
-                    href = "/{{ list1[1] }}/" + notification["pet_subject_id"] + "/{{ list1[3] }}";
+                    href = petBaseUrl.replace("//", "/" + notification["pet_subject_id"] + "/");
                 }
-            } else if (notification["business_subject_id"]) {
-                {% set list1 = url_for('business.posts', business_pid='').split('/') %}
-                href = "/{{ list1[1] }}/" + notification["business_subject_id"] + "/{{ list1[3] }}";
             }
 
             alert.setAttribute("href", href);

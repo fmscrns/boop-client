@@ -12,7 +12,6 @@
     </head>
     {% block welcome %}{% endblock %}
     <body>
-        
         <div class="alert-frame d-flex flex-column" {% if current_user %}cu-pu="{{ config.MEDIA_STORAGE + current_user['photo'] }}" cu-n="{{ current_user['name'] }}"{% endif %}>
             <div class="container">
                 {% with messages = get_flashed_messages(with_categories=true) %}

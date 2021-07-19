@@ -5,6 +5,7 @@ from . import concat_url_param, save_image
 class PetService:
     @staticmethod
     def create(data_form, data_file):
+        print("INSIDE SERVICE")
         return requests.post("{}/pet/".format(
             current_app.config["API_DOMAIN"]),
             headers = {

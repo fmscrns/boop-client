@@ -8,7 +8,29 @@ from ..service.circle_service import CircleService
 from ..service.circleType_service import CircleTypeService
 from ..form.post_form import CreatePostForm, DeletePostForm
 
-@circle_bp.route("/<circle_pid>", methods=["GET", "POST"])
+@circle_bp.route("/create", methods=["POST"])
+@session_required
+def create(current_user):
+    createCircleForm = CreateCircleForm()
+    createCircleForm.type_input.choices = [(_type, "") for _type in request.form.getlist("type_input")]
+    if createCircleForm.validate_on_submit():
+        create_circle = CircleService.create(request.form, request.files)
+
+        if create_circle.ok:
+            resp = json.loads(create_circle.text)
+            flash(resp["message"], "success")
+
+            return redirect(url_for("user.circles", username=current_user["username"]))
+        
+        flash(json.loads(create_circle.text)["message"], "danger")
+
+    if createCircleForm.errors:
+        for key in createCircleForm.errors:
+            for message in createCircleForm.errors[key]:
+                flash("{}: {}".format(key.split("_")[0], message), "danger")
+
+    return redirect(url_for("user.circles", username=current_user["username"]))
+    
 @circle_bp.route("/<circle_pid>/posts", methods=["GET", "POST"])
 @session_required
 def posts(current_user, circle_pid):
@@ -131,29 +153,6 @@ def pending_members(current_user, circle_pid):
             abort(403)
     else:
         abort(404)
-
-@circle_bp.route("/create", methods=["POST"])
-@session_required
-def create(current_user):
-    createCircleForm = CreateCircleForm()
-    createCircleForm.type_input.choices = [(_type, "") for _type in request.form.getlist("type_input")]
-    if createCircleForm.validate_on_submit():
-        create_circle = CircleService.create(request.form, request.files)
-
-        if create_circle.ok:
-            resp = json.loads(create_circle.text)
-            flash(resp["message"], "success")
-
-            return redirect(url_for("user.circles", username=current_user["username"]))
-        
-        flash(json.loads(create_circle.text)["message"], "danger")
-
-    if createCircleForm.errors:
-        for key in createCircleForm.errors:
-            for message in createCircleForm.errors[key]:
-                flash("{}: {}".format(key.split("_")[0], message), "danger")
-
-    return redirect(url_for("user.circles", username=current_user["username"]))
 
 @circle_bp.route("/<circle_pid>/admin/create", methods=["POST"])
 @session_required

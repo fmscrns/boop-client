@@ -112,10 +112,10 @@
                                                 {% for owner in this_pet["owner"] %}
                                                     <div class="d-flex justify-content-between {%if loop.index > 1%}mt-3{%endif%}">
                                                         <span class="w-75 pr-2">{% if owner.public_id == current_user.public_id %}You{% else %}{{ owner["name"] }}{% endif %}</span>
-                                                        <button type="button" class="btn btn-outline-danger btn-sm w-25" data-toggle="modal" data-target="#deletePetOwnerModal">
+                                                        <button type="button" class="btn btn-outline-danger btn-sm w-25" data-toggle="modal" data-target="#deletePetOwnerModal{{ loop.index }}">
                                                             Remove
                                                         </button>
-                                                        <div class="modal" id="deletePetOwnerModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                        <div class="modal" id="deletePetOwnerModal{{ loop.index }}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                                                             <div class="modal-dialog">
                                                                 <form class="modal-content" method="POST" action="{{ url_for('pet.delete_owner', pet_pid=this_pet.public_id) }}">
                                                                     <div class="modal-header">
