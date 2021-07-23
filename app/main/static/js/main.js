@@ -1094,7 +1094,7 @@ document.querySelectorAll(".dp-mb").forEach((button) => {
 document.querySelectorAll(".ntf-nb").forEach((notifCont) => {
      let notifUnreadCount = notifCont.querySelector(".position-absolute");
      let notifMenu = notifCont.querySelector(".dropdown-menu");
-
+     let mediaStorage = notifCont.getAttribute("cu-pu");
      let postBaseUrl = notifCont.getAttribute("post-base-url");
      let petBaseUrl = notifCont.getAttribute("pet-base-url");
      let petPendFollBaseUrl = notifCont.getAttribute("pet-pf-base-url");
@@ -1121,7 +1121,7 @@ document.querySelectorAll(".ntf-nb").forEach((notifCont) => {
                          notifImageCont = document.createElement("div");
                          notifImageCont.classList.add("mr-3", "ntf-nb-img-c");
                          notifImage = document.createElement("img");
-                         notifImage.setAttribute("src", "/static/images/" + notification["sender_photo"]);
+                         notifImage.setAttribute("src", mediaStorage + notification["sender_photo"]);
                          notifImageCont.append(notifImage);
                          thisNotif.append(notifImageCont);
 

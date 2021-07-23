@@ -120,7 +120,7 @@
                 <li class="nav-item {{ profileNavbarActive }}">
                     <a class="nav-link" href="{{ url_for('user.pets', username=current_user['username']) }}"><span class="font-weight-bold hci-bb-l">{{ current_user.name }}</span> <span class="sr-only">(current)</span></a>
                 </li>
-                <li class="ntf-nb nav-item font-weight-bold dropdown" post-base-url="{{ url_for('post.comments', post_pid='') }}" pet-base-url="{{ url_for('pet.posts', pet_pid='') }}" pet-pf-base-url="{{ url_for('pet.pending_followers', pet_pid='') }}" business-base-url="{{ url_for('business.posts', business_pid='') }}" circle-base-url="{{ url_for('circle.posts', circle_pid='') }}" circle-pf-base-url="{{ url_for('circle.pending_members', circle_pid='') }}">
+                <li class="ntf-nb nav-item font-weight-bold dropdown" cu-pu="{{ config.MEDIA_STORAGE }}" post-base-url="{{ url_for('post.comments', post_pid='') }}" pet-base-url="{{ url_for('pet.posts', pet_pid='') }}" pet-pf-base-url="{{ url_for('pet.pending_followers', pet_pid='') }}" business-base-url="{{ url_for('business.posts', business_pid='') }}" circle-base-url="{{ url_for('circle.posts', circle_pid='') }}" circle-pf-base-url="{{ url_for('circle.pending_members', circle_pid='') }}">
                     <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Notifications
                         <span class="d-none position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary text-white">
