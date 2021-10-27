@@ -15,7 +15,7 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     DEBUG = False
     API_DOMAIN = "https://boop-proj-server.herokuapp.com"
-    MEDIA_STORAGE = "https://res.cloudinary.com/fmscrns/image/upload/v1598443648/Boop/"
+    MEDIA_STORAGE = "https://res.cloudinary.com/tjcmfrnc/image/upload/v1635309887/BoopDev/"
 
 config_by_name = dict(
     dev=DevelopmentConfig,
