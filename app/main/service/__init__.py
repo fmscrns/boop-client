@@ -52,7 +52,7 @@ def save_base64image(form_text):
     picture_fn = filename + f_ext
     image = base64.b64decode(encoded_image)
     if current_app.config["DEBUG"] == False:
-        myCloudinary.uploader.upload_image(image, folder="Boop/", public_id=filename)
+        myCloudinary.uploader.upload_image(image, folder="BoopDev/", public_id=filename)
     else:
         image_bytes = BytesIO(image)
         _i = Image.open(image_bytes)
