@@ -2,7 +2,7 @@ import os
 
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'my_precious_secret_key')
-    NAME_CLOUDINARY = "fmscrns"
+    NAME_CLOUDINARY = "tjcmfrnc"
     KEY_API_CLOUDINARY = os.getenv('CLOUD_KEY')
     SECRET_API_CLOUDINARY = os.getenv("CLOUD_SECRET")
     DEBUG = False
