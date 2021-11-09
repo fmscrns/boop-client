@@ -21,7 +21,7 @@ def save_image(form_image, _type):
             f_ext = ".jpg"
         picture_fn = filename + f_ext
         if current_app.config["DEBUG"] == False:
-            myCloudinary.uploader.upload_image(form_image, folder="Boop/", public_id=filename)
+            myCloudinary.uploader.upload_image(form_image, folder="BoopDev/", public_id=filename)
         else:
             picture_path = os.path.join(current_app.root_path,'static/images', picture_fn)
         
