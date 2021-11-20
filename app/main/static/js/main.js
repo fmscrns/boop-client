@@ -1,11 +1,12 @@
 var currentDate = new Date();
 
 document.querySelectorAll(".sp-pc-bi").forEach((baseCard) => {
-     let searchValue = baseCard.getAttribute("search-value");
+     let searchVal = baseCard.getAttribute("search-value");
      let petsUrl = baseCard.getAttribute("pets-url");
      let peopleUrl = baseCard.getAttribute("people-url");
      let loading = $(baseCard).siblings(".spinner-grow");
      let impasseBadge = $(baseCard).siblings(".badge");
+     let searchBar = document.querySelector(".searchbar-onpage");
      var paginationNo = 1;
      var doneAjax = true;
      var activateScrollPagination = false;
@@ -13,79 +14,119 @@ document.querySelectorAll(".sp-pc-bi").forEach((baseCard) => {
      var queryUrl;
      var queryClassRemoved;
      var queryEndResultConfig;
+
+     var typingTimer;
+     var doneTypingInterval = 1000;
+
+     changeSideBarLinkHref(searchVal);
+     searchBar.value = searchVal;
+     function changeSideBarLinkHref(searchValue) {
+          document.querySelectorAll(".sb-tmid").forEach((sideBarLink) => {
+               sideBarLink.href = sideBarLink.getAttribute("base-href") + "?value=" + searchValue;
+          });
+     }
+
+     searchBar.addEventListener("keyup", (e) => {
+          let newSearchVal = e.currentTarget.value;
+          
+          if (newSearchVal) {
+               if (e.keyCode === 13) {
+                    e.preventDefault();
+                    window.clearTimeout(typingTimer);
+                    paginationNo = 1;
+                    changeSideBarLinkHref(newSearchVal);
+                    readyPopulate(newSearchVal);
+               } else {
+                    window.clearTimeout(typingTimer);
+                    typingTimer = setTimeout(function () {
+                         paginationNo = 1;
+                         changeSideBarLinkHref(newSearchVal);
+                         readyPopulate(newSearchVal);
+                    }, doneTypingInterval);
+               }
+          }
+     });
+     var catType = "People";
      $(window).scroll(function () {
           if(($(window).scrollTop() + $(window).height() == $(document).height()) && doneAjax && activateScrollPagination) {
                loading.show();
-               resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig);
+               resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig, catType);
           }
      });
-     
-     if (petsUrl && peopleUrl) {
-          $(document.querySelectorAll(".sp-pc-dc-disp")).remove();
-          resultAjax(resultContainerCreator("Pets"), petsUrl + "?value=" + searchValue, "sp-pc-bi-us", [0, "/search/pets?value=" + searchValue]);
-          resultAjax(resultContainerCreator("People"), peopleUrl + "?search=" + searchValue, "sp-pc-bi-pe", [0, "/search/people?value=" + searchValue]);
-     } else if (petsUrl) {
-          paginationNo = 1;
-          $(document.querySelectorAll(".sp-pc-dc-disp")).remove();
-          queryCont = resultContainerCreator("Pets");
-          queryUrl = petsUrl + "?value=" + searchValue;
-          queryClassRemoved = "sp-pc-bi-us";
-          queryEndResultConfig = [1];
-          resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig);
-          let petFilterSideNavbar = document.querySelector(".sfpt-nbc");
-          let specieSelectInput = petFilterSideNavbar.querySelectorAll("select")[0];
-          let breedSelectInput = petFilterSideNavbar.querySelectorAll("select")[1];
-          let statusBoolInput = petFilterSideNavbar.querySelectorAll("select")[2];
-          specieSelectInput.addEventListener("change", (e) => {
-               breedSelectInput.setAttribute("disabled", "disabled");
-               breedSelectInput.innerHTML = "";
-               if (specieSelectInput.value != 0) {
-                    specieBreedInputDynamicAjax(specieSelectInput, breedSelectInput);
-               }
-          });
-          [specieSelectInput, breedSelectInput, statusBoolInput].forEach((input) => {
-               input.addEventListener("change", (e) => {
-                    paginationNo = 1;
-                    $(document.querySelectorAll(".sp-pc-dc-disp")).remove();
-                    queryCont = resultContainerCreator("Pets");
-                    let ssiSelected = ($("option:selected", specieSelectInput).attr("param-str") ? $("option:selected", specieSelectInput).attr("param-str") : "");
-                    let bsiSelected = ($("option:selected", breedSelectInput).attr("param-str") ? $("option:selected", breedSelectInput).attr("param-str") : "");
-                    let stiSelected = ($("option:selected", statusBoolInput).attr("param-str") ? $("option:selected", statusBoolInput).attr("param-str") : "");
-                    queryUrl = petsUrl + "?value=" + searchValue + ssiSelected + bsiSelected + stiSelected;
-                    queryClassRemoved = "sp-pc-bi-us";
-                    queryEndResultConfig = [1];
-                    resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig);
-               });
-          });
-     } else if (peopleUrl) {
-          queryCont = resultContainerCreator("People");
-          queryUrl = peopleUrl + "?search=" + searchValue;
-          queryClassRemoved = "sp-pc-bi-pe";
-          queryEndResultConfig = [1];
-          resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig);
-          let peopleFilterSideNavbar = document.querySelector(".sfppl-nbc");
-          let sameFollowedPetsInput = peopleFilterSideNavbar.querySelectorAll("input")[0];
-          let sameBreedPreferencesInput = peopleFilterSideNavbar.querySelectorAll("input")[1];
-          [sameFollowedPetsInput, sameBreedPreferencesInput].forEach((input) => {
-               input.addEventListener("change", (e) => {
-                    if (e.currentTarget.checked) {
-                         e.currentTarget.setAttribute("param-str", e.currentTarget.getAttribute("param-str").slice(0, -1) + "1");
-                    } else {
-                         e.currentTarget.setAttribute("param-str", e.currentTarget.getAttribute("param-str").slice(0, -1) + "0");
+
+     readyPopulate(searchVal);
+     function readyPopulate(searchValue) {
+          if (petsUrl && peopleUrl) {
+               $(document.querySelectorAll(".sp-pc-dc-disp")).remove();
+               resultAjax(resultContainerCreator("People"), peopleUrl + "?value=" + searchValue, "sp-pc-bi-pe", [0, "/search/people?value=" + searchValue], "People");
+               resultAjax(resultContainerCreator("Pets"), petsUrl + "?value=" + searchValue, "sp-pc-bi-us", [0, "/search/pets?value=" + searchValue], "Pet");
+          } else if (petsUrl) {
+               catType = "Pet";
+               paginationNo = 1;
+               $(document.querySelectorAll(".sp-pc-dc-disp")).remove();
+               queryCont = resultContainerCreator("Pets");
+               queryUrl = petsUrl + "?value=" + searchValue;
+               queryClassRemoved = "sp-pc-bi-us";
+               queryEndResultConfig = [1];
+               resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig, catType);
+               let petFilterSideNavbar = document.querySelector(".sfpt-nbc");
+               let specieSelectInput = petFilterSideNavbar.querySelectorAll("select")[0];
+               let breedSelectInput = petFilterSideNavbar.querySelectorAll("select")[1];
+               let statusBoolInput = petFilterSideNavbar.querySelectorAll("select")[2];
+               specieSelectInput.addEventListener("change", (e) => {
+                    breedSelectInput.setAttribute("disabled", "disabled");
+                    breedSelectInput.innerHTML = "";
+                    if (specieSelectInput.value != 0) {
+                         specieBreedInputDynamicAjax(specieSelectInput, breedSelectInput);
                     }
-                    paginationNo = 1;
-                    $(document.querySelectorAll(".sp-pc-dc-disp")).remove();
-                    queryCont = resultContainerCreator("People");
-                    let sfpiSelected = ($(sameFollowedPetsInput).attr("param-str") ? $(sameFollowedPetsInput).attr("param-str") : "");
-                    let sbpiSelected = ($(sameBreedPreferencesInput).attr("param-str") ? $(sameBreedPreferencesInput).attr("param-str") : "");
-                    
-                    queryUrl = peopleUrl + "?search=" + searchValue + sfpiSelected  + sbpiSelected;
-                    queryClassRemoved = "sp-pc-bi-pe";
-                    queryEndResultConfig = [1];
-                    resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig);
                });
-          });
-     }
+               [specieSelectInput, breedSelectInput, statusBoolInput].forEach((input) => {
+                    input.addEventListener("change", (e) => {
+                         paginationNo = 1;
+                         $(document.querySelectorAll(".sp-pc-dc-disp")).remove();
+                         queryCont = resultContainerCreator("Pets");
+                         let ssiSelected = ($("option:selected", specieSelectInput).attr("param-str") ? $("option:selected", specieSelectInput).attr("param-str") : "");
+                         let bsiSelected = ($("option:selected", breedSelectInput).attr("param-str") ? $("option:selected", breedSelectInput).attr("param-str") : "");
+                         let stiSelected = ($("option:selected", statusBoolInput).attr("param-str") ? $("option:selected", statusBoolInput).attr("param-str") : "");
+                         queryUrl = petsUrl + "?value=" + searchValue + ssiSelected + bsiSelected + stiSelected;
+                         queryClassRemoved = "sp-pc-bi-us";
+                         queryEndResultConfig = [1];
+                         resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig, catType);
+                    });
+               });
+          } else if (peopleUrl) {
+               catType = "People";
+               paginationNo = 1;
+               $(document.querySelectorAll(".sp-pc-dc-disp")).remove();
+               queryCont = resultContainerCreator("People");
+               queryUrl = peopleUrl + "?value=" + searchValue;
+               queryClassRemoved = "sp-pc-bi-pe";
+               queryEndResultConfig = [1];
+               resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig, catType);
+               let peopleFilterSideNavbar = document.querySelector(".sfppl-nbc");
+               let sameFollowedPetsInput = peopleFilterSideNavbar.querySelectorAll("input")[0];
+               let sameBreedPreferencesInput = peopleFilterSideNavbar.querySelectorAll("input")[1];
+               [sameFollowedPetsInput, sameBreedPreferencesInput].forEach((input) => {
+                    input.addEventListener("change", (e) => {
+                         if (e.currentTarget.checked) {
+                              e.currentTarget.setAttribute("param-str", e.currentTarget.getAttribute("param-str").slice(0, -1) + "1");
+                         } else {
+                              e.currentTarget.setAttribute("param-str", e.currentTarget.getAttribute("param-str").slice(0, -1) + "0");
+                         }
+                         paginationNo = 1;
+                         $(document.querySelectorAll(".sp-pc-dc-disp")).remove();
+                         queryCont = resultContainerCreator("People");
+                         let sfpiSelected = ($(sameFollowedPetsInput).attr("param-str") ? $(sameFollowedPetsInput).attr("param-str") : "");
+                         let sbpiSelected = ($(sameBreedPreferencesInput).attr("param-str") ? $(sameBreedPreferencesInput).attr("param-str") : "");
+                         
+                         queryUrl = peopleUrl + "?value=" + searchValue + sfpiSelected  + sbpiSelected;
+                         queryClassRemoved = "sp-pc-bi-pe";
+                         queryEndResultConfig = [1];
+                         resultAjax(queryCont, queryUrl, queryClassRemoved, queryEndResultConfig, catType);
+                    });
+               });
+          }
+     };
 
      function resultContainerCreator (title) {
           let cont = document.createElement("div");
@@ -99,7 +140,7 @@ document.querySelectorAll(".sp-pc-bi").forEach((baseCard) => {
           return cont;
      }
 
-     function resultAjax (cont, url, classRemoved, endResultConfig) {
+     function resultAjax (cont, url, classRemoved, endResultConfig, catType) {
           $.ajax({
                type: "GET",
                url: url + "&pagination_no=" + paginationNo,
@@ -110,7 +151,7 @@ document.querySelectorAll(".sp-pc-bi").forEach((baseCard) => {
                },
                success: function (response) {
                     cont.removeAttribute("hidden");
-                    for (item of response) {
+                    for (item of response[catType]) {
                          let card = $(baseCard).clone().removeAttr("hidden").removeClass("sp-pc-bi");
                          
                          card.find("." + classRemoved).remove();
@@ -207,7 +248,10 @@ document.querySelectorAll(".autocomplete").forEach((div) => {
      let pidHolder = div.querySelectorAll("input")[1];
      let mediaStorage = div.getAttribute("media-storage");
      let url = div.getAttribute("href");
-     let itemBaseUrl = div.getAttribute("item-base-url");
+
+     let peopleItemBaseUrl = div.getAttribute("people-item-base-url");
+     let petItemBaseUrl = div.getAttribute("pet-item-base-url");
+     let usersOnly = div.getAttribute("users-only");
      let searchType = div.getAttribute("search-type");
      let searchInputWidthBL = 209;
      let fillerInputWidthBL = 313;
@@ -221,14 +265,14 @@ document.querySelectorAll(".autocomplete").forEach((div) => {
           if (!val) { return false;}
           currentFocus = -1;
           a = document.createElement("DIV");
-          a.style.overflowY = "scroll"
+          a.style.overflowY = "scroll";
           a.setAttribute("id", this.id + "autocomplete-list");
           a.setAttribute("class", "autocomplete-items");
           this.parentNode.appendChild(a);
           typingTimer = setTimeout(function () {
                $.ajax({
                     type: "GET",
-                    url: url + "?search=" + val,
+                    url: url + "?value=" + val,
                     beforeSend: function () {
                          let b = document.createElement("DIV");
                          b.classList.add("d-flex", "flex-row", "justify-content-start", "align-items-center");
@@ -245,7 +289,11 @@ document.querySelectorAll(".autocomplete").forEach((div) => {
                     },
                     success: function (response) {
                          a.innerHTML = "";
-                         userAutocomplete(a, val, response);
+                         userAutocomplete(a, val, response["People"]);
+                         if (usersOnly === "false") {
+                              petAutocomplete(a, val, response["Pet"]);
+                              searchSeeMore(a, val);
+                         }
                     },
                     complete: function (xhr) {
                          if (xhr.status == 404) {
@@ -266,9 +314,18 @@ document.querySelectorAll(".autocomplete").forEach((div) => {
      });
 
      function userAutocomplete (a, val, response) {
+          if (usersOnly === "false") {
+               let btitle = document.createElement("div");
+               btitle.style.width = searchInputWidthBL + "px";
+               btitle.classList.add("d-flex", "flex-row", "justify-content-start", "align-items-center");
+               btitle.innerHTML += "<span class='h6 mt-1'>People</span>";
+               a.appendChild(btitle);
+          }
+
           if (searchType == "filler") {
                for (let user of response) {
                     let b = document.createElement("DIV");
+                    b.classList.add("ac-i-h");
                     b.style.width = fillerInputWidthBL + "px";
                     b.classList.add("d-flex", "flex-row", "justify-content-start", "align-items-center");
                     let profPic = document.createElement("img");
@@ -300,10 +357,11 @@ document.querySelectorAll(".autocomplete").forEach((div) => {
           } else if (searchType == "searcher") {
                for (let user of response) {
                     let b = document.createElement("div");
+                    b.classList.add("ac-i-h");
                     b.style.width = searchInputWidthBL + "px";
                     let bi = document.createElement("a");
                     bi.classList.add("d-flex", "flex-row", "justify-content-start", "align-items-center", "text-dark", "text-decoration-none");
-                    bi.setAttribute("href", itemBaseUrl + "/" + user["username"]);
+                    bi.setAttribute("href", peopleItemBaseUrl + "/" + user["username"]);
                     let profPic = document.createElement("img");
                     profPic.setAttribute("src", mediaStorage + user["photo"]);
                     profPic.classList.add("home-content-profPic", "mr-3");
@@ -326,15 +384,48 @@ document.querySelectorAll(".autocomplete").forEach((div) => {
                     b.append(bi);
                     a.appendChild(b);
                }
-               let b = document.createElement("DIV");
+          }
+     }
+
+     function petAutocomplete (a, val, response) {
+          let btitle = document.createElement("div");
+          btitle.style.width = searchInputWidthBL + "px";
+          btitle.classList.add("d-flex", "flex-row", "justify-content-start", "align-items-center");
+          btitle.innerHTML += "<span class='h6 mt-1'>Pet</span>";
+          a.appendChild(btitle);
+
+          for (let pet of response) {
+               let b = document.createElement("div");
+               b.classList.add("ac-i-h");
                b.style.width = searchInputWidthBL + "px";
                let bi = document.createElement("a");
-               bi.classList.add("d-flex", "justify-content-center", "align-items-center", "text-dark", "text-decoration-none");
-               bi.setAttribute("href", "/search/all?value=" + val);
-               bi.innerHTML = "Search more for&nbsp;<span class='font-weight-bold'>" + val + "</span>" ;
+               bi.classList.add("d-flex", "flex-row", "justify-content-start", "align-items-center", "text-dark", "text-decoration-none");
+               bi.setAttribute("href", petItemBaseUrl + "/" + pet["public_id"]);
+               let profPic = document.createElement("img");
+               profPic.setAttribute("src", mediaStorage + pet["photo"]);
+               profPic.classList.add("home-content-profPic", "mr-3");
+               bi.append(profPic);
+               let b0 = document.createElement("div");
+               b0.classList.add("d-flex", "flex-column");
+               var nameSubstringMatchPosition = pet.name.toUpperCase().indexOf(val.toUpperCase());
+               b0.innerHTML += "<span>" + [pet.name.slice(0, nameSubstringMatchPosition), "<strong>", pet.name.slice(nameSubstringMatchPosition, nameSubstringMatchPosition + val.length), "</strong>", pet.name.slice(nameSubstringMatchPosition + val.length)].join('') + "</span>";
+               b0.innerHTML += "<span class='small tex-muted mt-1'>" + pet.group_name + " &middot; " + pet.subgroup_name + "</span>";
+               bi.append(b0);
                b.append(bi);
-               a.append(b);
+               a.appendChild(b);
           }
+     }
+
+     function searchSeeMore (a, val) {
+          let b = document.createElement("DIV");
+          b.classList.add("ac-i-h");
+          b.style.width = searchInputWidthBL + "px";
+          let bi = document.createElement("a");
+          bi.classList.add("d-flex", "justify-content-center", "align-items-center", "text-dark", "text-decoration-none");
+          bi.setAttribute("href", "/search/all?value=" + val);
+          bi.innerHTML = "Search more for&nbsp;<span class='font-weight-bold'>" + val + "</span>" ;
+          b.append(bi);
+          a.append(b);
      }
 
      inp.addEventListener("keydown", function(e) {

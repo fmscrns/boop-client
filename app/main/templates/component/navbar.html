@@ -1,9 +1,9 @@
-{% macro search_sideNavbar(searchPetForm, searchPeopleForm, search_value, a, b, c, d, e, f) %}
+{% macro search_sideNavbar(searchPetForm, searchPeopleForm, a, b, c, d, e, f) %}
     <div class="w-25 position-fixed h-100 py-4 px-3 bg-light border">
         <nav class="stnv-c nav flex-column h-100 mt-3">
             <span class="font-weight-bold h5 mb-2">Filter</span>
-            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{a}}" href="{{ url_for('search.all', value=search_value) }}">All</a>
-            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{c}}" href="{{ url_for('search.people', value=search_value) }}">People</a>
+            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{a}} sb-tmid" base-href="{{ url_for('search.all') }}">All</a>
+            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{c}} sb-tmid" base-href="{{ url_for('search.people') }}">People</a>
             {% if c %}
                 <div class="sfppl-nbc my-1 pl-4">
                     <div class="border rounded p-2 d-flex flex-row align-items-center justify-content-between mt-2 mb-3">
@@ -22,7 +22,7 @@
                     </div>           
                 </div>
             {% endif %}
-            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{b}}" href="{{ url_for('search.pets', value=search_value) }}">Pets</a>
+            <a class="nav-link font-weight-normal rounded my-1 px-4 py-2 {{b}} sb-tmid" base-href="{{ url_for('search.pets') }}">Pets</a>
             {% if b %}
                 <div class="sfpt-nbc my-1 pl-4">
                     <div class="input-group my-2">
@@ -94,7 +94,7 @@
     </nav>
 {% endmacro %}
 
-{% macro loaded_navbar(current_user, homeNavbarActive, profileNavbarActive) %}
+{% macro loaded_navbar(current_user, homeNavbarActive, profileNavbarActive, search_page=false) %}
     <nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light border">
         <a class="navbar-brand ml-1" href="{{ url_for('home.feed') }}">
             <img src="{{ url_for('static', filename='assets/boop-nameplate-dark.svg') }}">
@@ -103,11 +103,17 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse mr-5 pr-5" id="navbarSupportedContent">
-            <form class="form-inline my-2 my-lg-0 position-relative w-25">
-                <div href="{{ url_for('user.search') }}" media-storage="{{ config.MEDIA_STORAGE }}" search-type="searcher" item-base-url="{{ url_for('user.pets', username='') }}" class="autocomplete position-absolute w-100 p-0">
-                    <input class="form-control mr-sm-2 w-75 form-control-sm" type="search" placeholder="Search" aria-label="Search">
+            {% if search_page is true %}
+                <div class="form-inline my-2 my-lg-0 position-relative w-25">
+                    <input class="form-control mr-sm-2 w-75 form-control-sm searchbar-onpage" type="search" placeholder="Search" aria-label="Search">
                 </div>
-            </form>
+            {% else %}
+                <form class="form-inline my-2 my-lg-0 position-relative w-25">
+                    <div href="{{ url_for('search.create') }}" media-storage="{{ config.MEDIA_STORAGE }}" search-type="searcher" people-item-base-url="{{ url_for('user.pets', username='') }}" pet-item-base-url="{{ url_for('pet.posts', pet_pid='') }}" class="autocomplete position-absolute w-100 p-0" users-only="false">
+                        <input class="form-control mr-sm-2 w-75 form-control-sm" type="search" placeholder="Search" aria-label="Search">
+                    </div>
+                </form>
+            {% endif %}
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item font-weight-bold {{ homeNavbarActive }}">
                     <a class="nav-link" href="{{ url_for('home.feed') }}">

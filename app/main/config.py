@@ -8,11 +8,13 @@ class Config:
     DEBUG = False
 
 class DevelopmentConfig(Config):
+    ENV = "development"
     DEBUG = True
     API_DOMAIN = "http://127.0.0.1:5000"
     MEDIA_STORAGE = "/static/images/"
 
 class ProductionConfig(Config):
+    ENV = "production"
     DEBUG = False
     API_DOMAIN = "https://boop-proj-server.herokuapp.com"
     MEDIA_STORAGE = "https://res.cloudinary.com/tjcmfrnc/image/upload/v1635309887/BoopDev/"

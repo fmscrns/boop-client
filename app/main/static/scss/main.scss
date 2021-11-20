@@ -216,7 +216,6 @@ body {
 
 .autocomplete-items > div {
     padding: 10px;
-    cursor: pointer;
     background-color: #fff;
     border-bottom: 1px solid #d4d4d4;
 }
@@ -224,8 +223,15 @@ body {
 .autocomplete-active {
     background-color: DodgerBlue !important;
     color: #ffffff;
+
 }
-.autocomplete-items > div:hover {
+
+.autocomplete-items > .ac-i-h {
+    /*when hovering an item:*/
+    cursor: pointer;
+}
+
+.autocomplete-items > .ac-i-h:hover {
     /*when hovering an item:*/
     background-color: #e9e9e9;
 }
