@@ -165,7 +165,7 @@ document.querySelectorAll(".sp-pc-bi").forEach((baseCard) => {
 
                          if (item["bio"]) {
                               let nameCont = card.find(".pc-pe-n").html(item["name"]);
-                              nameCont.attr("href", nameCont.attr("href").replace("//", "/" + item["public_id"] + "/"));
+                              nameCont.attr("href", nameCont.attr("href") + item["public_id"]);
                               if (item["status"] == 1) {
                                    card.find(".pc-pe-st").html("Status: <span class='badge badge-pill badge-primary'>Open for adoption</span>");
                               } else if (item["status"] == 2) {
