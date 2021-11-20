@@ -12,20 +12,15 @@ from dateutil import parser
 @pet_bp.route("/create", methods=["POST"])
 @session_required
 def create(current_user):
-    print("START CONTROLLER")
     createPetForm = CreatePetForm()
 
     createPetForm.group_input.choices = [(request.form.get("group_input"), "")]
     createPetForm.subgroup_input.choices = [(request.form.get("subgroup_input"), "")]
 
     if createPetForm.validate_on_submit():
-        print("DONE VALIDATED")
-        print("ENTERING SERVICE...")
         create_pet = PetService.create(request.form, request.files)
-        print("DONE SERVICE")
         if create_pet.ok:
             flash(json.loads(create_pet.text)["message"], "success")
-            print("END CONTROLLER")
             return redirect(url_for("user.pets", username=current_user["username"]))
         
         flash(json.loads(create_pet.text)["message"], "danger")
@@ -38,6 +33,7 @@ def create(current_user):
     return redirect(url_for("user.pets", username=current_user["username"]))
 
 @pet_bp.route("/<pet_pid>/posts", methods=["GET", "POST"])
+@pet_bp.route("/<pet_pid>", methods=["GET", "POST"])
 @session_required
 def posts(current_user, pet_pid):
     get_resp = PetService.get_by_pid(pet_pid)
@@ -317,6 +313,10 @@ def search(current_user):
         ).text
     )
     if list.get("data"):
-        return jsonify(list["data"])
+        return jsonify(
+            dict(
+                Pet = list["data"]
+            )
+        )
     else:
         abort(404)

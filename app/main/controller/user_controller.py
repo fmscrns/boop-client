@@ -117,14 +117,18 @@ def circles(current_user, username):
 def search(current_user):
     list = json.loads(
         UserService.search(
-            request.args.get("search"),
+            request.args.get("value"),
             request.args.get("same_followed_pets"),
             request.args.get("same_breed_preferences"),
             request.args.get("pagination_no")
         ).text
     )
     if list.get("data"):
-        return jsonify(list["data"])
+        return jsonify(
+            dict(
+                People = list["data"]
+            )
+        )
     else:
         abort(404)
 

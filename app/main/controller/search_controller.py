@@ -1,11 +1,46 @@
 from app.main.service.specie_service import SpecieService
 import json
 from app.main.form.search_form import SearchPeopleForm, SearchPetForm
-from flask import render_template, abort
+from flask import render_template, abort, jsonify
 from flask.globals import request, session
 from flask.helpers import url_for
 from ... import search_bp
 from ..util.decorator import session_required
+from app.main.service.user_service import UserService
+from app.main.service.pet_service import PetService
+
+@search_bp.route("/get", methods=["GET"])
+@session_required
+def create(current_user):
+    people_list = json.loads(
+        UserService.search(
+            request.args.get("value"),
+            request.args.get("same_followed_pets"),
+            request.args.get("same_breed_preferences"),
+            request.args.get("pagination_no")
+        ).text
+    )
+
+    pet_list = json.loads(
+        PetService.search(
+            request.args.get("value"),
+            request.args.get("group_id"),
+            request.args.get("subgroup_id"),
+            request.args.get("status"),
+            request.args.get("pagination_no")
+        ).text
+    )
+
+    if people_list.get("data") and pet_list.get("data"):
+        return jsonify(
+            dict(
+                People = people_list["data"],
+                Pet = pet_list["data"]
+            )
+        )
+    else:
+        abort(404)
+
 
 @search_bp.route("/all", methods=["GET", "POST"])
 @session_required
