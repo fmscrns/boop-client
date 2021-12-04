@@ -627,7 +627,7 @@ document.querySelectorAll(".ptf-c").forEach((cont) => {
                          });
                          newCard.find("img").attr("src", newCard.find("img").attr("src") + "/" + pet["photo"]);
                          let nameCont = newCard.find(".font-weight-bold");
-                         nameCont.html(pet["name"]).attr("href", nameCont.attr("base-url").replace("//", "/" + pet["public_id"] + "/")).removeAttr("base-url");
+                         nameCont.html(pet["name"]).attr("href", nameCont.attr("base-url") + pet["public_id"]).removeAttr("base-url");
                          newCard.find(".ptf-c-bi-s").html(pet["group_name"]);
                          newCard.find(".ptf-c-bi-b").html(pet["subgroup_name"]);
                          newCard.find(".ptf-c-bi-fc").html((pet["follower_count"] != 0 ? abbreviateNumber(pet["follower_count"]) : "No") + " follower" + (pet["follower_count"] != 1 ? "s" : ""));
