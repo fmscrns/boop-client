@@ -22,7 +22,7 @@
             notifUnreadCount.classList.remove("d-none");
             notifUnreadCount.innerHTML = parseInt(notifUnreadCount.innerHTML) + 1;
             
-            thisNotif = document.createElement("a");
+            let thisNotif = document.createElement("a");
             thisNotif.classList.add("dropdown-item", "p-3", "d-flex", "flex-row", "align-items-center", "justify-content-between", "ntf-nb-unr");
             
             notifImageCont = document.createElement("div");
@@ -54,7 +54,7 @@
                 if (notification["_type"] == 1) {
                     thisNotif.setAttribute("href", petPendFollBaseUrl.replace("//", "/" + notification["pet_subject_id"] + "/"));
                 } else {
-                    thisNotif.setAttribute("href", petBaseUrl.replace("//", "/" + notification["pet_subject_id"] + "/"));
+                    thisNotif.setAttribute("href", petBaseUrl + notification["pet_subject_id"]);
                 }
             } else if (notification["business_subject_id"]) {
                 thisNotif.setAttribute("href", businessBaseUrl.replace("//", "/" + notification["business_subject_id"] + "/"));
@@ -84,7 +84,7 @@
                 if (notification["_type"] == 1) {
                     href = petPendFollBaseUrl.replace("//", "/" + notification["pet_subject_id"] + "/");
                 } else {
-                    href = petBaseUrl.replace("//", "/" + notification["pet_subject_id"] + "/");
+                    href = petBaseUrl + notification["pet_subject_id"];
                 }
             }
 

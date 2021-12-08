@@ -31,7 +31,7 @@ def create(current_user):
         ).text
     )
 
-    if people_list.get("data") and pet_list.get("data"):
+    if people_list.get("data") or pet_list.get("data"):
         return jsonify(
             dict(
                 People = people_list["data"],

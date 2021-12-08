@@ -22,7 +22,7 @@ def create(current_user):
             resp = json.loads(create_business.text)
             flash(resp["message"], "success")
 
-            return redirect(url_for("user.businesses", username=current_user["username"]))
+            return redirect(url_for("business.posts", business_pid=resp["public_id"]))
         
         flash(json.loads(create_business.text)["message"], "danger")
 

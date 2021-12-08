@@ -1238,7 +1238,7 @@ document.querySelectorAll(".ntf-nb").forEach((notifCont) => {
                               if (notification["_type"] == 1) {
                                    thisNotif.setAttribute("href", petPendFollBaseUrl.replace("//", "/" + notification["pet_subject_id"] + "/"));
                               } else {
-                                   thisNotif.setAttribute("href", petBaseUrl.replace("//", "/" + notification["pet_subject_id"] + "/"));
+                                   thisNotif.setAttribute("href", petBaseUrl + notification["pet_subject_id"]);
                               }
                          } else if (notification["business_subject_id"]) {
                               thisNotif.setAttribute("href", businessBaseUrl.replace("//", "/" + notification["business_subject_id"] + "/"));

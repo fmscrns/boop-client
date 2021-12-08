@@ -20,7 +20,7 @@ def create(current_user):
             resp = json.loads(create_circle.text)
             flash(resp["message"], "success")
 
-            return redirect(url_for("user.circles", username=current_user["username"]))
+            return redirect(url_for("circle.posts", circle_pid=resp["public_id"]))
         
         flash(json.loads(create_circle.text)["message"], "danger")
 
