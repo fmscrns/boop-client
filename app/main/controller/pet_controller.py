@@ -21,7 +21,7 @@ def create(current_user):
         create_pet = PetService.create(request.form, request.files)
         if create_pet.ok:
             flash(json.loads(create_pet.text)["message"], "success")
-            return redirect(url_for("user.pets", username=current_user["username"]))
+            return redirect(url_for("pet.posts", pet_pid=json.loads(create_pet.text)["public_id"]))
         
         flash(json.loads(create_pet.text)["message"], "danger")
     
