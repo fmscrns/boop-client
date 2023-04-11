@@ -1,4 +1,4 @@
-from flask import Blueprint
+from Flask import Blueprint
 gateway_bp = Blueprint("gateway", __name__)
 admin_bp = Blueprint("admin", __name__)
 home_bp = Blueprint("home", __name__)
