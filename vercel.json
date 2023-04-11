@@ -1,5 +1,0 @@
-{
-        "buildCommand" : "python manage.py run",
-        "version" : 2
-}
-    
